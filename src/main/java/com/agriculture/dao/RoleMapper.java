@@ -1,9 +1,10 @@
 package com.agriculture.dao;
 
 import com.agriculture.model.dto.Role;
+import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
-
+@Mapper
 public interface RoleMapper {
     Role selectRoleById(int id);
     List<Role> selectAllRole();
