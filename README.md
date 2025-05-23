@@ -5,56 +5,32 @@
 
 #### 软件架构
 软件架构说明
+
 ├── main/
-
 │   ├── java/
-
 │   │   └── com/agriculture/
-
 │   │       ├── controller/          # 控制层
-
 │   │       ├── service/             # 服务层接口
-
 │   │       │   └── impl/            # 服务层实现
-
 │   │       ├── dao/                 # Mapper接口
-
 │   │       ├── model/               # 实体类
-
 │   │       ├── config/              # 配置类（Spring、MyBatis）
-
 │   │       ├── interceptor/         # 权限拦截器
-
 │   │       └── util/                # 工具类（文件上传、邮件发送等）
-
 │   ├── resources/
-
 │   │   ├── mapper/                  # MyBatis映射文件
-
 │   │   ├── spring/                  # Spring配置文件
-
 │   │   ├── mybatis-config.xml
-
 │   │   └── log4j2.xml
-
 ├── test/                            # 单元测试
-
 └── webapp/
-
     ├── static/                  # 静态资源
-
     │   ├── css/
-
     │   ├── js/
-
     │   └── uploads/             # 上传文件存储目录
-
     ├── WEB-INF/
-
     │   └── views/               # JSP页面
-
     │  
-
     └── web.xml
         
 
