@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.agriculture.dao.RoleMapper">
+    <resultMap id="roleResultMap" type="com.agriculture.entity.Role">
+        <id property="id" column="id"/>
+        <result property="roleName" column="name"/>
+        <result property="description" column="description"/>
+    </resultMap>
+    <select id="getRoleById" resultMap="roleResultMap">
+        SELECT * FROM role WHERE id = #{id}
+    </select>
+    <select id="getAllRoles" resultMap="roleResultMap">
+        SELECT * FROM role
+    </select>
+    <insert id="insertRole" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO role
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            name
+            <if test="description != null"> ,description </if>
+        </trim>
+            VALUES
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            #{roleName}
+            <if test="description != null"> ,#{description} </if>
+        </trim>
+    </insert>
+    <update id="updateRole">
+        UPDATE role
+        <set>
+            <if test="roleName != null"> name = #{roleName}, </if>
+            <if test="description != null"> description = #{description}, </if>
+        </set>
+        WHERE id = #{id}
+    </update>
+    <delete id="deleteRole">
+        DELETE FROM role WHERE id = #{id}
+    </delete>
+    <select id="getRoleCount" resultType="int">
+        SELECT COUNT(*) FROM role
+    </select>
+</mapper>
