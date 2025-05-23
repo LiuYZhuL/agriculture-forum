@@ -11,19 +11,15 @@ import java.util.Date;
 @AllArgsConstructor
 public class User {
     private Integer id;
-
     private String username;
-
     private String password;
+
     private String email;
     private String avatar;
-
     private Integer roleId;
 
     private Integer status;
-
     private Date createTime;
-
     private Date lastLoginTime;
 }
 
