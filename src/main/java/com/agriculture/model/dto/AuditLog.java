@@ -1,0 +1,25 @@
+package com.agriculture.model.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import java.util.Date;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class AuditLog {
+
+    private Integer id;
+
+    private Integer postId;
+
+
+    private Integer auditorId;
+
+    private Integer action; // 1-通过 2-拒绝
+
+    private Date auditTime;
+
+    private String reason;
+}
