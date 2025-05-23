@@ -1,0 +1,13 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="agriculture-forum:Web exploded">
+    <output-path>$PROJECT_DIR$/out/artifacts/agriculture_forum_Web_exploded</output-path>
+    <root id="archive" name="agriculture-forum_Web exploded.war">
+      <element id="javaee-facet-resources" facet="agriculture-forum/web/Web" />
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="classes">
+          <element id="module-output" name="agriculture-forum" />
+        </element>
+      </element>
+    </root>
+  </artifact>
+</component>
