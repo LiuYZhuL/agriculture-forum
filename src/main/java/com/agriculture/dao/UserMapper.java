@@ -13,4 +13,5 @@ public interface UserMapper {
     int deleteUser(int id);
     List<User> getUserByStatus(int status);
     int getUserCount();
+    User getUserByUsername(String username);
 }
