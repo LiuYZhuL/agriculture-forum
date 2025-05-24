@@ -1,6 +1,6 @@
 package com.agriculture.dao;
 
-import com.agriculture.model.dto.Role;
+import com.agriculture.model.po.Role;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;

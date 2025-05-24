@@ -1,4 +1,4 @@
-package com.agriculture.model.dto;
+package com.agriculture.model.po;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,7 +9,7 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Interaction {
+public class Comment {
 
     private Integer id;
 
@@ -19,7 +19,11 @@ public class Interaction {
 
     private Integer userId;
 
-    private Integer type; // 1-点赞 2-收藏
+    private String content;
+
+
+    private Integer parentId;
+
 
     private Date createTime;
 }

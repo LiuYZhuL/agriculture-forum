@@ -1,4 +1,4 @@
-package com.agriculture.model.dto;
+package com.agriculture.model.po;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,8 +9,7 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-
-public class Attachment {
+public class Interaction {
 
     private Integer id;
 
@@ -18,11 +17,9 @@ public class Attachment {
     private Integer postId;
 
 
-    private String filePath;
+    private Integer userId;
 
+    private Integer type; // 1-点赞 2-收藏
 
-    private String fileType;
-
-
-    private Date uploadTime;
+    private Date createTime;
 }

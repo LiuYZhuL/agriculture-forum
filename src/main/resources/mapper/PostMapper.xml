@@ -6,11 +6,11 @@
         <result column="user_id" property="userId" jdbcType="INTEGER" />
         <result column="category_id" property="categoryId" jdbcType="INTEGER" />
         <result column="title" property="title" jdbcType="VARCHAR" />
-        <result column="content" property="content" jdbcType="VARCHAR" />
-        <result column="type" property="type" jdbcType="INTEGER" />
-        <result column="status" property="status" jdbcType="INTEGER" />
-        <result column="is_top" property="isTop" jdbcType="INTEGER" />
-        <result column="is_essence" property="isEssence" jdbcType="INTEGER" />
+        <result column="content" property="content" jdbcType="LONGVARCHAR" />
+        <result column="type" property="type" jdbcType="TINYINT" />
+        <result column="status" property="status" jdbcType="TINYINT" />
+        <result column="is_top" property="isTop" jdbcType="TINYINT" />
+        <result column="is_essence" property="isEssence" jdbcType="TINYINT" />
         <result column="best_answer_id" property="bestAnswerId" jdbcType="INTEGER" />
         <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
         <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
@@ -25,30 +25,34 @@
         SELECT * FROM post
     </select>
 
-    <insert id="insertPost" parameterType="com.agriculture.model.dto.Post">
+    <!-- 分页查询 -->
+    <select id="getPostsByPage" resultType="com.agriculture.model.dto.Post">
+        SELECT * FROM post
+        ORDER BY create_time DESC
+            LIMIT #{offset}, #{pageSize}
+    </select>
+
+    <!-- 关联用户信息查询 -->
+    <select id="getPostWithUser" resultType="map">
+        SELECT p.*, u.username, u.avatar
+        FROM post p
+                 LEFT JOIN user u ON p.user_id = u.id
+        WHERE p.id = #{postId}
+    </select>
+
+    <insert id="insertPost" parameterType="com.agriculture.model.dto.Post" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO post
-        <trim prefix="(" suffix=")" suffixOverrides=",">
-            user_id, category_id, title, content, type, status
-            <if test="isTop != null">,is_top</if>
-            <if test="isEssence != null">,is_essence</if>
-            <if test="bestAnswerId != null">,best_answer_id</if>
-            <if test="viewCount != null">,view_count</if>
-        </trim>
+        (user_id, category_id, title, content, type, status,
+         is_top, is_essence, best_answer_id, view_count)
         VALUES
-        <trim prefix="(" suffix=")" suffixOverrides=",">
-            #{userId}, #{categoryId}, #{title}, #{content}, #{type}, #{status}
-            <if test="isTop != null">,#{isTop}</if>
-            <if test="isEssence != null">,#{isEssence}</if>
-            <if test="bestAnswerId != null">,#{bestAnswerId}</if>
-            <if test="viewCount != null">,#{viewCount}</if>
-        </trim>
+            (#{userId}, #{categoryId}, #{title}, #{content}, #{type}, #{status},
+             #{isTop,jdbcType=TINYINT}, #{isEssence,jdbcType=TINYINT},
+             #{bestAnswerId,jdbcType=INTEGER}, #{viewCount,jdbcType=INTEGER})
     </insert>
 
     <update id="updatePost" parameterType="com.agriculture.model.dto.Post">
         UPDATE post
         <set>
-            <if test="userId != null"> user_id = #{userId}, </if>
-            <if test="categoryId != null"> category_id = #{categoryId}, </if>
             <if test="title != null"> title = #{title}, </if>
             <if test="content != null"> content = #{content}, </if>
             <if test="type != null"> type = #{type}, </if>
@@ -56,7 +60,7 @@
             <if test="isTop != null"> is_top = #{isTop}, </if>
             <if test="isEssence != null"> is_essence = #{isEssence}, </if>
             <if test="bestAnswerId != null"> best_answer_id = #{bestAnswerId}, </if>
-            <if test="updateTime != null"> update_time = #{updateTime}, </if>
+            update_time = CURRENT_TIMESTAMP,
             <if test="viewCount != null"> view_count = #{viewCount}, </if>
         </set>
         WHERE id = #{id}
@@ -66,15 +70,33 @@
         DELETE FROM post WHERE id = #{id}
     </delete>
 
+    <!-- 条件查询方法 -->
     <select id="getPostsByStatus" resultType="com.agriculture.model.dto.Post">
         SELECT * FROM post WHERE status = #{status}
     </select>
 
-    <select id="getPostsByType" resultType="com.agriculture.model.dto.Post">
-        SELECT * FROM post WHERE type = #{type}
+    <select id="getPostsByCategory" resultType="com.agriculture.model.dto.Post">
+        SELECT * FROM post WHERE category_id = #{categoryId}
     </select>
 
+    <select id="getPostsByUser" resultType="com.agriculture.model.dto.Post">
+        SELECT * FROM post WHERE user_id = #{userId}
+    </select>
+
+    <!-- 热门帖子查询 -->
+    <select id="getHotPosts" resultType="com.agriculture.model.dto.Post">
+        SELECT * FROM post
+        WHERE status = 1  -- 已发布状态
+        ORDER BY view_count DESC, is_essence DESC, is_top DESC
+            LIMIT #{limit}
+    </select>
+
+    <!-- 统计方法 -->
     <select id="getPostCount" resultType="int">
         SELECT COUNT(*) FROM post
+    </select>
+
+    <select id="getPostCountByStatus" resultType="int">
+        SELECT COUNT(*) FROM post WHERE status = #{status}
     </select>
 </mapper>

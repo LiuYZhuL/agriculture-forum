@@ -1,6 +1,6 @@
 package com.agriculture.dao;
 
-import com.agriculture.model.dto.User;
+import com.agriculture.model.po.User;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;

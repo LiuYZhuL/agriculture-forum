@@ -1,7 +1,7 @@
 package com.agriculture.service.impl;
 
 import com.agriculture.dao.UserMapper;
-import com.agriculture.model.dto.User;
+import com.agriculture.model.po.User;
 import com.agriculture.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

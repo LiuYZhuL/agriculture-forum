@@ -9,13 +9,14 @@
         <property name="driverClassName" value="com.mysql.cj.jdbc.Driver"/>
         <property name="url" value="jdbc:mysql://localhost:3306/agriculture_forum?useSSL=true&amp;UseUnicode=true&amp;characterEncoding=utf8&amp;serverTimezone=Asia/Shanghai"/>
         <property name="username" value="root"/>
-        <property name="password" value="1234"/>
+        <property name="password" value="shi123ba"/>
     </bean>
     <!--配置Mybatis sqlSessionFactory-->
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean" init-method="afterPropertiesSet">
         <property name="dataSource" ref="dataSource"/>
         <property name="typeAliasesPackage" value="com.agriculture.model.dto"/>
         <property name="mapperLocations" value="classpath:mapper/*Mapper.xml"/>
+        <!--MyBatis通过解析这些XML文件，将其中定义的SQL语句与对应的Mapper接口方法绑定。-->
         <property name="configLocation" value="classpath:mybatis-config.xml"/>
 
     </bean>

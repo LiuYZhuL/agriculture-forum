@@ -1,14 +1,14 @@
-package com.agriculture.model.dto;
+package com.agriculture.model.po;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Role {
+public class Category {
     private Integer id;
-    private String roleName;
+    private String name;
+    private Integer parentId;
     private String description;
 }

@@ -1,4 +1,4 @@
-package com.agriculture.model.dto;
+package com.agriculture.model.po;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

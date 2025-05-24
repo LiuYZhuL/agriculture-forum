@@ -1,4 +1,4 @@
-package com.agriculture.model.dto;
+package com.agriculture.model.po;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,7 +9,8 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Comment {
+
+public class Attachment {
 
     private Integer id;
 
@@ -17,13 +18,11 @@ public class Comment {
     private Integer postId;
 
 
-    private Integer userId;
-
-    private String content;
+    private String filePath;
 
 
-    private Integer parentId;
+    private String fileType;
 
 
-    private Date createTime;
+    private Date uploadTime;
 }
