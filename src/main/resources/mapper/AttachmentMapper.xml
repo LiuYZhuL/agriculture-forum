@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.agriculture.dao.AttachmentMapper">
+
+    <!-- 基础结果映射 -->
+    <resultMap id="BaseResultMap" type="com.agriculture.model.po.Attachment">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="post_id" property="postId" jdbcType="INTEGER"/>
+        <result column="file_path" property="filePath" jdbcType="VARCHAR"/>
+        <result column="file_type" property="fileType" jdbcType="VARCHAR"/>
+        <result column="upload_time" property="uploadTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!-- 插入附件 -->
+    <insert id="insert" parameterType="com.agriculture.model.po.Attachment" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO attachment
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            post_id, file_path,
+            <if test="fileType != null">file_type,</if>
+            <if test="uploadTime != null">upload_time,</if>
+        </trim>
+        VALUES
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            #{postId}, #{filePath},
+            <if test="fileType != null">#{fileType},</if>
+            <if test="uploadTime != null">#{uploadTime},</if>
+        </trim>
+    </insert>
+
+    <!-- 批量插入 -->
+    <insert id="batchInsert" parameterType="java.util.List">
+        INSERT INTO attachment (post_id, file_path, file_type, upload_time)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.postId}, #{item.filePath}, #{item.fileType}, #{item.uploadTime})
+        </foreach>
+    </insert>
+
+    <!-- 根据ID删除 -->
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        DELETE FROM attachment WHERE id = #{id}
+    </delete>
+
+    <!-- 根据帖子ID删除 -->
+    <delete id="deleteByPostId" parameterType="java.lang.Integer">
+        DELETE FROM attachment WHERE post_id = #{postId}
+    </delete>
+
+    <!-- 更新附件信息 -->
+    <update id="update" parameterType="com.agriculture.model.po.Attachment">
+        UPDATE attachment
+        <set>
+            <if test="postId != null">post_id = #{postId},</if>
+            <if test="filePath != null">file_path = #{filePath},</if>
+            <if test="fileType != null">file_type = #{fileType},</if>
+            <if test="uploadTime != null">upload_time = #{uploadTime},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <!-- 根据ID查询 -->
+    <select id="selectById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT * FROM attachment WHERE id = #{id}
+    </select>
+
+    <!-- 根据帖子ID查询附件 -->
+    <select id="selectByPostId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT * FROM attachment WHERE post_id = #{postId}
+    </select>
+
+    <!-- 根据文件类型查询 -->
+    <select id="selectByFileType" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT * FROM attachment WHERE file_type = #{fileType}
+    </select>
+
+    <!-- 复合条件查询 -->
+    <select id="selectByCondition" parameterType="com.agriculture.model.po.Attachment" resultMap="BaseResultMap">
+        SELECT * FROM attachment
+        <where>
+            <if test="postId != null">AND post_id = #{postId}</if>
+            <if test="fileType != null">AND file_type = #{fileType}</if>
+            <if test="filePath != null">AND file_path LIKE CONCAT('%', #{filePath}, '%')</if>
+        </where>
+        ORDER BY upload_time DESC
+    </select>
+
+    <!-- 统计帖子附件数量 -->
+    <select id="countByPostId" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM attachment WHERE post_id = #{postId}
+    </select>
+
+    <!-- 检查文件路径是否存在 -->
+    <select id="existsByFilePath" parameterType="java.lang.String" resultType="java.lang.Boolean">
+        SELECT COUNT(*) > 0 FROM attachment WHERE file_path = #{filePath}
+    </select>
+</mapper>

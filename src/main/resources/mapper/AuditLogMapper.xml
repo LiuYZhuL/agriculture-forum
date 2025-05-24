@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.agriculture.dao.AuditLogMapper">
+
+    <!-- 基础结果映射 -->
+    <resultMap id="BaseResultMap" type="com.agriculture.model.po.AuditLog">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="post_id" property="postId" jdbcType="INTEGER"/>
+        <result column="auditor_id" property="auditorId" jdbcType="INTEGER"/>
+        <result column="action" property="action" jdbcType="TINYINT"/>
+        <result column="audit_time" property="auditTime" jdbcType="TIMESTAMP"/>
+        <result column="reason" property="reason" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!-- 插入审核日志 -->
+    <insert id="insert" parameterType="com.agriculture.model.po.AuditLog" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO audit_log
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            post_id, auditor_id, action,
+            <if test="reason != null">reason,</if>
+            <if test="auditTime != null">audit_time,</if>
+        </trim>
+        VALUES
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            #{postId}, #{auditorId}, #{action},
+            <if test="reason != null">#{reason},</if>
+            <if test="auditTime != null">#{auditTime},</if>
+        </trim>
+    </insert>
+
+    <!-- 批量插入 -->
+    <insert id="batchInsert" parameterType="java.util.List">
+        INSERT INTO audit_log (post_id, auditor_id, action, reason, audit_time)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.postId}, #{item.auditorId}, #{item.action}, #{item.reason}, #{item.auditTime})
+        </foreach>
+    </insert>
+
+    <!-- 根据ID删除 -->
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        DELETE FROM audit_log WHERE id = #{id}
+    </delete>
+
+    <!-- 根据帖子ID删除 -->
+    <delete id="deleteByPostId" parameterType="java.lang.Integer">
+        DELETE FROM audit_log WHERE post_id = #{postId}
+    </delete>
+
+    <!-- 更新审核日志 -->
+    <update id="update" parameterType="com.agriculture.model.po.AuditLog">
+        UPDATE audit_log
+        <set>
+            <if test="postId != null">post_id = #{postId},</if>
+            <if test="auditorId != null">auditor_id = #{auditorId},</if>
+            <if test="action != null">action = #{action},</if>
+            <if test="reason != null">reason = #{reason},</if>
+            <if test="auditTime != null">audit_time = #{auditTime},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <!-- 根据ID查询 -->
+    <select id="selectById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT * FROM audit_log WHERE id = #{id}
+    </select>
+
+    <!-- 根据帖子ID查询审核记录 -->
+    <select id="selectByPostId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT * FROM audit_log WHERE post_id = #{postId} ORDER BY audit_time DESC
+    </select>
+
+    <!-- 根据审核人ID查询 -->
+    <select id="selectByAuditorId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT * FROM audit_log WHERE auditor_id = #{auditorId} ORDER BY audit_time DESC
+    </select>
+
+    <!-- 根据操作类型查询 -->
+    <select id="selectByAction" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT * FROM audit_log WHERE action = #{action} ORDER BY audit_time DESC
+    </select>
+
+    <!-- 复合条件查询 -->
+    <select id="selectByCondition" parameterType="com.agriculture.model.po.AuditLog" resultMap="BaseResultMap">
+        SELECT * FROM audit_log
+        <where>
+            <if test="postId != null">AND post_id = #{postId}</if>
+            <if test="auditorId != null">AND auditor_id = #{auditorId}</if>
+            <if test="action != null">AND action = #{action}</if>
+            <if test="reason != null">AND reason LIKE CONCAT('%', #{reason}, '%')</if>
+        </where>
+        ORDER BY audit_time DESC
+    </select>
+
+    <!-- 统计审核记录数 -->
+    <select id="count" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM audit_log
+    </select>
+
+    <!-- 获取帖子最新审核结果 -->
+    <select id="selectLatestByPostId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT * FROM audit_log
+        WHERE post_id = #{postId}
+        ORDER BY audit_time DESC
+            LIMIT 1
+    </select>
+</mapper>
