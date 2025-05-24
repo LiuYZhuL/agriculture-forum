@@ -13,7 +13,7 @@
     </resultMap>
 
     <!-- 插入评论 -->
-    <insert id="insert" parameterType="com.agriculture.model.po.Comment" useGeneratedKeys="true" keyProperty="id">
+    <insert id="insertComment" parameterType="com.agriculture.model.po.Comment" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO comment
         <trim prefix="(" suffix=")" suffixOverrides=",">
             post_id, user_id, content,
@@ -29,7 +29,7 @@
     </insert>
 
     <!-- 批量插入 -->
-    <insert id="batchInsert" parameterType="java.util.List">
+    <insert id="batchInsertComment" parameterType="java.util.List">
         INSERT INTO comment (post_id, user_id, content, parent_id)
         VALUES
         <foreach collection="list" item="item" separator=",">
@@ -38,17 +38,17 @@
     </insert>
 
     <!-- 根据ID删除 -->
-    <delete id="deleteById" parameterType="java.lang.Integer">
+    <delete id="deleteCommentById" parameterType="java.lang.Integer">
         DELETE FROM comment WHERE id = #{id}
     </delete>
 
     <!-- 根据帖子ID删除 -->
-    <delete id="deleteByPostId" parameterType="java.lang.Integer">
+    <delete id="deleteCommentByPostId" parameterType="java.lang.Integer">
         DELETE FROM comment WHERE post_id = #{postId}
     </delete>
 
     <!-- 更新评论 -->
-    <update id="update" parameterType="com.agriculture.model.po.Comment">
+    <update id="updateComment" parameterType="com.agriculture.model.po.Comment">
         UPDATE comment
         <set>
             <if test="postId != null">post_id = #{postId},</if>
@@ -61,45 +61,50 @@
     </update>
 
     <!-- 根据ID查询 -->
-    <select id="selectById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <select id="selectCommentById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         SELECT * FROM comment WHERE id = #{id}
     </select>
 
     <!-- 查询所有评论 -->
-    <select id="selectAll" resultMap="BaseResultMap">
+    <select id="selectAllComment" resultMap="BaseResultMap">
         SELECT * FROM comment
     </select>
 
     <!-- 根据帖子ID查询评论 -->
-    <select id="selectByPostId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-        SELECT * FROM comment WHERE post_id = #{postId}
+    <select id="selectCommentByPostId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT * FROM comment
+        WHERE post_id = #{postId}
+        ORDER BY
+            CASE
+                WHEN parent_id IS NULL THEN id  -- 顶级评论按自身ID排序
+                ELSE parent_id                  -- 回复类评论按父评论ID排序
+                END,
+            create_time ASC,
+            CASE
+                WHEN parent_id IS NULL THEN 0   -- 顶级评论优先显示
+                ELSE 1                          -- 回复类评论后显示
+                END
     </select>
 
     <!-- 根据用户ID查询评论 -->
-    <select id="selectByUserId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <select id="selectCommentByUserId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         SELECT * FROM comment WHERE user_id = #{userId}
     </select>
 
     <!-- 根据父评论ID查询回复 -->
-    <select id="selectByParentId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <select id="selectCommentByParentId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         SELECT * FROM comment WHERE parent_id = #{parentId}
     </select>
 
     <!-- 查询帖子的顶级评论（无父评论的） -->
-    <select id="selectTopLevelByPostId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <select id="selectTopLevelCommentByPostId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         SELECT * FROM comment
         WHERE post_id = #{postId} AND parent_id IS NULL
     </select>
 
-    <!-- 查询帖子的所有评论（包括回复） -->
-    <select id="selectAllByPostId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-        SELECT * FROM comment
-        WHERE post_id = #{postId}
-        ORDER BY create_time ASC
-    </select>
 
     <!-- 复合条件查询 -->
-    <select id="selectByCondition" parameterType="com.agriculture.model.po.Comment" resultMap="BaseResultMap">
+    <select id="selectCommentByCondition" parameterType="com.agriculture.model.po.Comment" resultMap="BaseResultMap">
         SELECT * FROM comment
         <where>
             <if test="postId != null">AND post_id = #{postId}</if>
@@ -111,12 +116,12 @@
     </select>
 
     <!-- 统计帖子评论数 -->
-    <select id="countByPostId" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+    <select id="countCommentByPostId" parameterType="java.lang.Integer" resultType="java.lang.Integer">
         SELECT COUNT(*) FROM comment WHERE post_id = #{postId}
     </select>
 
     <!-- 统计用户评论数 -->
-    <select id="countByUserId" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+    <select id="countCommentByUserId" parameterType="java.lang.Integer" resultType="java.lang.Integer">
         SELECT COUNT(*) FROM comment WHERE user_id = #{userId}
     </select>
 </mapper>

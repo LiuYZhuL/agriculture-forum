@@ -20,7 +20,7 @@
     <select id="getAllUsers" resultType="com.agriculture.model.po.User">
         SELECT * FROM user
     </select>
-    <insert id="insertUser" parameterType="com.agriculture.model.po.User">
+    <insert id="insertUser" parameterType="com.agriculture.model.po.User" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO user
         <trim prefix="(" suffix=")" suffixOverrides=",">
             username, password, email

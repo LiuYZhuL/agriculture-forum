@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -56,12 +57,18 @@ public class TestUserMapper {
      */
     @Test
     void insertUser_WithOptionalFields_ReturnsGeneratedId() {
-        testUser.setAvatar("avatar.jpg");
-        when(userMapper.insertUser(testUser)).thenReturn(1);
+        User insertUser = new User();
+        insertUser.setUsername("testUser");
+        insertUser.setPassword("securePass");
+        insertUser.setEmail("test@agri.com");
+        insertUser.setRoleId(2);
+        insertUser.setStatus(1);
+        insertUser.setAvatar("avatar.jpg");
+        when(userMapper.insertUser(insertUser)).thenReturn(testUser);
 
-        int result = userMapper.insertUser(testUser);
+        User result = userMapper.insertUser(insertUser);
 
-        assertEquals(1, result);
+        assertEquals(testUser, result);
         verify(userMapper).insertUser(argThat(user ->
                 user.getAvatar().equals("avatar.jpg") &&
                         user.getRoleId() == 2
@@ -79,11 +86,11 @@ public class TestUserMapper {
         updateUser.setUsername("newName");
         updateUser.setLastLoginTime(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
 
-        when(userMapper.updateUser(updateUser)).thenReturn(1);
+        when(userMapper.updateUser(updateUser)).thenReturn(updateUser);
 
-        int result = userMapper.updateUser(updateUser);
-
-        assertEquals(1, result);
+        User result = userMapper.updateUser(updateUser);
+        System.out.println("result:"+result);
+        assertEquals(updateUser, result);
         verify(userMapper).updateUser(argThat(user ->
                 user.getUsername().equals("newName") &&
                         user.getLastLoginTime() != null &&
@@ -97,11 +104,14 @@ public class TestUserMapper {
      */
     @Test
     void deleteUser_WithInvalidId_ReturnsZeroAffectedRows() {
-        when(userMapper.deleteUser(999)).thenReturn(0);
+        when(userMapper.deleteUser(999)).thenReturn(null);
 
-        int result = userMapper.deleteUser(999);
+        User result = userMapper.deleteUser(999);
 
-        assertEquals(0, result);
+        assertNull(result);
+        when(userMapper.deleteUser(1)).thenReturn(testUser);
+        result = userMapper.deleteUser(1);
+        assertEquals(testUser, result);
     }
 
     /**

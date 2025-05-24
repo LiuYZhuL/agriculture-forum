@@ -9,9 +9,9 @@ import java.util.List;
 public interface UserMapper {
     User getUserById(int id);
     List<User> getAllUsers();
-    int insertUser(User user);
-    int updateUser(User user);
-    int deleteUser(int id);
+    User insertUser(User user);
+    User updateUser(User user);
+    User deleteUser(int id);
     List<User> getUserByStatus(int status);
     int getUserCount();
     User getUserByUsername(String username);

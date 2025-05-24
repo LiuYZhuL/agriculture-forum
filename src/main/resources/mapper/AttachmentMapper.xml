@@ -12,69 +12,67 @@
     </resultMap>
 
     <!-- 插入附件 -->
-    <insert id="insert" parameterType="com.agriculture.model.po.Attachment" useGeneratedKeys="true" keyProperty="id">
+    <insert id="insertAttachment" parameterType="com.agriculture.model.po.Attachment" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO attachment
         <trim prefix="(" suffix=")" suffixOverrides=",">
             post_id, file_path,
             <if test="fileType != null">file_type,</if>
-            <if test="uploadTime != null">upload_time,</if>
         </trim>
         VALUES
         <trim prefix="(" suffix=")" suffixOverrides=",">
             #{postId}, #{filePath},
             <if test="fileType != null">#{fileType},</if>
-            <if test="uploadTime != null">#{uploadTime},</if>
         </trim>
     </insert>
 
     <!-- 批量插入 -->
-    <insert id="batchInsert" parameterType="java.util.List">
-        INSERT INTO attachment (post_id, file_path, file_type, upload_time)
+    <insert id="batchInsertAttachment" parameterType="java.util.List">
+        INSERT INTO attachment (post_id, file_path, file_type)
         VALUES
         <foreach collection="list" item="item" separator=",">
-            (#{item.postId}, #{item.filePath}, #{item.fileType}, #{item.uploadTime})
+            (#{item.postId}, #{item.filePath}, #{item.fileType})
         </foreach>
     </insert>
 
     <!-- 根据ID删除 -->
-    <delete id="deleteById" parameterType="java.lang.Integer">
+    <delete id="deleteAttachmentById" parameterType="java.lang.Integer">
         DELETE FROM attachment WHERE id = #{id}
     </delete>
 
     <!-- 根据帖子ID删除 -->
-    <delete id="deleteByPostId" parameterType="java.lang.Integer">
+    <delete id="deleteAttachmentByPostId" parameterType="java.lang.Integer">
         DELETE FROM attachment WHERE post_id = #{postId}
     </delete>
 
     <!-- 更新附件信息 -->
-    <update id="update" parameterType="com.agriculture.model.po.Attachment">
+    <update id="updateAttachment" parameterType="com.agriculture.model.po.Attachment">
         UPDATE attachment
         <set>
             <if test="postId != null">post_id = #{postId},</if>
             <if test="filePath != null">file_path = #{filePath},</if>
             <if test="fileType != null">file_type = #{fileType},</if>
-            <if test="uploadTime != null">upload_time = #{uploadTime},</if>
+            upload_time = CURRENT_TIMESTAMP
         </set>
         WHERE id = #{id}
     </update>
 
     <!-- 根据ID查询 -->
-    <select id="selectById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <select id="selectAttachmentById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         SELECT * FROM attachment WHERE id = #{id}
     </select>
 
     <!-- 根据帖子ID查询附件 -->
-    <select id="selectByPostId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <select id="selectAttachmentByPostId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         SELECT * FROM attachment WHERE post_id = #{postId}
     </select>
 
     <!-- 根据文件类型查询 -->
-    <select id="selectByFileType" parameterType="java.lang.String" resultMap="BaseResultMap">
+    <select id="selectAttachmentByFileType" parameterType="java.lang.String" resultMap="BaseResultMap">
         SELECT * FROM attachment WHERE file_type = #{fileType}
     </select>
 
     <!-- 复合条件查询 -->
-    <select id="selectByCondition" parameterType="com.agriculture.model.po.Attachment" resultMap="BaseResultMap">
+    <select id="selectAttachmentByCondition" parameterType="com.agriculture.model.po.Attachment" resultMap="BaseResultMap">
         SELECT * FROM attachment
         <where>
             <if test="postId != null">AND post_id = #{postId}</if>
@@ -85,12 +83,12 @@
     </select>
 
     <!-- 统计帖子附件数量 -->
-    <select id="countByPostId" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+    <select id="countAttachmentByPostId" parameterType="java.lang.Integer" resultType="java.lang.Integer">
         SELECT COUNT(*) FROM attachment WHERE post_id = #{postId}
     </select>
 
     <!-- 检查文件路径是否存在 -->
-    <select id="existsByFilePath" parameterType="java.lang.String" resultType="java.lang.Boolean">
+    <select id="existsAttachmentByFilePath" parameterType="java.lang.String" resultType="java.lang.Boolean">
         SELECT COUNT(*) > 0 FROM attachment WHERE file_path = #{filePath}
     </select>
 </mapper>

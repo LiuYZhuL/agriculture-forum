@@ -10,7 +10,7 @@
     </resultMap>
 
     <!-- 插入分类 -->
-    <insert id="insert" parameterType="com.agriculture.model.po.Category" useGeneratedKeys="true" keyProperty="id">
+    <insert id="insertCategory" parameterType="com.agriculture.model.po.Category" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO category
         <trim prefix="(" suffix=")" suffixOverrides=",">
             name,
@@ -24,7 +24,7 @@
     </insert>
 
     <!-- 批量插入 -->
-    <insert id="batchInsert" parameterType="java.util.List">
+    <insert id="batchInsertCategory" parameterType="java.util.List">
         INSERT INTO category (name, description)
         VALUES
         <foreach collection="list" item="item" separator=",">
@@ -33,12 +33,12 @@
     </insert>
 
     <!-- 根据ID删除 -->
-    <delete id="deleteById" parameterType="java.lang.Integer">
+    <delete id="deleteCategoryById" parameterType="java.lang.Integer">
         DELETE FROM category WHERE id = #{id}
     </delete>
 
     <!-- 更新分类 -->
-    <update id="update" parameterType="com.agriculture.model.po.Category">
+    <update id="updateCategory" parameterType="com.agriculture.model.po.Category">
         UPDATE category
         <set>
             <if test="name != null">name = #{name},</if>
@@ -48,27 +48,27 @@
     </update>
 
     <!-- 根据ID查询 -->
-    <select id="selectById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <select id="selectCategoryById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         SELECT * FROM category WHERE id = #{id}
     </select>
 
     <!-- 查询所有分类 -->
-    <select id="selectAll" resultMap="BaseResultMap">
+    <select id="selectAllCategory" resultMap="BaseResultMap">
         SELECT * FROM category ORDER BY id ASC
     </select>
 
     <!-- 根据名称查询（精确匹配） -->
-    <select id="selectByName" parameterType="java.lang.String" resultMap="BaseResultMap">
+    <select id="selectCategoryByName" parameterType="java.lang.String" resultMap="BaseResultMap">
         SELECT * FROM category WHERE name = #{name}
     </select>
 
     <!-- 根据名称模糊查询 -->
-    <select id="searchByName" parameterType="java.lang.String" resultMap="BaseResultMap">
+    <select id="searchCategoryByName" parameterType="java.lang.String" resultMap="BaseResultMap">
         SELECT * FROM category WHERE name LIKE CONCAT('%', #{name}, '%')
     </select>
 
     <!-- 复合条件查询 -->
-    <select id="selectByCondition" parameterType="com.agriculture.model.po.Category" resultMap="BaseResultMap">
+    <select id="selectCategoryByCondition" parameterType="com.agriculture.model.po.Category" resultMap="BaseResultMap">
         SELECT * FROM category
         <where>
             <if test="name != null">AND name LIKE CONCAT('%', #{name}, '%')</if>
@@ -78,12 +78,12 @@
     </select>
 
     <!-- 统计分类总数 -->
-    <select id="count" resultType="java.lang.Integer">
+    <select id="countCategory" resultType="java.lang.Integer">
         SELECT COUNT(*) FROM category
     </select>
 
     <!-- 检查分类名称是否存在 -->
-    <select id="existsByName" parameterType="java.lang.String" resultType="java.lang.Boolean">
+    <select id="existsCategoryByName" parameterType="java.lang.String" resultType="java.lang.Boolean">
         SELECT COUNT(*) > 0 FROM category WHERE name = #{name}
     </select>
 </mapper>

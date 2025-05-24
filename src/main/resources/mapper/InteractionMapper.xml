@@ -12,7 +12,7 @@
     </resultMap>
 
     <!-- 插入互动记录 -->
-    <insert id="insert" parameterType="com.agriculture.model.po.Interaction" useGeneratedKeys="true" keyProperty="id">
+    <insert id="insertInteraction" parameterType="com.agriculture.model.po.Interaction" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO interaction
         <trim prefix="(" suffix=")" suffixOverrides=",">
             post_id, user_id, type,
@@ -24,7 +24,7 @@
     </insert>
 
     <!-- 批量插入 -->
-    <insert id="batchInsert">
+    <insert id="batchInsertInteraction">
         INSERT INTO interaction (post_id, user_id, type)
         VALUES
         <foreach collection="list" item="item" separator=",">
@@ -34,18 +34,18 @@
 
 
     <!-- 根据ID删除 -->
-    <delete id="deleteById" parameterType="java.lang.Integer">
+    <delete id="deleteInteractionById" parameterType="java.lang.Integer" >
         DELETE FROM interaction WHERE id = #{id}
     </delete>
 
     <!-- 根据复合条件删除 -->
-    <delete id="deleteByCondition" parameterType="com.agriculture.model.po.Interaction">
+    <delete id="deleteInteractionByCondition" parameterType="com.agriculture.model.po.Interaction">
         DELETE FROM interaction
         WHERE post_id = #{postId} AND user_id = #{userId} AND type = #{type}
     </delete>
 
     <!-- 更新互动记录 -->
-    <update id="update" parameterType="com.agriculture.model.po.Interaction">
+    <update id="updateInteraction" parameterType="com.agriculture.model.po.Interaction">
         UPDATE interaction
         <set>
             <if test="postId != null">post_id = #{postId},</if>
@@ -57,32 +57,32 @@
     </update>
 
     <!-- 根据ID查询 -->
-    <select id="selectById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <select id="selectInteractionById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         SELECT * FROM interaction WHERE id = #{id}
     </select>
 
     <!-- 查询所有 -->
-    <select id="selectAll" resultMap="BaseResultMap">
+    <select id="selectAllInteraction" resultMap="BaseResultMap">
         SELECT * FROM interaction
     </select>
 
     <!-- 根据用户ID查询 -->
-    <select id="selectByUserId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <select id="selectInteractionByUserId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         SELECT * FROM interaction WHERE user_id = #{userId}
     </select>
 
     <!-- 根据帖子ID查询 -->
-    <select id="selectByPostId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <select id="selectInteractionByPostId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         SELECT * FROM interaction WHERE post_id = #{postId}
     </select>
 
     <!-- 根据类型查询 -->
-    <select id="selectByType" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <select id="selectInteractionByType" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         SELECT * FROM interaction WHERE type = #{type}
     </select>
 
     <!-- 复合条件查询 -->
-    <select id="selectByCondition" parameterType="com.agriculture.model.po.Interaction" resultMap="BaseResultMap">
+    <select id="selectInteractionByCondition" parameterType="com.agriculture.model.po.Interaction" resultMap="BaseResultMap">
         SELECT * FROM interaction
         <where>
             <if test="postId != null">AND post_id = #{postId}</if>
@@ -92,18 +92,18 @@
     </select>
 
     <!-- 检查是否存在 -->
-    <select id="exists" parameterType="com.agriculture.model.po.Interaction" resultType="java.lang.Boolean">
+    <select id="existsInteraction" parameterType="com.agriculture.model.po.Interaction" resultType="java.lang.Boolean">
         SELECT COUNT(*) > 0 FROM interaction
         WHERE post_id = #{postId} AND user_id = #{userId} AND type = #{type}
     </select>
 
     <!-- 统计总数 -->
-    <select id="count" resultType="java.lang.Integer">
+    <select id="countInteraction" resultType="java.lang.Integer">
         SELECT COUNT(*) FROM interaction
     </select>
 
     <!-- 根据条件统计 -->
-    <select id="countByCondition" parameterType="com.agriculture.model.po.Interaction" resultType="java.lang.Integer">
+    <select id="countInteractionByCondition" parameterType="com.agriculture.model.po.Interaction" resultType="java.lang.Integer">
         SELECT COUNT(*) FROM interaction
         <where>
             <if test="postId != null">AND post_id = #{postId}</if>
