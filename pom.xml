@@ -165,6 +165,13 @@
             <version>5.14.2</version>
             <scope>test</scope>
         </dependency>
+
+        <!-- Spring Security Crypto  密码加密 -->
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-crypto</artifactId>
+            <version>5.8.5</version>
+        </dependency>
     </dependencies>
 
     <build>
