@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.agriculture.dao.PostMapper">
+    <!-- 基础结果映射：定义数据库列与Java对象属性的映射关系 -->
     <resultMap id="BaseResultMap" type="com.agriculture.model.dto.Post">
+        <!-- 主键映射 -->
         <id column="id" property="id" jdbcType="INTEGER" />
+        <!-- 普通字段映射 -->
         <result column="user_id" property="userId" jdbcType="INTEGER" />
         <result column="category_id" property="categoryId" jdbcType="INTEGER" />
         <result column="title" property="title" jdbcType="VARCHAR" />
@@ -17,22 +20,24 @@
         <result column="view_count" property="viewCount" jdbcType="INTEGER" />
     </resultMap>
 
+    <!-- 根据ID查询单个帖子 -->
     <select id="getPostById" resultType="com.agriculture.model.dto.Post">
         SELECT * FROM post WHERE id = #{id}
     </select>
 
+    <!-- 查询所有帖子 -->
     <select id="getAllPosts" resultType="com.agriculture.model.dto.Post">
         SELECT * FROM post
     </select>
 
-    <!-- 分页查询 -->
+    <!-- 分页查询帖子（按创建时间降序排列） -->
     <select id="getPostsByPage" resultType="com.agriculture.model.dto.Post">
         SELECT * FROM post
         ORDER BY create_time DESC
             LIMIT #{offset}, #{pageSize}
     </select>
 
-    <!-- 关联用户信息查询 -->
+    <!-- 关联查询帖子及用户信息（返回Map格式） -->
     <select id="getPostWithUser" resultType="map">
         SELECT p.*, u.username, u.avatar
         FROM post p
@@ -40,6 +45,7 @@
         WHERE p.id = #{postId}
     </select>
 
+    <!-- 插入新帖子（使用自增主键） -->
     <insert id="insertPost" parameterType="com.agriculture.model.dto.Post" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO post
         (user_id, category_id, title, content, type, status,
@@ -50,9 +56,11 @@
              #{bestAnswerId,jdbcType=INTEGER}, #{viewCount,jdbcType=INTEGER})
     </insert>
 
+    <!-- 更新帖子信息（动态SQL） -->
     <update id="updatePost" parameterType="com.agriculture.model.dto.Post">
         UPDATE post
         <set>
+            <!-- 动态更新字段（非空时才更新） -->
             <if test="title != null"> title = #{title}, </if>
             <if test="content != null"> content = #{content}, </if>
             <if test="type != null"> type = #{type}, </if>
@@ -60,42 +68,47 @@
             <if test="isTop != null"> is_top = #{isTop}, </if>
             <if test="isEssence != null"> is_essence = #{isEssence}, </if>
             <if test="bestAnswerId != null"> best_answer_id = #{bestAnswerId}, </if>
+            <!-- 强制更新时间为当前时间 -->
             update_time = CURRENT_TIMESTAMP,
             <if test="viewCount != null"> view_count = #{viewCount}, </if>
         </set>
         WHERE id = #{id}
     </update>
 
+    <!-- 根据ID删除帖子 -->
     <delete id="deletePost">
         DELETE FROM post WHERE id = #{id}
     </delete>
 
-    <!-- 条件查询方法 -->
+    <!-- 根据状态查询帖子 -->
     <select id="getPostsByStatus" resultType="com.agriculture.model.dto.Post">
         SELECT * FROM post WHERE status = #{status}
     </select>
 
+    <!-- 根据分类ID查询帖子 -->
     <select id="getPostsByCategory" resultType="com.agriculture.model.dto.Post">
         SELECT * FROM post WHERE category_id = #{categoryId}
     </select>
 
+    <!-- 根据用户ID查询帖子 -->
     <select id="getPostsByUser" resultType="com.agriculture.model.dto.Post">
         SELECT * FROM post WHERE user_id = #{userId}
     </select>
 
-    <!-- 热门帖子查询 -->
+    <!-- 查询热门帖子（按浏览量、精华帖、置顶帖排序） -->
     <select id="getHotPosts" resultType="com.agriculture.model.dto.Post">
         SELECT * FROM post
-        WHERE status = 1  -- 已发布状态
+        WHERE status = 1  -- 只查询已发布的帖子
         ORDER BY view_count DESC, is_essence DESC, is_top DESC
             LIMIT #{limit}
     </select>
 
-    <!-- 统计方法 -->
+    <!-- 统计所有帖子数量 -->
     <select id="getPostCount" resultType="int">
         SELECT COUNT(*) FROM post
     </select>
 
+    <!-- 根据状态统计帖子数量 -->
     <select id="getPostCountByStatus" resultType="int">
         SELECT COUNT(*) FROM post WHERE status = #{status}
     </select>

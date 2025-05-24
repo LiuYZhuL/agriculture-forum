@@ -51,7 +51,7 @@
             <if test="postId != null">post_id = #{postId},</if>
             <if test="userId != null">user_id = #{userId},</if>
             <if test="type != null">type = #{type},</if>
-            create_time = NOW() <!-- 强制设置为当前时间 -->
+            create_time =CURRENT_TIMESTAMP <!-- 强制设置为当前时间 -->
         </set>
         WHERE id = #{id}
     </update>

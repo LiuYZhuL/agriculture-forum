@@ -55,7 +55,7 @@
             <if test="userId != null">user_id = #{userId},</if>
             <if test="content != null">content = #{content},</if>
             <if test="parentId != null">parent_id = #{parentId},</if>
-            create_time = NOW() <!-- 强制设置为当前时间 -->
+            create_time =CURRENT_TIMESTAMP <!-- 强制设置为当前时间 -->
         </set>
         WHERE id = #{id}
     </update>
