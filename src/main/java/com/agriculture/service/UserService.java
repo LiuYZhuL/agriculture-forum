@@ -10,4 +10,6 @@ public interface UserService {
     User login(LoginUser loginUser);
     User register(RegisterUser registerUser);
 
+    void logout(User user);
+
 }

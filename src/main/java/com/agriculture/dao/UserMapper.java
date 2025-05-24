@@ -3,6 +3,7 @@ package com.agriculture.dao;
 import com.agriculture.model.po.User;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.Date;
 import java.util.List;
 @Mapper
 public interface UserMapper {
@@ -14,4 +15,5 @@ public interface UserMapper {
     List<User> getUserByStatus(int status);
     int getUserCount();
     User getUserByUsername(String username);
+    void updateLastLoginTime(int id);
 }

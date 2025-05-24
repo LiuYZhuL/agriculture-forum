@@ -56,4 +56,16 @@ public class UserServiceImpl implements UserService {
         return user;
     }
 
+    /*
+     * 登出
+     * @param user 登出的用户
+     */
+    @Override
+    @Transactional
+    public void logout(User user) {
+        if (userMapper.getUserById(user.getId()) == null){
+            throw new RuntimeException("用户不存在");
+        }
+        userMapper.updateLastLoginTime(user.getId());
+    }
 }
