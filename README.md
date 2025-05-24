@@ -43,9 +43,9 @@
 ##### role 角色表：
 | 列名          | 数据类型         | 约束      | 描述    |
 |-------------|--------------|---------|-------|
-| id          | INT          | PRIMARY | id    |
+| id          | INT          | PRIMARY | 角色id    |
 | name        | VARCHAR(20)  | UNIQUE  | 角色权限名 |
-| description | VARCHAR(255) |         | 描述    |
+| description | VARCHAR(255) |         | 角色描述    |
 
 ##### user 用户表：
 | 列名              | 数据类型         | 约束      | 描述            |
