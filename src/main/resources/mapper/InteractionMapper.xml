@@ -16,23 +16,22 @@
         INSERT INTO interaction
         <trim prefix="(" suffix=")" suffixOverrides=",">
             post_id, user_id, type,
-            <if test="createTime != null">create_time,</if>
         </trim>
         VALUES
         <trim prefix="(" suffix=")" suffixOverrides=",">
             #{postId}, #{userId}, #{type},
-            <if test="createTime != null">#{createTime},</if>
         </trim>
     </insert>
 
     <!-- 批量插入 -->
-    <insert id="batchInsert" parameterType="java.util.List">
-        INSERT INTO interaction (post_id, user_id, type, create_time)
+    <insert id="batchInsert">
+        INSERT INTO interaction (post_id, user_id, type)
         VALUES
         <foreach collection="list" item="item" separator=",">
-            (#{item.postId}, #{item.userId}, #{item.type}, #{item.createTime})
+            (#{item.postId}, #{item.userId}, #{item.type})
         </foreach>
     </insert>
+
 
     <!-- 根据ID删除 -->
     <delete id="deleteById" parameterType="java.lang.Integer">
@@ -52,7 +51,7 @@
             <if test="postId != null">post_id = #{postId},</if>
             <if test="userId != null">user_id = #{userId},</if>
             <if test="type != null">type = #{type},</if>
-            <if test="createTime != null">create_time = #{createTime},</if>
+            create_time = NOW() <!-- 强制设置为当前时间 -->
         </set>
         WHERE id = #{id}
     </update>

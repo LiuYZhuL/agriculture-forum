@@ -18,22 +18,22 @@
         <trim prefix="(" suffix=")" suffixOverrides=",">
             post_id, user_id, content,
             <if test="parentId != null">parent_id,</if>
-            <if test="createTime != null">create_time,</if>
+            <!-- 不包含create_time，让数据库自动填充 -->
         </trim>
         VALUES
         <trim prefix="(" suffix=")" suffixOverrides=",">
             #{postId}, #{userId}, #{content},
             <if test="parentId != null">#{parentId},</if>
-            <if test="createTime != null">#{createTime},</if>
+            <!-- 不包含create_time，让数据库自动填充 -->
         </trim>
     </insert>
 
     <!-- 批量插入 -->
     <insert id="batchInsert" parameterType="java.util.List">
-        INSERT INTO comment (post_id, user_id, content, parent_id, create_time)
+        INSERT INTO comment (post_id, user_id, content, parent_id)
         VALUES
         <foreach collection="list" item="item" separator=",">
-            (#{item.postId}, #{item.userId}, #{item.content}, #{item.parentId}, #{item.createTime})
+            (#{item.postId}, #{item.userId}, #{item.content}, #{item.parentId})
         </foreach>
     </insert>
 
@@ -55,7 +55,7 @@
             <if test="userId != null">user_id = #{userId},</if>
             <if test="content != null">content = #{content},</if>
             <if test="parentId != null">parent_id = #{parentId},</if>
-            <if test="createTime != null">create_time = #{createTime},</if>
+            create_time = NOW() <!-- 强制设置为当前时间 -->
         </set>
         WHERE id = #{id}
     </update>
