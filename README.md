@@ -15,6 +15,8 @@
 │   │       │   └── impl/            # 服务层实现  
 │   │       ├── dao/                 # Mapper接口  
 │   │       ├── model/               # 实体类  
+│   │       │   ├── po/              # 数据库实体
+│   │       │   └── dto/             # 数据传输实体  
 │   │       ├── config/              # 配置类（Spring、MyBatis）  
 │   │       ├── interceptor/         # 权限拦截器  
 │   │       └── util/                # 工具类（文件上传、邮件发送等）  
