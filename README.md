@@ -37,8 +37,92 @@
     │    
     └── web.xml  
         
-
 ```
+
+#### 数据库设计：
+##### role 角色表：
+| 列名          | 数据类型         | 约束      | 描述    |
+|-------------|--------------|---------|-------|
+| id          | INT          | PRIMARY | id    |
+| name        | VARCHAR(20)  | UNIQUE  | 角色权限名 |
+| description | VARCHAR(255) |         | 描述    |
+
+##### user 用户表：
+| 列名              | 数据类型         | 约束      | 描述            |
+|-----------------|--------------|---------|---------------|
+| id              | INT          | PRIMARY | 用户id          |
+| username        | VARCHAR(50)  | UNIQUE  | 用户名           |
+| password        | VARCHAR(255) | NOT NULL | 加密密码          |
+| email           | VARCHAR(100) | UNIQUE  | 邮箱            |
+| avatar          | VARCHAR(255) |         | 头像URL         |
+| role_id         | INT          | FOREIGN | 角色id          |
+| status          | TINYINT      |         | 状态：0-封禁, 1-正常 |
+| create_time     | DATETIME     |         | 注册时间          |
+| last_login_time | DATETIME     |         | 最后登录时间        |
+
+##### category 分类表：
+| 列名          | 数据类型         | 约束       | 描述           |
+|-------------|--------------|----------|--------------|
+| id`         | INT          | PRIMARY  | 分类id         |
+| name        | VARCHAR(50)  | NOT NULL | 分类名称（如种植/养殖） |
+| description | VARCHAR(255) |          | 分类描述         |
+
+##### post 帖子表：
+| 列名          | 数据类型         | 约束        | 描述                     |
+|-------------|--------------|-----------|------------------------|
+| id          | INT          | PRIMARY   | 帖子id                   |
+| user_id     | INT          | FOREIGN   | 发帖用户id                 |
+| category_id | INT          | FOREIGN   | 分类id                   |
+| title       | VARCHAR(255) | NOT NULL  | 标题                     |
+| content     | TEXT         | NOT NULL  | 正文内容                   |
+| status      | TINYINT      | DEFAULT 0 | 状态：0-待审核, 1-已发布, 2-已拒绝 |
+| is_top      | TINYINT      | DEFAULT 0 | 是否置顶（0否, 1是）           |
+| is_essence  | TINYINT      | DEFAULT 0 | 是否精华帖（0否, 1是）          |
+| create_time | DATETIME     |           | 创建时间                   |
+| update_time | DATETIME |           | 最后更新时间 |
+| view_count  | INT      | DEFAULT 0 | 浏览数    |
+
+##### comment 评论表：
+| 列名          | 数据类型     | 约束      | 描述            |
+|-------------|----------|---------|---------------|
+| id          | INT      | PRIMARY | 评论id          |
+| post_id     | INT      | FOREIGN | 所属帖子ID        |
+| user_id     | INT      | FOREIGN | 评论者ID         |
+| content     | TEXT     |         | 评论内容          |
+| parent_id   | INT      | FOREIGN | 父评论ID（实现二级回复） |
+| create_time | DATETIME |         | 评论时间          |
+
+##### interaction 用户行为表：
+| 列名          | 数据类型     | 约束       | 描述            |
+|-------------|----------|----------|---------------|
+| id          | INT      | PRIMARY  | 行为id          |
+| post_id     | INT      | FOREIGN  | 帖子ID          |
+| user_id     | INT      | FOREIGN  | 用户ID          |
+| type        | TINYINT  | NOT NULL | 类型：1-点赞, 2-收藏 |
+| create_time | DATETIME |          | 互动时间          |
+
+
+##### attachment 附件表：
+| 列名          | 数据类型         | 约束       | 描述                          |
+|-------------|--------------|----------|-----------------------------|
+| id          | INT          | PRIMARY  | 附件id                        |
+| post_id     | INT          | FOREIGN  | 关联帖子ID                      |
+| file_path   | VARCHAR(255) | NOT NULL | 文件存储路径                      |
+| file_type   | VARCHAR(50)  |          | 文件类型（image/jpeg, video/mp4） |
+| upload_time | DATETIME     |          | 上传时间                        |
+
+##### audit_log 审核日志表：
+| 列名         | 数据类型         | 约束       | 描述            |
+|------------|--------------|----------|---------------|
+| id         | INT          | PRIMARY  | 日志id          |
+| post_id    | INT          | FOREIGN  | 被审核帖子ID       |
+| auditor_id | INT          | FOREIGN  | 审核人ID         |
+| action     | TINYINT      | NOT NULL | 操作：1-通过, 2-拒绝 |
+| audit_time | DATETIME     |          | 审核时间          |
+| reason     | VARCHAR(255) |          | 审核意见（拒绝时填写）   |
+
+
+
 
 #### 安装教程
 
