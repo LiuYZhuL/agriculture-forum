@@ -57,12 +57,12 @@ public class TestUserMapper {
     @Test
     void insertUser_WithOptionalFields_ReturnsGeneratedId() {
         testUser.setAvatar("avatar.jpg");
-        when(userMapper.addUser(testUser)).thenReturn(1);
+        when(userMapper.insertUser(testUser)).thenReturn(1);
 
-        int result = userMapper.addUser(testUser);
+        int result = userMapper.insertUser(testUser);
 
         assertEquals(1, result);
-        verify(userMapper).addUser(argThat(user ->
+        verify(userMapper).insertUser(argThat(user ->
                 user.getAvatar().equals("avatar.jpg") &&
                         user.getRoleId() == 2
         ));

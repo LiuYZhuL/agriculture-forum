@@ -8,7 +8,7 @@ import java.util.List;
 public interface RoleMapper {
     Role selectRoleById(int id);
     List<Role> selectAllRole();
-    int addRole(Role role);
+    int insertRole(Role role);
     int updateRole(Role role);
     int deleteRole(int id);
     int getRoleCount();

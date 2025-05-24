@@ -51,9 +51,9 @@ class TestRoleMapper {
     @Test
     void addRole_ValidInput_ReturnsOne() {
         Role newRole = new Role(3, "Guest","");
-        when(roleMapper.addRole(newRole)).thenReturn(1);
+        when(roleMapper.insertRole(newRole)).thenReturn(1);
 
-        int rowsAffected = roleMapper.addRole(newRole);
+        int rowsAffected = roleMapper.insertRole(newRole);
         assertEquals(1, rowsAffected);
     }
 

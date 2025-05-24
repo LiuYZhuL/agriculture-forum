@@ -8,7 +8,7 @@ import java.util.List;
 public interface UserMapper {
     User getUserById(int id);
     List<User> getAllUsers();
-    int addUser(User user);
+    int insertUser(User user);
     int updateUser(User user);
     int deleteUser(int id);
     List<User> getUserByStatus(int status);
