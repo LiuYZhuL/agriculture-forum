@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.agriculture.dao.PostMapper">
+    <resultMap id="BaseResultMap" type="com.agriculture.model.dto.Post">
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="user_id" property="userId" jdbcType="INTEGER" />
+        <result column="category_id" property="categoryId" jdbcType="INTEGER" />
+        <result column="title" property="title" jdbcType="VARCHAR" />
+        <result column="content" property="content" jdbcType="VARCHAR" />
+        <result column="type" property="type" jdbcType="INTEGER" />
+        <result column="status" property="status" jdbcType="INTEGER" />
+        <result column="is_top" property="isTop" jdbcType="INTEGER" />
+        <result column="is_essence" property="isEssence" jdbcType="INTEGER" />
+        <result column="best_answer_id" property="bestAnswerId" jdbcType="INTEGER" />
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+        <result column="view_count" property="viewCount" jdbcType="INTEGER" />
+    </resultMap>
+
+    <select id="getPostById" resultType="com.agriculture.model.dto.Post">
+        SELECT * FROM post WHERE id = #{id}
+    </select>
+
+    <select id="getAllPosts" resultType="com.agriculture.model.dto.Post">
+        SELECT * FROM post
+    </select>
+
+    <insert id="insertPost" parameterType="com.agriculture.model.dto.Post">
+        INSERT INTO post
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            user_id, category_id, title, content, type, status
+            <if test="isTop != null">,is_top</if>
+            <if test="isEssence != null">,is_essence</if>
+            <if test="bestAnswerId != null">,best_answer_id</if>
+            <if test="viewCount != null">,view_count</if>
+        </trim>
+        VALUES
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            #{userId}, #{categoryId}, #{title}, #{content}, #{type}, #{status}
+            <if test="isTop != null">,#{isTop}</if>
+            <if test="isEssence != null">,#{isEssence}</if>
+            <if test="bestAnswerId != null">,#{bestAnswerId}</if>
+            <if test="viewCount != null">,#{viewCount}</if>
+        </trim>
+    </insert>
+
+    <update id="updatePost" parameterType="com.agriculture.model.dto.Post">
+        UPDATE post
+        <set>
+            <if test="userId != null"> user_id = #{userId}, </if>
+            <if test="categoryId != null"> category_id = #{categoryId}, </if>
+            <if test="title != null"> title = #{title}, </if>
+            <if test="content != null"> content = #{content}, </if>
+            <if test="type != null"> type = #{type}, </if>
+            <if test="status != null"> status = #{status}, </if>
+            <if test="isTop != null"> is_top = #{isTop}, </if>
+            <if test="isEssence != null"> is_essence = #{isEssence}, </if>
+            <if test="bestAnswerId != null"> best_answer_id = #{bestAnswerId}, </if>
+            <if test="updateTime != null"> update_time = #{updateTime}, </if>
+            <if test="viewCount != null"> view_count = #{viewCount}, </if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deletePost">
+        DELETE FROM post WHERE id = #{id}
+    </delete>
+
+    <select id="getPostsByStatus" resultType="com.agriculture.model.dto.Post">
+        SELECT * FROM post WHERE status = #{status}
+    </select>
+
+    <select id="getPostsByType" resultType="com.agriculture.model.dto.Post">
+        SELECT * FROM post WHERE type = #{type}
+    </select>
+
+    <select id="getPostCount" resultType="int">
+        SELECT COUNT(*) FROM post
+    </select>
+</mapper>
