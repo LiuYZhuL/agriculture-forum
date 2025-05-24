@@ -1,5 +1,5 @@
 import com.agriculture.dao.UserMapper;
-import com.agriculture.model.dto.User;
+import com.agriculture.model.po.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
