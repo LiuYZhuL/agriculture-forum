@@ -20,5 +20,13 @@
    style="display: inline-block; padding: 6px 12px; background: #eee; border: 1px solid #ccc; text-decoration: none;">
     前去登陆
 </a>
+<a href="${pageContext.request.contextPath}/api/user/logout"
+   style="display: inline-block; padding: 6px 12px; background: #eee; border: 1px solid #ccc; text-decoration: none;">
+    登出
+</a>
+<a href="${pageContext.request.contextPath}/api/user/home"
+   style="display: inline-block; padding: 6px 12px; background: #eee; border: 1px solid #ccc; text-decoration: none;">
+    用户中心
+</a>
 </body>
 </html>

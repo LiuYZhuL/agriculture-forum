@@ -122,4 +122,16 @@ public class UserController {
         modelAndView.setViewName("redirect:/api/dashboard");
         return modelAndView;
     }
+    @GetMapping("/home")
+    public ModelAndView home(HttpSession session) {
+        ModelAndView modelAndView = new ModelAndView();
+        User user = (User) session.getAttribute("user");
+        if(user==null){
+            modelAndView.setViewName("redirect:/api/user/login");
+            return modelAndView;
+        }
+        modelAndView.addObject("user", user);
+        modelAndView.setViewName("home");
+        return modelAndView;
+    }
 }
