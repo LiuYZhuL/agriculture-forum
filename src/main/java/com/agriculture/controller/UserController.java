@@ -102,4 +102,19 @@ public class UserController {
         modelAndView.setViewName("redirect:/api/user/login");
         return modelAndView;
     }
+    @GetMapping("/logout")
+    public ModelAndView logout(HttpSession session) {
+        ModelAndView modelAndView = new ModelAndView();
+        try {
+            User user = (User) session.getAttribute("user");
+            userService.logout(user);
+        } catch (RuntimeException runtimeException) {
+            modelAndView.setViewName("redirect:/api/dashboard");
+            modelAndView.addObject("error", runtimeException.getMessage());
+            return modelAndView;
+        }
+        session.invalidate();
+        modelAndView.setViewName("redirect:/api/dashboard");
+        return modelAndView;
+    }
 }
