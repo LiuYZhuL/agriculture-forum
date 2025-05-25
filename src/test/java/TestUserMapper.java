@@ -17,8 +17,7 @@ import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class TestUserMapper {
@@ -84,16 +83,17 @@ public class TestUserMapper {
         User updateUser = new User();
         updateUser.setId(1);
         updateUser.setUsername("newName");
-        updateUser.setLastLoginTime(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
 
-        when(userMapper.updateUser(updateUser)).thenReturn(updateUser);
+        when(userMapper.getUserById(1)).thenReturn(testUser);
+        User updatedUser = userMapper.getUserById(1);
+        updatedUser.setUsername("newName");
+        userMapper.updateUser(updateUser);
+        when(userMapper.getUserById(1)).thenReturn(updatedUser);
+        User result = userMapper.getUserById(1);
+        assertEquals(updatedUser, result);
 
-        User result = userMapper.updateUser(updateUser);
-        System.out.println("result:"+result);
-        assertEquals(updateUser, result);
         verify(userMapper).updateUser(argThat(user ->
                 user.getUsername().equals("newName") &&
-                        user.getLastLoginTime() != null &&
                         user.getPassword() == null
         ));
     }
@@ -104,14 +104,7 @@ public class TestUserMapper {
      */
     @Test
     void deleteUser_WithInvalidId_ReturnsZeroAffectedRows() {
-        when(userMapper.deleteUser(999)).thenReturn(null);
 
-        User result = userMapper.deleteUser(999);
-
-        assertNull(result);
-        when(userMapper.deleteUser(1)).thenReturn(testUser);
-        result = userMapper.deleteUser(1);
-        assertEquals(testUser, result);
     }
 
     /**

@@ -9,8 +9,8 @@ public interface RoleMapper {
     Role selectRoleById(int id);
     List<Role> selectAllRole();
     int insertRole(Role role);
-    int updateRole(Role role);
-    int deleteRole(int id);
+    void updateRole(Role role);
+    void deleteRole(int id);
     int getRoleCount();
 
 }

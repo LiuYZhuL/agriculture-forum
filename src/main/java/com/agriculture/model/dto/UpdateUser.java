@@ -16,5 +16,4 @@ public class UpdateUser {
     private String avatar;
     private int roleId;
     private int status;
-    private Date lastLoginTime;
 }

@@ -1,14 +1,15 @@
 package com.agriculture.dao;
 
 import com.agriculture.model.po.Interaction;
+import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
-
+@Mapper
 public interface InteractionMapper {
     int insertInteraction(Interaction interaction);
     void batchInsertInteraction(List<Interaction> interactions);
-    Interaction deleteInteractionById(int id);
-    Interaction deleteInteractionByCondition(Interaction interaction);
+    int deleteInteractionById(int id);
+    void deleteInteractionByCondition(Interaction interaction);
     void updateInteraction(Interaction interaction);
     Interaction selectInteractionById(int id);
     List<Interaction> selectAllInteraction();

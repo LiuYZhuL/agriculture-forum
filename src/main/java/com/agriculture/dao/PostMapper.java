@@ -10,8 +10,8 @@ public interface PostMapper {
     Post getPostById(int id);
     List<Post> getAllPosts();
     Post insertPost(Post post);
-    Post updatePost(Post post);
-    Post deletePost(int id);
+    void updatePost(Post post);
+    void deletePost(int id);
     List<Post> getPostsByStatus(int status);
     List<Post> getPostsByCategory(int categoryId);
     List<Post> getPostsByUser(int userId);

@@ -1,15 +1,16 @@
 package com.agriculture.dao;
 
 import com.agriculture.model.po.Comment;
+import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
-
+@Mapper
 public interface CommentMapper {
     Comment insertComment(Comment comment);
     void batchInsertComment(List<Comment> comments);
-    Comment deleteCommentById(int id);
-    List<Comment> deleteCommentByPostId(int postId);
-    Comment updateComment(Comment comment);
+    void deleteCommentById(int id);
+    void deleteCommentByPostId(int postId);
+    void updateComment(Comment comment);
     Comment selectCommentById(int id);
     List<Comment> selectAllComment();
     List<Comment> selectCommentByPostId(int postId);
