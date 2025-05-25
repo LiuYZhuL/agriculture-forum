@@ -51,6 +51,7 @@ public class TestUserService {
         String rawPassword = "wrongpass";
         User mockUser = new User();
         mockUser.setPassword(PasswordUtil.encode("correctpass")); // 正确密码加密
+        mockUser.setStatus(User.STATUS_NORMAL);
         when(userMapper.getUserByUsername("user1")).thenReturn(mockUser);
 
         LoginUser input = new LoginUser("user1", rawPassword);
@@ -67,6 +68,7 @@ public class TestUserService {
         // Arrange
         String rawPassword = "pass123";
         User mockUser = new User();
+        mockUser.setId(1);
         mockUser.setUsername("user1");
         mockUser.setPassword(PasswordUtil.encode(rawPassword)); // 加密后的密码
         when(userMapper.getUserByUsername("user1")).thenReturn(mockUser);

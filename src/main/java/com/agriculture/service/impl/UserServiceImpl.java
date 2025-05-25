@@ -29,7 +29,7 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("用户名不存在");
         }
         User user = userMapper.getUserByUsername(loginUser.getUsername());
-        if(user.getStatus().equals(User.STATUS_LOCKED)){
+        if(user.getStatus() != null && user.getStatus().equals(User.STATUS_LOCKED)){
             throw new RuntimeException("用户被锁定");
         }
         if(!PasswordUtil.matches(loginUser.getPassword(),user.getPassword())){
