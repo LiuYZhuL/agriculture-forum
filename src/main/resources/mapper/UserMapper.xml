@@ -23,23 +23,19 @@
     <insert id="insertUser" parameterType="com.agriculture.model.po.User" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO user
         <trim prefix="(" suffix=")" suffixOverrides=",">
-            username, password, email
+            username, password, email,role_id
             <if test="avatar != null">  <!-- 移除前置逗号 -->
                 ,avatar
             </if>
-            <if test="roleId != null">
-                ,role_id
-            </if>
+
         </trim>
         VALUES
         <trim prefix="(" suffix=")" suffixOverrides=",">
-            #{username}, #{password}, #{email}
+            #{username}, #{password}, #{email},1
             <if test="avatar != null">  <!-- 移除前置逗号 -->
                 ,#{avatar}
             </if>
-            <if test="roleId != null">
-                ,#{roleId}
-            </if>
+
         </trim>
     </insert>
 
