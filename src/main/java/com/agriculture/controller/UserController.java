@@ -5,12 +5,14 @@ import com.agriculture.model.dto.RegisterUser;
 import com.agriculture.model.po.User;
 import com.agriculture.service.UserService;
 import jakarta.servlet.http.HttpSession;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
@@ -114,5 +116,29 @@ public class UserController {
         modelAndView.addObject("user", user);
         modelAndView.setViewName("home");
         return modelAndView;
+    }
+    //  重置密码
+    @GetMapping("/reset")
+    public ModelAndView reset() {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("reset");
+        return modelAndView;
+    }
+    @PostMapping("/reset")
+    public ModelAndView reset(
+            @RequestParam("username") String username,
+            @RequestParam("email") String email)
+    {
+       ModelAndView  modelAndView = new ModelAndView();
+       try {
+           String newPassword = userService.resetPassword(username, email);
+           modelAndView.addObject("newPassword", "新密码是"+newPassword);
+           modelAndView.setViewName("reset");
+           return modelAndView;
+       }catch (RuntimeException runtimeException){
+           modelAndView.setViewName("reset");
+           modelAndView.addObject("error", runtimeException.getMessage());
+           return modelAndView;
+       }
     }
 }

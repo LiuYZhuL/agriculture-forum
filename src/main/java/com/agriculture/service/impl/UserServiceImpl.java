@@ -94,7 +94,7 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("用户被锁定");
         }
     }
-
+//获取用户信息
     @Override
     @Transactional
     public User getUserById(Integer userId) {
@@ -103,7 +103,7 @@ public class UserServiceImpl implements UserService {
         }
         return userMapper.getUserById(userId);
     }
-
+//获取用户信息
     @Override
     @Transactional
     public User getUserByUsername(String username) {
@@ -113,7 +113,7 @@ public class UserServiceImpl implements UserService {
         return userMapper.getUserByUsername(username);
     }
 
-
+//修改用户信息
     @Override
     @Transactional
     public void updateUserInfo(UpdateUser updateUser) {
@@ -137,8 +137,9 @@ public class UserServiceImpl implements UserService {
         newUser.setEmail(updateUser.getEmail());
         userMapper.updateUser(user);
     }
-
+//修改密码
     @Override
+    @Transactional
     public void changePassword(Integer userId, String oldPassword, String newPassword) {
         if (userId == null){
             throw new RuntimeException("用户ID不能为空");
@@ -156,8 +157,9 @@ public class UserServiceImpl implements UserService {
         userMapper.updateUser(user);
 
     }
-
+//重设密码
     @Override
+    @Transactional
     public String resetPassword(String username, String email) {
         if (username == null || username.isEmpty()){
             throw new RuntimeException("用户名不能为空");
@@ -173,13 +175,14 @@ public class UserServiceImpl implements UserService {
         User newUser = new User();
         newUser.setId(user.getId());
         newUser.setPassword(PasswordUtil.encode(newPassword));
-        userMapper.updateUser(user);
+        userMapper.updateUser(newUser);
         return newPassword;
 
     }
-
+//修改用户状态
 
     @Override
+    @Transactional
     public void updateUserStatus(Integer userId, Integer status) {
         if (userId == null){
             throw new RuntimeException("用户ID不能为空");
@@ -198,8 +201,9 @@ public class UserServiceImpl implements UserService {
         userMapper.updateUser(newUser);
 
     }
-
+//修改用户角色
     @Override
+    @Transactional
     public void updateUserRole(Integer userId, Integer roleId) {
         if (userId == null){
             throw new RuntimeException("用户ID不能为空");
@@ -218,8 +222,9 @@ public class UserServiceImpl implements UserService {
         userMapper.updateUser(newUser);
 
     }
-
+//获取用户列表
     @Override
+    @Transactional
     public PageInfo<User> listUsers(int pageNum, int pageSize, User user) {
         // 构建查询条件
         // 单次分页查询

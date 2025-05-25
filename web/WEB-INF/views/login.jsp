@@ -34,5 +34,9 @@
        style="display: inline-block; padding: 6px 12px; background: #eee; border: 1px solid #ccc; text-decoration: none;">
      前去注册
     </a>
+    <a href="${pageContext.request.contextPath}/api/user/reset"
+       style="display: inline-block; padding: 6px 12px; background: #eee; border: 1px solid #ccc; text-decoration: none;">
+     忘记密码
+    </a>
 </body>
 </html>
