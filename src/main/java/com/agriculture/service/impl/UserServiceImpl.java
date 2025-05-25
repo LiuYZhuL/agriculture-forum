@@ -127,9 +127,7 @@ public class UserServiceImpl implements UserService {
         if (userMapper.getUserByUsername(updateUser.getUsername()) != null &&!user.getUsername().equals(updateUser.getUsername())){
             throw new RuntimeException("用户名已存在");
         }
-        if (!user.getPassword().equals(PasswordUtil.encode(updateUser.getPassword()))){
-            throw new RuntimeException("旧密码错误");
-        }
+
         User newUser = new User();
         newUser.setId(updateUser.getId());
         newUser.setUsername(updateUser.getUsername());
