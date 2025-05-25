@@ -60,6 +60,27 @@
         SELECT * FROM user WHERE username = #{username}
     </select>
     <update id="updateLastLoginTime">
-        UPDATE user SET last_login_time = NOW() WHERE id = #{id}
+        UPDATE user SET last_login_time = CURRENT_TIMESTAMP WHERE id = #{id}
     </update>
+    <select id="selectUserByCondition" resultType="com.agriculture.model.po.User">
+        SELECT * FROM user WHERE
+        <where>
+            <if test="id!= null">
+                id = #{id}
+            </if>
+            <if test="username != null">
+                AND username = #{username}
+            </if>
+            <if test="email != null">
+                AND email = #{email}
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+            <if test="roleId != null">
+                AND role_id = #{roleId}
+            </if>
+        </where>
+    </select>
+
 </mapper>

@@ -22,4 +22,6 @@ public class Interaction {
     private Integer type; // 1-点赞 2-收藏
 
     private Date createTime;
+    public static final Integer TYPE_LIKE = 1;
+    public static final Integer TYPE_COLLECT = 2;
 }

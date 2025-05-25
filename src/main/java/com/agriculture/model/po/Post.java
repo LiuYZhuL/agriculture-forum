@@ -18,7 +18,6 @@ public class Post {
 
     private String title;
     private String content;
-    private Integer type;  // 0-普通帖 1-问答帖
 
     private Integer status; // 0-待审核 1-已发布 2-已拒绝
 
@@ -33,4 +32,11 @@ public class Post {
     private Date updateTime;
 
     private Integer viewCount;
+    public static final Integer STATUS_WAITING_AUDIT = 0;
+    public static final Integer STATUS_PUBLISHED = 1;
+    public static final Integer STATUS_REJECTED = 2;
+    public static final Integer IS_NOT_TOP = 0;
+    public static final Integer IS_TOP = 1;
+    public static final Integer IS_NOT_ESSENCE = 0;
+    public static final Integer IS_ESSENCE = 1;
 }

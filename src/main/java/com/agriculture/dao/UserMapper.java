@@ -16,4 +16,5 @@ public interface UserMapper {
     int getUserCount();
     User getUserByUsername(String username);
     void updateLastLoginTime(int id);
+    List<User> selectUserByCondition(User user);
 }

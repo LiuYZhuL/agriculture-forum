@@ -22,4 +22,6 @@ public class AuditLog {
     private Date auditTime;
 
     private String reason;
+    public static final Integer ACTION_PASS = 1;
+    public static final Integer ACTION_REJECT = 2;
 }

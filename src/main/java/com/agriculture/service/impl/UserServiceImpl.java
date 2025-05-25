@@ -29,11 +29,13 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("用户名不存在");
         }
         User user = userMapper.getUserByUsername(loginUser.getUsername());
-
+        if(user.getStatus().equals(User.STATUS_LOCKED)){
+            throw new RuntimeException("用户被锁定");
+        }
         if(!PasswordUtil.matches(loginUser.getPassword(),user.getPassword())){
             throw new RuntimeException("密码错误");
         }
-
+        userMapper.updateLastLoginTime(user.getId());
         return user;
 
     }
@@ -66,6 +68,9 @@ public class UserServiceImpl implements UserService {
         if (userMapper.getUserById(user.getId()) == null){
             throw new RuntimeException("用户不存在");
         }
-        userMapper.updateLastLoginTime(user.getId());
+        if (userMapper.getUserById(user.getId()).getStatus().equals(User.STATUS_LOCKED)){
+            throw new RuntimeException("用户被锁定");
+        }
     }
+
 }

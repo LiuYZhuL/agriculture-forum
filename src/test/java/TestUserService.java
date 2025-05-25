@@ -81,6 +81,25 @@ public class TestUserService {
         assertEquals("user1", result.getUsername());
         verify(userMapper, times(2)).getUserByUsername("user1"); // 两次查询（实际代码中有冗余）
     }
+    @Test
+    void login_WhenUserIsLocked_ThrowException() {
+        // Arrange
+        User mockUser = new User();
+        mockUser.setUsername("user1");
+        mockUser.setPassword(PasswordUtil.encode("pass123")); // 加密后的密码
+        mockUser.setStatus(User.STATUS_LOCKED);
+        when(userMapper.getUserByUsername("user1")).thenReturn(mockUser);
+
+        LoginUser input = new LoginUser("user1", "pass123");
+
+
+        // Act & Assert
+        Exception exception = assertThrows(RuntimeException.class, () ->
+                userService.login(input)
+        );
+        assertEquals("用户被锁定", exception.getMessage());
+    }
+
     // endregion
 
     // region register() Tests
@@ -114,4 +133,31 @@ public class TestUserService {
         verify(userMapper, times(1)).insertUser(any(User.class));
     }
     // endregion
+
+    // region logout() Tests
+    @Test
+    void logout_ThrowException() {
+        User user = new User();
+        user.setId(1);
+        user.setUsername("user1");
+        user.setPassword(PasswordUtil.encode("pass123"));
+        user.setEmail("user1@mail.com");
+        user.setRoleId(1);
+        user.setStatus(User.STATUS_LOCKED);
+        // Arrange
+
+        when(userMapper.getUserById(user.getId())).thenReturn(null);
+        Exception exception = assertThrows(RuntimeException.class, () ->
+                userService.logout(user)
+        );
+        assertEquals("用户不存在", exception.getMessage());
+        verify(userMapper).getUserById(user.getId());
+
+        when(userMapper.getUserById(user.getId())).thenReturn(user);
+        Exception exception2 = assertThrows(RuntimeException.class, () ->
+                userService.logout(user)
+        );
+        assertEquals("用户被锁定", exception2.getMessage());
+
+    }
 }

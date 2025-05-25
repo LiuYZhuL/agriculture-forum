@@ -10,7 +10,6 @@
         <result column="category_id" property="categoryId" jdbcType="INTEGER" />
         <result column="title" property="title" jdbcType="VARCHAR" />
         <result column="content" property="content" jdbcType="LONGVARCHAR" />
-        <result column="type" property="type" jdbcType="TINYINT" />
         <result column="status" property="status" jdbcType="TINYINT" />
         <result column="is_top" property="isTop" jdbcType="TINYINT" />
         <result column="is_essence" property="isEssence" jdbcType="TINYINT" />
@@ -48,10 +47,10 @@
     <!-- 插入新帖子（使用自增主键） -->
     <insert id="insertPost" parameterType="com.agriculture.model.dto.Post" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO post
-        (user_id, category_id, title, content, type, status,
+        (user_id, category_id, title, content, status,
          is_top, is_essence, best_answer_id, view_count)
         VALUES
-            (#{userId}, #{categoryId}, #{title}, #{content}, #{type}, #{status},
+            (#{userId}, #{categoryId}, #{title}, #{content}, #{status},
              #{isTop,jdbcType=TINYINT}, #{isEssence,jdbcType=TINYINT},
              #{bestAnswerId,jdbcType=INTEGER}, #{viewCount,jdbcType=INTEGER})
     </insert>
@@ -63,7 +62,6 @@
             <!-- 动态更新字段（非空时才更新） -->
             <if test="title != null"> title = #{title}, </if>
             <if test="content != null"> content = #{content}, </if>
-            <if test="type != null"> type = #{type}, </if>
             <if test="status != null"> status = #{status}, </if>
             <if test="isTop != null"> is_top = #{isTop}, </if>
             <if test="isEssence != null"> is_essence = #{isEssence}, </if>
