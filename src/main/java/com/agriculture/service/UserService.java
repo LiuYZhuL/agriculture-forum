@@ -20,7 +20,7 @@ public interface UserService {
     void updateUserInfo(UpdateUser updateUser);
 
     // 修改密码
-    void changePassword(Integer userId, String oldPassword, String newPassword);
+    void changePassword(UpdateUser updateUser);
 
     // 重置密码（忘记密码流程）
     String resetPassword(String username, String email);

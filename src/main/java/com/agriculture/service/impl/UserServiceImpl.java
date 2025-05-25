@@ -21,7 +21,7 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserMapper userMapper;
 
-    /*
+    /**
      * 登录
      * @param loginUser 登录用户名和密码
      * @return User 用户信息
@@ -49,7 +49,7 @@ public class UserServiceImpl implements UserService {
         return user;
 
     }
-    /*
+    /**
      * 注册
      * @param registerUser 注册用户信息
      * @return User 用户信息
@@ -77,7 +77,7 @@ public class UserServiceImpl implements UserService {
         return user;
     }
 
-    /*
+    /**
      * 登出
      * @param user 登出的用户
      */
@@ -94,7 +94,12 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("用户被锁定");
         }
     }
-//获取用户信息
+
+    /**
+     * 获取用户信息
+     * @param userId
+     * @return User 用户信息
+     */
     @Override
     @Transactional
     public User getUserById(Integer userId) {
@@ -113,7 +118,11 @@ public class UserServiceImpl implements UserService {
         return userMapper.getUserByUsername(username);
     }
 
-//修改用户信息
+    /**
+     * 修改用户信息
+     * @param updateUser 修改用户信息
+     *                     必须包含id,username,email
+     */
     @Override
     @Transactional
     public void updateUserInfo(UpdateUser updateUser) {
@@ -131,31 +140,40 @@ public class UserServiceImpl implements UserService {
         User newUser = new User();
         newUser.setId(updateUser.getId());
         newUser.setUsername(updateUser.getUsername());
-        newUser.setPassword(PasswordUtil.encode(updateUser.getNewPassword()));
         newUser.setEmail(updateUser.getEmail());
         userMapper.updateUser(user);
     }
-//修改密码
+    /**
+     * 修改密码
+     * @param updateUser 修改密码的用户信息
+     *                     必须包含id,password,newPassword
+     */
     @Override
     @Transactional
-    public void changePassword(Integer userId, String oldPassword, String newPassword) {
-        if (userId == null){
+    public void changePassword(UpdateUser updateUser) {
+        if (updateUser == null){
             throw new RuntimeException("用户ID不能为空");
         }
-        if (userMapper.getUserById(userId) == null){
+        if (userMapper.getUserById(updateUser.getId()) == null){
             throw new RuntimeException("用户不存在");
         }
-        User user = userMapper.getUserById(userId);
-        if (!user.getPassword().equals(PasswordUtil.encode(oldPassword))){
+        User user = userMapper.getUserById(updateUser.getId());
+        if (!user.getPassword().equals(PasswordUtil.encode(updateUser.getPassword()))){
             throw new RuntimeException("旧密码错误");
         }
         User newUser = new User();
-        newUser.setId(userId);
-        newUser.setPassword(PasswordUtil.encode(newPassword));
+        newUser.setId(updateUser.getId());
+        newUser.setPassword(PasswordUtil.encode(updateUser.getNewPassword()));
         userMapper.updateUser(user);
 
     }
-//重设密码
+
+    /**
+     * 重置密码
+     * @param username
+     * @param email
+     * @return String 新密码
+     */
     @Override
     @Transactional
     public String resetPassword(String username, String email) {
@@ -177,8 +195,14 @@ public class UserServiceImpl implements UserService {
         return newPassword;
 
     }
-//修改用户状态
 
+    /**
+     * 修改用户状态
+     * @param userId
+     * @param status
+     * User.STATUS_LOCKED:锁定
+     * User.STATUS_NORMAL:正常
+     */
     @Override
     @Transactional
     public void updateUserStatus(Integer userId, Integer status) {
@@ -199,7 +223,14 @@ public class UserServiceImpl implements UserService {
         userMapper.updateUser(newUser);
 
     }
-//修改用户角色
+
+    /**
+     * 修改用户角色
+     * @param userId
+     * @param roleId
+     * Role.ROLE_ADMIN:管理员
+     * Role.ROLE_USER:普通用户
+     */
     @Override
     @Transactional
     public void updateUserRole(Integer userId, Integer roleId) {
@@ -220,7 +251,15 @@ public class UserServiceImpl implements UserService {
         userMapper.updateUser(newUser);
 
     }
-//获取用户列表
+
+    /**
+     * 获取用户列表
+     * @param pageNum(web端分页参数)
+     * @param pageSize(通常为 10)
+     * @param user
+     * 筛选条件 可为空 为空则查询全部用户
+     * @return
+     */
     @Override
     @Transactional
     public PageInfo<User> listUsers(int pageNum, int pageSize, User user) {
