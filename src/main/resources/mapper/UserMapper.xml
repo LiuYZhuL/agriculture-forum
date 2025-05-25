@@ -24,16 +24,25 @@
         INSERT INTO user
         <trim prefix="(" suffix=")" suffixOverrides=",">
             username, password, email
-            <if test="avatar!= null" > ,avatar </if>
-            <if test="roleId!= null" > ,role_id </if>
+            <if test="avatar != null">  <!-- 移除前置逗号 -->
+                ,avatar
+            </if>
+            <if test="roleId != null">
+                ,role_id
+            </if>
         </trim>
-            VALUES
+        VALUES
         <trim prefix="(" suffix=")" suffixOverrides=",">
             #{username}, #{password}, #{email}
-            <if test="avatar!= null"> ,#{avatar} </if>
-            <if test="roleId!= null"> ,#{roleId} </if>
+            <if test="avatar != null">  <!-- 移除前置逗号 -->
+                ,#{avatar}
+            </if>
+            <if test="roleId != null">
+                ,#{roleId}
+            </if>
         </trim>
     </insert>
+
     <update id="updateUser" parameterType="com.agriculture.model.po.User">
         UPDATE user
         <set>

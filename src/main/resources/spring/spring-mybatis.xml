@@ -14,15 +14,18 @@
     <!--配置Mybatis sqlSessionFactory-->
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean" init-method="afterPropertiesSet">
         <property name="dataSource" ref="dataSource"/>
-        <property name="typeAliasesPackage" value="com.agriculture.model.dto"/>
-        <property name="mapperLocations" value="classpath:mapper/*Mapper.xml"/>
+        <property name="typeAliasesPackage" value="com.agriculture.model.po"/>
+        <property name="mapperLocations" value="classpath:mapper/*.xml"/>
         <!--MyBatis通过解析这些XML文件，将其中定义的SQL语句与对应的Mapper接口方法绑定。-->
         <property name="configLocation" value="classpath:mybatis-config.xml"/>
+        <property name="transactionFactory">
+            <bean class="org.mybatis.spring.transaction.SpringManagedTransactionFactory"/>
+        </property>
 
     </bean>
     <!--扫面自定义的Mapper接口-->
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
         <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
-        <property name="basePackage" value="com.agriculture.mapper"/>
+        <property name="basePackage" value="com.agriculture.dao"/>
     </bean>
 </beans>

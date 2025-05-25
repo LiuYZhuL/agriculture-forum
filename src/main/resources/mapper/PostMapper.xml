@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.agriculture.dao.PostMapper">
     <!-- 基础结果映射：定义数据库列与Java对象属性的映射关系 -->
-    <resultMap id="BaseResultMap" type="com.agriculture.model.dto.Post">
+    <resultMap id="BaseResultMap" type="com.agriculture.model.po.Post">
         <!-- 主键映射 -->
         <id column="id" property="id" jdbcType="INTEGER" />
         <!-- 普通字段映射 -->
@@ -20,17 +20,17 @@
     </resultMap>
 
     <!-- 根据ID查询单个帖子 -->
-    <select id="getPostById" resultType="com.agriculture.model.dto.Post">
+    <select id="getPostById" resultType="com.agriculture.model.po.Post">
         SELECT * FROM post WHERE id = #{id}
     </select>
 
     <!-- 查询所有帖子 -->
-    <select id="getAllPosts" resultType="com.agriculture.model.dto.Post">
+    <select id="getAllPosts" resultType="com.agriculture.model.po.Post">
         SELECT * FROM post
     </select>
 
     <!-- 分页查询帖子（按创建时间降序排列） -->
-    <select id="getPostsByPage" resultType="com.agriculture.model.dto.Post">
+    <select id="getPostsByPage" resultType="com.agriculture.model.po.Post">
         SELECT * FROM post
         ORDER BY create_time DESC
             LIMIT #{offset}, #{pageSize}
@@ -45,7 +45,7 @@
     </select>
 
     <!-- 插入新帖子（使用自增主键） -->
-    <insert id="insertPost" parameterType="com.agriculture.model.dto.Post" useGeneratedKeys="true" keyProperty="id">
+    <insert id="insertPost" parameterType="com.agriculture.model.po.Post" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO post
         (user_id, category_id, title, content, status,
          is_top, is_essence, best_answer_id, view_count)
@@ -56,7 +56,7 @@
     </insert>
 
     <!-- 更新帖子信息（动态SQL） -->
-    <update id="updatePost" parameterType="com.agriculture.model.dto.Post">
+    <update id="updatePost" parameterType="com.agriculture.model.po.Post">
         UPDATE post
         <set>
             <!-- 动态更新字段（非空时才更新） -->
@@ -79,22 +79,22 @@
     </delete>
 
     <!-- 根据状态查询帖子 -->
-    <select id="getPostsByStatus" resultType="com.agriculture.model.dto.Post">
+    <select id="getPostsByStatus" resultType="com.agriculture.model.po.Post">
         SELECT * FROM post WHERE status = #{status}
     </select>
 
     <!-- 根据分类ID查询帖子 -->
-    <select id="getPostsByCategory" resultType="com.agriculture.model.dto.Post">
+    <select id="getPostsByCategory" resultType="com.agriculture.model.po.Post">
         SELECT * FROM post WHERE category_id = #{categoryId}
     </select>
 
     <!-- 根据用户ID查询帖子 -->
-    <select id="getPostsByUser" resultType="com.agriculture.model.dto.Post">
+    <select id="getPostsByUser" resultType="com.agriculture.model.po.Post">
         SELECT * FROM post WHERE user_id = #{userId}
     </select>
 
     <!-- 查询热门帖子（按浏览量、精华帖、置顶帖排序） -->
-    <select id="getHotPosts" resultType="com.agriculture.model.dto.Post">
+    <select id="getHotPosts" resultType="com.agriculture.model.po.Post">
         SELECT * FROM post
         WHERE status = 1  -- 只查询已发布的帖子
         ORDER BY view_count DESC, is_essence DESC, is_top DESC

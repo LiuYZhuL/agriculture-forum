@@ -2,6 +2,7 @@ package com.agriculture.controller;
 
 import com.agriculture.model.dto.LoginUser;
 import com.agriculture.model.po.User;
+import com.agriculture.service.UserService;
 import com.agriculture.service.impl.UserServiceImpl;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,13 +20,21 @@ import java.util.Objects;
 @RequestMapping("/api/user")
 public class UserController {
     @Autowired
-    private UserServiceImpl userService;
+    private UserService userService;
     @GetMapping("/login")
     public ModelAndView login() {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("redirect:/api/user/login");
         return modelAndView;
     }
+    /*
+     * 登录
+     * @param loginUser 登录用户名和密码
+     * @param bindingResult 验证结果
+     * @param session 会话
+     * @return ModelAndView
+     * @throws RuntimeException 运行时异常
+     */
     @PostMapping("/login")
     public ModelAndView login(@Valid LoginUser loginUser,
                               BindingResult bindingResult,
@@ -49,6 +58,12 @@ public class UserController {
         }
         session.setAttribute("user", user);
         modelAndView.setViewName("redirect:/api/dashboard");
+        return modelAndView;
+    }
+    @GetMapping("/register")
+    public ModelAndView register() {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("redirect:/api/user/register");
         return modelAndView;
     }
 }

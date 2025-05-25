@@ -3,7 +3,7 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.agriculture.dao.RoleMapper">
-    <resultMap id="roleResultMap" type="com.agriculture.entity.Role">
+    <resultMap id="roleResultMap" type="com.agriculture.model.po.Role">
         <id property="id" column="id"/>
         <result property="roleName" column="name"/>
         <result property="description" column="description"/>
