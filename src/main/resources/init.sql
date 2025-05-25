@@ -22,7 +22,7 @@ CREATE TABLE `user` (
                         `password` VARCHAR(255) NOT NULL COMMENT '加密后的密码',
                         `email` VARCHAR(100) UNIQUE NOT NULL COMMENT '邮箱',
                         `avatar` VARCHAR(255) DEFAULT 'default_avatar.png' COMMENT '头像路径',
-                        `role_id` INT NOT NULL DEFAULT 0 COMMENT '角色ID',
+                        `role_id` INT NOT NULL DEFAULT 1 COMMENT '角色ID',
                         `status` TINYINT DEFAULT 1 COMMENT '状态：0-封禁, 1-正常',
                         `create_time` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '注册时间',
                         `last_login_time` DATETIME COMMENT '最后登录时间',
