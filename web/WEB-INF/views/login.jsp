@@ -21,14 +21,14 @@
     </c:if>
     <!-- 登录表单 -->
     <form action="${pageContext.request.contextPath}/api/user/login" method="post">
-        <label for="username">Username:</label>
+        <label for="username">用户名:</label>
         <input type="text" id="username" name="username" required value="${loginUser.username}"><br><br>
         
-        <label for="password">Password:</label>
+        <label for="password">密码:</label>
         <input type="password" id="password" name="password" required value="${loginUser.password}"
                pattern="^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}" title="密码至少一位字母，一位数字，长度至少8位"><br><br>
         
-        <input type="submit" value="Login">
+        <input type="submit" value="登录">
     </form>
     <a href="${pageContext.request.contextPath}/api/user/register"
        style="display: inline-block; padding: 6px 12px; background: #eee; border: 1px solid #ccc; text-decoration: none;">

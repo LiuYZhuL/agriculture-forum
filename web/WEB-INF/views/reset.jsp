@@ -27,11 +27,11 @@
 <!-- 忘记表单 -->
 
 <form action="${pageContext.request.contextPath}/api/user/reset" method="post">
-    <label for="username">Username:</label>
+    <label for="username">用户名:</label>
     <input type="text" id="username" name="username" required ><br><br>
-    <label for="email">Email:</label>
+    <label for="email">邮箱:</label>
     <input type="email" id="email" name="email" required ><br><br>
-    <input type="submit" value="reset">
+    <input type="submit" value="提交">
 </form>
 
 

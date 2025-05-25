@@ -85,7 +85,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void logout(User user) {
         if (user == null){
-            throw new RuntimeException("用户不存在");
+            throw new RuntimeException("用户未登录");
         }
         if (userMapper.getUserById(user.getId()) == null){
             throw new RuntimeException("用户不存在");
