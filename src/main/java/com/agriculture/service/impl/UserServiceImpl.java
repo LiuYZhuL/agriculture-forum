@@ -4,13 +4,17 @@ import com.agriculture.dao.UserMapper;
 import com.agriculture.model.dto.LoginUser;
 import com.agriculture.model.dto.RegisterUser;
 import com.agriculture.model.dto.UpdateUser;
+import com.agriculture.model.po.Role;
 import com.agriculture.model.po.User;
 import com.agriculture.service.UserService;
 import com.agriculture.util.PasswordUtil;
+import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -89,6 +93,139 @@ public class UserServiceImpl implements UserService {
         if (userMapper.getUserById(user.getId()).getStatus().equals(User.STATUS_LOCKED)){
             throw new RuntimeException("用户被锁定");
         }
+    }
+
+    @Override
+    @Transactional
+    public User getUserById(Integer userId) {
+        if (userId == null){
+            throw new RuntimeException("用户ID不能为空");
+        }
+        return userMapper.getUserById(userId);
+    }
+
+    @Override
+    @Transactional
+    public User getUserByUsername(String username) {
+        if (username == null || username.isEmpty()){
+            throw new RuntimeException("用户名不能为空");
+        }
+        return userMapper.getUserByUsername(username);
+    }
+
+
+    @Override
+    @Transactional
+    public void updateUserInfo(UpdateUser updateUser) {
+        if (updateUser == null){
+            throw new RuntimeException("修改信息不能为空");
+        }
+        if (userMapper.getUserById(updateUser.getId()) == null){
+            throw new RuntimeException("用户不存在");
+        }
+        User user = userMapper.getUserById(updateUser.getId());
+        if (userMapper.getUserByUsername(updateUser.getUsername()) != null &&!user.getUsername().equals(updateUser.getUsername())){
+            throw new RuntimeException("用户名已存在");
+        }
+        if (!user.getPassword().equals(PasswordUtil.encode(updateUser.getPassword()))){
+            throw new RuntimeException("旧密码错误");
+        }
+        User newUser = new User();
+        newUser.setId(updateUser.getId());
+        newUser.setUsername(updateUser.getUsername());
+        newUser.setPassword(PasswordUtil.encode(updateUser.getNewPassword()));
+        newUser.setEmail(updateUser.getEmail());
+        userMapper.updateUser(user);
+    }
+
+    @Override
+    public void changePassword(Integer userId, String oldPassword, String newPassword) {
+        if (userId == null){
+            throw new RuntimeException("用户ID不能为空");
+        }
+        if (userMapper.getUserById(userId) == null){
+            throw new RuntimeException("用户不存在");
+        }
+        User user = userMapper.getUserById(userId);
+        if (!user.getPassword().equals(PasswordUtil.encode(oldPassword))){
+            throw new RuntimeException("旧密码错误");
+        }
+        User newUser = new User();
+        newUser.setId(userId);
+        newUser.setPassword(PasswordUtil.encode(newPassword));
+        userMapper.updateUser(user);
+
+    }
+
+    @Override
+    public String resetPassword(String username, String email) {
+        if (username == null || username.isEmpty()){
+            throw new RuntimeException("用户名不能为空");
+        }
+        User user = userMapper.getUserByUsername(username);
+        if (email == null || email.isEmpty()){
+            throw new RuntimeException("邮箱不能为空");
+        }
+        if (!user.getEmail().equals(email)){
+            throw new RuntimeException("邮箱错误");
+        }
+        String newPassword = "a1234567";
+        User newUser = new User();
+        newUser.setId(user.getId());
+        newUser.setPassword(PasswordUtil.encode(newPassword));
+        userMapper.updateUser(user);
+        return newPassword;
+
+    }
+
+
+    @Override
+    public void updateUserStatus(Integer userId, Integer status) {
+        if (userId == null){
+            throw new RuntimeException("用户ID不能为空");
+        }
+        if (userMapper.getUserById(userId) == null){
+            throw new RuntimeException("用户不存在");
+        }
+        User newUser = new User();
+        newUser.setId(userId);
+        if (status.equals(User.STATUS_LOCKED)){
+            newUser.setStatus(User.STATUS_LOCKED);
+        }
+        if (status.equals(User.STATUS_NORMAL)){
+            newUser.setStatus(User.STATUS_NORMAL);
+        }
+        userMapper.updateUser(newUser);
+
+    }
+
+    @Override
+    public void updateUserRole(Integer userId, Integer roleId) {
+        if (userId == null){
+            throw new RuntimeException("用户ID不能为空");
+        }
+        if (userMapper.getUserById(userId) == null){
+            throw new RuntimeException("用户不存在");
+        }
+        User newUser = new User();
+        newUser.setId(userId);
+        if (roleId.equals(Role.ROLE_ADMIN)){
+            newUser.setRoleId(Role.ROLE_ADMIN);
+        }
+        if (roleId.equals(Role.ROLE_USER)){
+            newUser.setRoleId(Role.ROLE_USER);
+        }
+        userMapper.updateUser(newUser);
+
+    }
+
+    @Override
+    public PageInfo<User> listUsers(int pageNum, int pageSize, User user) {
+        // 构建查询条件
+        // 单次分页查询
+        PageHelper.startPage(pageNum, pageSize);
+        List<User> users = userMapper.selectUserByCondition(user);
+        return new PageInfo<>(users);
     }
 
 }

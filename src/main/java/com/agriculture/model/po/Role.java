@@ -11,4 +11,6 @@ public class Role {
     private Integer id;
     private String roleName;
     private String description;
+    public static final Integer ROLE_USER = 1;
+    public static final Integer ROLE_ADMIN = 2;
 }
