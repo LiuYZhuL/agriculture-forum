@@ -37,5 +37,12 @@
    style="display: inline-block; padding: 6px 12px; background: #eee; border: 1px solid #ccc; text-decoration: none;">
     用户中心
 </a>
+<c:if test="${not empty sessionScope.user and sessionScope.user.roleId == 2}">
+    <a href="${pageContext.request.contextPath}/api/admin/dashboard"
+       style="display: inline-block; padding: 6px 12px; background: #eee; border: 1px solid #ccc; text-decoration: none;">
+        管理员中心
+    </a>
+</c:if>
+
 </body>
 </html>

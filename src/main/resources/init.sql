@@ -12,7 +12,6 @@ CREATE TABLE `role` (
 -- 初始角色数据
 INSERT INTO `role` (name, description) VALUES
                                            ('user', '普通用户：发帖、评论、互动'),
-                                           ('expert', '农业专家：审核帖子、解答问题'),
                                            ('admin', '系统管理员：管理用户、分类、全局设置');
 
 -- 2. 用户表：存储用户基本信息

@@ -14,10 +14,10 @@
         <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
         <result column="last_login_time" property="lastLoginTime" jdbcType="TIMESTAMP" />
     </resultMap>
-    <select id="getUserById" resultType="com.agriculture.model.po.User">
+    <select id="getUserById" resultMap="BaseResultMap">
         SELECT * FROM user WHERE id = #{id}
     </select>
-    <select id="getAllUsers" resultType="com.agriculture.model.po.User">
+    <select id="getAllUsers" resultMap="BaseResultMap">
         SELECT * FROM user
     </select>
     <insert id="insertUser" parameterType="com.agriculture.model.po.User" useGeneratedKeys="true" keyProperty="id">
@@ -54,20 +54,20 @@
     <delete id="deleteUser">
         DELETE FROM user WHERE id = #{id}
     </delete>
-    <select id="getUserByStatus" resultType="com.agriculture.model.po.User">
+    <select id="getUserByStatus" resultMap="BaseResultMap">
         SELECT * FROM user WHERE status = #{status}
     </select>
 
     <select id="getUserCount" resultType="int">
         SELECT COUNT(*) FROM user
     </select>
-    <select id="getUserByUsername" resultType="com.agriculture.model.po.User">
+    <select id="getUserByUsername" resultMap="BaseResultMap">
         SELECT * FROM user WHERE username = #{username}
     </select>
     <update id="updateLastLoginTime">
         UPDATE user SET last_login_time = CURRENT_TIMESTAMP WHERE id = #{id}
     </update>
-    <select id="selectUserByCondition" resultType="com.agriculture.model.po.User">
+    <select id="selectUserByCondition" resultMap="BaseResultMap">
         SELECT * FROM user WHERE
         <where>
             <if test="id!= null">

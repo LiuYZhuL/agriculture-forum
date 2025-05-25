@@ -10,10 +10,9 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UpdateUser {
+    private int id;
     private String username;
     private String password;
+    private String newPassword;
     private String email;
-    private String avatar;
-    private int roleId;
-    private int status;
 }
