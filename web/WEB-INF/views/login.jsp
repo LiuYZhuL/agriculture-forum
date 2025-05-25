@@ -8,10 +8,10 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <title>Login</title>
+    <title>登录</title>
 </head>
 <body>
-    <h1>Login</h1>
+    <h1>登录</h1>
     <!-- 显示错误信息 -->
     <%
         String error = (String) request.getAttribute("error");
@@ -31,5 +31,9 @@
         
         <input type="submit" value="Login">
     </form>
+    <a href="${pageContext.request.contextPath}/api/user/register"
+       style="display: inline-block; padding: 6px 12px; background: #eee; border: 1px solid #ccc; text-decoration: none;">
+     前去注册
+    </a>
 </body>
 </html>

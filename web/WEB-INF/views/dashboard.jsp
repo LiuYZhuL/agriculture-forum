@@ -8,9 +8,17 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <title>Title</title>
+    <title>首页</title>
 </head>
 <body>
+<a href="${pageContext.request.contextPath}/api/user/register"
+   style="display: inline-block; padding: 6px 12px; background: #eee; border: 1px solid #ccc; text-decoration: none;">
+    前去注册
+</a>
 
+<a href="${pageContext.request.contextPath}/api/user/login"
+   style="display: inline-block; padding: 6px 12px; background: #eee; border: 1px solid #ccc; text-decoration: none;">
+    前去登陆
+</a>
 </body>
 </html>
