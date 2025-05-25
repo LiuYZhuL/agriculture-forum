@@ -7,7 +7,7 @@ import java.util.List;
 
 @Mapper
 public interface AttachmentMapper {
-    Attachment insertAttachment(Attachment attachment);
+    int insertAttachment(Attachment attachment);
     void batchInsertAttachment(List<Attachment> attachmentList);
     void deleteAttachmentById(int id);
     void deleteAttachmentByPostId(int postId);

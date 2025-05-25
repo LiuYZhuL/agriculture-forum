@@ -7,7 +7,7 @@ import java.util.List;
 
 @Mapper
 public interface AuditLogMapper {
-    AuditLog insertAuditLog(AuditLog auditLog);
+    int insertAuditLog(AuditLog auditLog);
     void batchInsertAuditLog(List<AuditLog> auditLogs);
     void deleteAuditLogById(Integer id);
     void deleteAuditLogByPostId(Integer postId);

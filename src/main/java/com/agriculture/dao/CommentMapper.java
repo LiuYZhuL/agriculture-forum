@@ -6,7 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import java.util.List;
 @Mapper
 public interface CommentMapper {
-    Comment insertComment(Comment comment);
+    int insertComment(Comment comment);
     void batchInsertComment(List<Comment> comments);
     void deleteCommentById(int id);
     void deleteCommentByPostId(int postId);

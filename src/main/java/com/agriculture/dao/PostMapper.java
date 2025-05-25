@@ -9,7 +9,7 @@ import java.util.List;
 public interface PostMapper {
     Post getPostById(int id);
     List<Post> getAllPosts();
-    Post insertPost(Post post);
+    int insertPost(Post post);
     void updatePost(Post post);
     void deletePost(int id);
     List<Post> getPostsByStatus(int status);
