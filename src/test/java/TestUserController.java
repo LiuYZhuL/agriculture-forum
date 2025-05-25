@@ -38,7 +38,7 @@ class TestUserController {
         ModelAndView result = userController.login(loginUser, mock(HttpSession.class));
 
         // Verify
-        assertEquals("redirect:/api/user/login", result.getViewName());
+        assertEquals("login", result.getViewName());
         assertNotNull(result.getModel().get("error"));
     }
 
@@ -52,7 +52,7 @@ class TestUserController {
         ModelAndView result = userController.login(loginUser, mock(HttpSession.class));
 
         // Verify
-        assertEquals("redirect:/api/user/login", result.getViewName());
+        assertEquals("login", result.getViewName());
         assertEquals("Invalid credentials", result.getModel().get("error"));
     }
 
@@ -68,7 +68,7 @@ class TestUserController {
 
         // Verify
         verify(session).setAttribute(eq("user"), any());
-        assertEquals("redirect:/api/dashboard", result.getViewName());
+        assertEquals("dashboard", result.getViewName());
     }
 
 
@@ -84,7 +84,7 @@ class TestUserController {
         ModelAndView result = userController.register(regUser, mock(HttpSession.class));
 
         // Verify
-        assertEquals("redirect:/api/user/register", result.getViewName());
+        assertEquals("register", result.getViewName());
         assertEquals("User exists", result.getModel().get("error"));
     }
 
@@ -99,6 +99,6 @@ class TestUserController {
 
         // Verify
         verify(session).invalidate();
-        assertEquals("redirect:/api/dashboard", result.getViewName());
+        assertEquals("dashboard", result.getViewName());
     }
 }

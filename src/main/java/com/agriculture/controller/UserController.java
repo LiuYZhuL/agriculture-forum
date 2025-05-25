@@ -43,13 +43,13 @@ public class UserController {
         try {
             user = userService.login(loginUser);
         } catch (RuntimeException runtimeException) {
-            modelAndView.setViewName("redirect:/api/user/login");
+            modelAndView.setViewName("login");
             modelAndView.addObject("error", runtimeException.getMessage());
             modelAndView.addObject("loginUser", loginUser);
             return modelAndView;
         }
         session.setAttribute("user", user);
-        modelAndView.setViewName("redirect:/api/dashboard");
+        modelAndView.setViewName("dashboard");
         return modelAndView;
     }
     @GetMapping("/register")
@@ -73,9 +73,11 @@ public class UserController {
         try {
             userService.register(registerUser);
         } catch (RuntimeException runtimeException) {
-            modelAndView.setViewName("redirect:/api/user/register");
+            modelAndView.setViewName("register");
             modelAndView.addObject("error", runtimeException.getMessage());
+            System.out.println(registerUser);
             modelAndView.addObject("registerUser", registerUser);
+            System.out.println(modelAndView.getModel().get("registerUser"));
             return modelAndView;
         }
         LoginUser loginUser = new LoginUser();
@@ -83,7 +85,7 @@ public class UserController {
         loginUser.setPassword(registerUser.getPassword());
         modelAndView.addObject("loginUser", loginUser);
 
-        modelAndView.setViewName("redirect:/api/user/login");
+        modelAndView.setViewName("login");
         return modelAndView;
     }
     @GetMapping("/logout")
@@ -93,12 +95,12 @@ public class UserController {
             User user = (User) session.getAttribute("user");
             userService.logout(user);
         } catch (RuntimeException runtimeException) {
-            modelAndView.setViewName("redirect:/api/dashboard");
+            modelAndView.setViewName("dashboard");
             modelAndView.addObject("error", runtimeException.getMessage());
             return modelAndView;
         }
         session.invalidate();
-        modelAndView.setViewName("redirect:/api/dashboard");
+        modelAndView.setViewName("dashboard");
         return modelAndView;
     }
     @GetMapping("/home")
@@ -106,7 +108,7 @@ public class UserController {
         ModelAndView modelAndView = new ModelAndView();
         User user = (User) session.getAttribute("user");
         if(user==null){
-            modelAndView.setViewName("redirect:/api/user/login");
+            modelAndView.setViewName("login");
             return modelAndView;
         }
         modelAndView.addObject("user", user);

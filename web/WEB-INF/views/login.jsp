@@ -14,18 +14,18 @@
 <body>
     <h1>登录</h1>
     <!-- 显示错误信息 -->
-    <c:if test="${not empty param.error}">
+    <c:if test="${not empty error}">
         <div style="color: red; margin-bottom: 15px;">
-                ${param.error}
+                ${error}
         </div>
     </c:if>
     <!-- 登录表单 -->
     <form action="${pageContext.request.contextPath}/api/user/login" method="post">
         <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required><br><br>
+        <input type="text" id="username" name="username" required value="${loginUser.username}"><br><br>
         
         <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required
+        <input type="password" id="password" name="password" required value="${loginUser.password}"
                pattern="^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}" title="密码至少一位字母，一位数字，长度至少8位"><br><br>
         
         <input type="submit" value="Login">

@@ -12,9 +12,9 @@
     <title>首页</title>
 </head>
 <body>
-<c:if test="${not empty param.error}">
+<c:if test="${not empty error}">
     <div style="color: red; margin-bottom: 15px;">
-            ${param.error}
+            ${error}
     </div>
 </c:if>
 <c:if test="${not empty sessionScope.user}">
