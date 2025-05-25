@@ -63,11 +63,11 @@ public class TestUserMapper {
         insertUser.setRoleId(2);
         insertUser.setStatus(1);
         insertUser.setAvatar("avatar.jpg");
-        when(userMapper.insertUser(insertUser)).thenReturn(testUser);
+        when(userMapper.insertUser(insertUser)).thenReturn(testUser.getId());
 
-        User result = userMapper.insertUser(insertUser);
+        int result = userMapper.insertUser(insertUser);
 
-        assertEquals(testUser, result);
+        assertEquals(1, result);
         verify(userMapper).insertUser(argThat(user ->
                 user.getAvatar().equals("avatar.jpg") &&
                         user.getRoleId() == 2
