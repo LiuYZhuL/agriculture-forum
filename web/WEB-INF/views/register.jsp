@@ -6,6 +6,7 @@
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <html>
 <head>
     <title>注册</title>
@@ -13,23 +14,21 @@
 <body>
 <h1>注册</h1>
 <!-- 显示错误信息 -->
-<%
-    String error = (String) request.getAttribute("error");
-    if (error != null && !error.isEmpty()) {
-%>
-<p style="color: red;"><%= error %></p>
-<%
-    }
-%>
+<c:if test="${not empty param.error}">
+    <div style="color: red; margin-bottom: 15px;">
+            ${param.error}
+    </div>
+</c:if>
 <!-- 登录表单 -->
 <form action="${pageContext.request.contextPath}/api/user/register" method="post">
     <label for="username">Username:</label>
     <input type="text" id="username" name="username" required><br><br>
 
     <label for="password">Password:</label>
-    <input type="password" id="password" name="password" required><br><br>
+    <input type="password" id="password" name="password" required
+           pattern="^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}" title="密码至少一位字母，一位数字，长度至少8位"><br><br>
     <label for="email">Email:</label>
-    <input type="text" id="email" name="email" required><br><br>
+    <input type="email" id="email" name="email" required><br><br>
     <input type="submit" value="register">
 </form>
 <a href="${pageContext.request.contextPath}/api/user/login"

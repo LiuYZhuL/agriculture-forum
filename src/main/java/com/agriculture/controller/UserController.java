@@ -37,21 +37,8 @@ public class UserController {
      */
     @PostMapping("/login")
     public ModelAndView login(@Valid LoginUser loginUser,
-                              BindingResult bindingResult,
                               HttpSession session){
         ModelAndView modelAndView = new ModelAndView();
-        if (bindingResult.hasErrors()) {
-            modelAndView.setViewName("redirect:/api/user/login");
-            if (bindingResult.getFieldError() == null){
-                modelAndView.addObject("error", "用户名或密码错误");
-                modelAndView.addObject("loginUser", loginUser);
-                return modelAndView;
-            }
-            String errorMsg = Objects.requireNonNull(bindingResult.getFieldError()).getDefaultMessage();
-            modelAndView.addObject("error", errorMsg);
-            modelAndView.addObject("loginUser", loginUser);
-            return modelAndView;
-        }
         User user;
         try {
             user = userService.login(loginUser);
@@ -81,16 +68,8 @@ public class UserController {
      */
     @PostMapping("/register")
     public ModelAndView register(@Valid RegisterUser registerUser,
-                                BindingResult bindingResult,
                                 HttpSession session){
         ModelAndView modelAndView = new ModelAndView();
-        if (bindingResult.hasErrors()) {
-            modelAndView.setViewName("redirect:/api/user/register");
-            String errorMsg = Objects.requireNonNull(bindingResult.getFieldError()).getDefaultMessage();
-            modelAndView.addObject("error", errorMsg);
-            modelAndView.addObject("registerUser", registerUser);
-            return modelAndView;
-        }
         try {
             userService.register(registerUser);
         } catch (RuntimeException runtimeException) {

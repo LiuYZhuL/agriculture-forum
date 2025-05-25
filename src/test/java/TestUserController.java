@@ -31,11 +31,11 @@ class TestUserController {
     void testLoginPost_WithValidationErrors() {
         // Setup
         LoginUser loginUser = new LoginUser();
-        BindingResult bindingResult = mock(BindingResult.class);
-        when(bindingResult.hasErrors()).thenReturn(true);
+        loginUser.setUsername("test");
+        when(userService.login(any())).thenThrow(new RuntimeException("无密码"));
 
         // Execute
-        ModelAndView result = userController.login(loginUser, bindingResult, mock(HttpSession.class));
+        ModelAndView result = userController.login(loginUser, mock(HttpSession.class));
 
         // Verify
         assertEquals("redirect:/api/user/login", result.getViewName());
@@ -46,12 +46,10 @@ class TestUserController {
     void testLoginPost_ServiceException() throws Exception {
         // Setup
         LoginUser loginUser = new LoginUser("test", "password");
-        BindingResult bindingResult = mock(BindingResult.class);
-        when(bindingResult.hasErrors()).thenReturn(false);
         when(userService.login(any())).thenThrow(new RuntimeException("Invalid credentials"));
 
         // Execute
-        ModelAndView result = userController.login(loginUser, bindingResult, mock(HttpSession.class));
+        ModelAndView result = userController.login(loginUser, mock(HttpSession.class));
 
         // Verify
         assertEquals("redirect:/api/user/login", result.getViewName());
@@ -62,44 +60,28 @@ class TestUserController {
     void testLoginPost_Success() throws Exception {
         // Setup
         LoginUser loginUser = new LoginUser("valid", "password");
-        BindingResult bindingResult = mock(BindingResult.class);
         HttpSession session = mock(HttpSession.class);
-        when(bindingResult.hasErrors()).thenReturn(false);
         when(userService.login(any())).thenReturn(new User());
 
         // Execute
-        ModelAndView result = userController.login(loginUser, bindingResult, session);
+        ModelAndView result = userController.login(loginUser, session);
 
         // Verify
         verify(session).setAttribute(eq("user"), any());
         assertEquals("redirect:/api/dashboard", result.getViewName());
     }
 
-    @Test
-    void testRegisterPost_ValidationFailed() {
-        // Setup
-        RegisterUser regUser = new RegisterUser();
-        BindingResult bindingResult = mock(BindingResult.class);
-        when(bindingResult.hasErrors()).thenReturn(true);
-
-        // Execute
-        ModelAndView result = userController.register(regUser, bindingResult, mock(HttpSession.class));
-
-        // Verify
-        assertEquals("redirect:/api/user/register", result.getViewName());
-        assertNotNull(result.getModel().get("error"));
-    }
 
     @Test
     void testRegisterPost_ServiceException() {
         // Setup
         RegisterUser regUser = new RegisterUser("newuser", "pass", "test@agri.com");
-        BindingResult bindingResult = mock(BindingResult.class);
-        when(bindingResult.hasErrors()).thenReturn(false);
+
+
         doThrow(new RuntimeException("User exists")).when(userService).register(any());
 
         // Execute
-        ModelAndView result = userController.register(regUser, bindingResult, mock(HttpSession.class));
+        ModelAndView result = userController.register(regUser, mock(HttpSession.class));
 
         // Verify
         assertEquals("redirect:/api/user/register", result.getViewName());

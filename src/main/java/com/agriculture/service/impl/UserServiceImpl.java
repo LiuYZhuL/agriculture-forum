@@ -28,6 +28,12 @@ public class UserServiceImpl implements UserService {
         if(userMapper.getUserByUsername(loginUser.getUsername())==null){
             throw new RuntimeException("用户名不存在");
         }
+        if(loginUser.getUsername()==null || loginUser.getUsername().isEmpty()){
+            throw new RuntimeException("用户名不能为空");
+        }
+        if(loginUser.getPassword()==null || loginUser.getPassword().isEmpty()){
+            throw new RuntimeException("密码不能为空");
+        }
         User user = userMapper.getUserByUsername(loginUser.getUsername());
         if(user.getStatus() != null && user.getStatus().equals(User.STATUS_LOCKED)){
             throw new RuntimeException("用户被锁定");
@@ -47,6 +53,15 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public User register(RegisterUser registerUser) {
+        if(registerUser.getUsername()==null || registerUser.getUsername().isEmpty()){
+            throw new RuntimeException("用户名不能为空");
+        }
+        if(registerUser.getPassword()==null || registerUser.getPassword().isEmpty()){
+            throw new RuntimeException("密码不能为空");
+        }
+        if(registerUser.getEmail()==null || registerUser.getEmail().isEmpty()){
+            throw new RuntimeException("邮箱不能为空");
+        }
         if(userMapper.getUserByUsername(registerUser.getUsername())!=null){
             throw new RuntimeException("用户名已存在");
         }
@@ -65,6 +80,9 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void logout(User user) {
+        if (user == null){
+            throw new RuntimeException("用户不存在");
+        }
         if (userMapper.getUserById(user.getId()) == null){
             throw new RuntimeException("用户不存在");
         }

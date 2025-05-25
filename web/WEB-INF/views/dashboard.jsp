@@ -6,11 +6,20 @@
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <html>
 <head>
     <title>首页</title>
 </head>
 <body>
+<c:if test="${not empty param.error}">
+    <div style="color: red; margin-bottom: 15px;">
+            ${param.error}
+    </div>
+</c:if>
+<c:if test="${not empty sessionScope.user}">
+    <h1>欢迎 ${sessionScope.user.username} 光临！</h1>
+</c:if>
 <a href="${pageContext.request.contextPath}/api/user/register"
    style="display: inline-block; padding: 6px 12px; background: #eee; border: 1px solid #ccc; text-decoration: none;">
     前去注册
