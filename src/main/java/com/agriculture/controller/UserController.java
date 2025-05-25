@@ -1,9 +1,9 @@
 package com.agriculture.controller;
 
 import com.agriculture.model.dto.LoginUser;
+import com.agriculture.model.dto.RegisterUser;
 import com.agriculture.model.po.User;
 import com.agriculture.service.UserService;
-import com.agriculture.service.impl.UserServiceImpl;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -24,7 +24,7 @@ public class UserController {
     @GetMapping("/login")
     public ModelAndView login() {
         ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("redirect:/api/user/login");
+        modelAndView.setViewName("login");
         return modelAndView;
     }
     /*
@@ -63,7 +63,43 @@ public class UserController {
     @GetMapping("/register")
     public ModelAndView register() {
         ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("redirect:/api/user/register");
+        modelAndView.setViewName("register");
+        return modelAndView;
+    }
+    /*
+     * 注册
+     * @param registerUser 注册用户名、密码、邮箱
+     * @param bindingResult 验证结果
+     * @param session 会话
+     * @return ModelAndView
+     * @throws RuntimeException 运行时异常
+     */
+    @PostMapping("/register")
+    public ModelAndView register(@Valid RegisterUser registerUser,
+                                BindingResult bindingResult,
+                                HttpSession session){
+        ModelAndView modelAndView = new ModelAndView();
+        if (bindingResult.hasErrors()) {
+            modelAndView.setViewName("redirect:/api/user/register");
+            String errorMsg = Objects.requireNonNull(bindingResult.getFieldError()).getDefaultMessage();
+            modelAndView.addObject("error", errorMsg);
+            modelAndView.addObject("registerUser", registerUser);
+            return modelAndView;
+        }
+        try {
+            userService.register(registerUser);
+        } catch (RuntimeException runtimeException) {
+            modelAndView.setViewName("redirect:/api/user/register");
+            modelAndView.addObject("error", runtimeException.getMessage());
+            modelAndView.addObject("registerUser", registerUser);
+            return modelAndView;
+        }
+        LoginUser loginUser = new LoginUser();
+        loginUser.setUsername(registerUser.getUsername());
+        loginUser.setPassword(registerUser.getPassword());
+        modelAndView.addObject("loginUser", loginUser);
+
+        modelAndView.setViewName("redirect:/api/user/login");
         return modelAndView;
     }
 }
