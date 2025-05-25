@@ -42,6 +42,11 @@ public class UserController {
         ModelAndView modelAndView = new ModelAndView();
         if (bindingResult.hasErrors()) {
             modelAndView.setViewName("redirect:/api/user/login");
+            if (bindingResult.getFieldError() == null){
+                modelAndView.addObject("error", "用户名或密码错误");
+                modelAndView.addObject("loginUser", loginUser);
+                return modelAndView;
+            }
             String errorMsg = Objects.requireNonNull(bindingResult.getFieldError()).getDefaultMessage();
             modelAndView.addObject("error", errorMsg);
             modelAndView.addObject("loginUser", loginUser);
