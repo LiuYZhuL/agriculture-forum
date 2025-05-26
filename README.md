@@ -38,9 +38,50 @@
     └── web.xml  
         
 ```
+# 农业论坛系统接口文档
 
-#### 数据库设计：
-##### role 角色表：
+## 用户模块 (UserController)
+**基础路径**: `/api/user`
+
+| 功能描述        | 请求类型 | 路径          | 请求参数/说明                                                                 |
+|----------------|----------|---------------|-----------------------------------------------------------------------------|
+| 登录页面        | GET      | /login        | 渲染登录视图                                                                |
+| 用户登录        | POST     | /login        | `@Valid LoginUser`(表单数据，含username/password)、`HttpSession`            |
+| 注册页面        | GET      | /register     | 渲染注册视图                                                                |
+| 用户注册        | POST     | /register     | `@Valid RegisterUser`(表单数据，含username/password/email)、`HttpSession`   |
+| 用户注销        | GET      | /logout       | 需会话中存在用户信息                                                        |
+| 个人中心        | GET      | /home         | 需登录状态，返回用户信息视图                                                |
+| 忘记密码页面    | GET      | /reset        | 渲染密码重置视图                                                            |
+| 密码重置        | POST     | /reset        | 表单参数：`username`, `email` → 返回明文新密码                              |
+| 头像上传        | POST     | /avatar       | `MultipartFile avatar`(图片文件，≤10MB，支持jpg/png/gif)                    |
+| 更新个人信息    | POST     | /update       | 表单参数：`username`, `email`                                               |
+| 修改密码        | POST     | /change       | 表单参数：`password`(旧密码), `newPassword`                                 |
+
+## 管理员模块 (AdminController)
+**基础路径**: `/api/admin`
+
+| 功能描述            | 请求类型 | 路径                | 请求参数/说明                                                                 |
+|--------------------|----------|---------------------|-----------------------------------------------------------------------------|
+| 用户管理首页        | GET      | /manage            | 默认展示第1页，每页5条用户数据                                              |
+| 用户编辑页面        | GET      | /user/update       | Query参数：`userId`(目标用户ID)                                             |
+| 更新用户信息        | POST     | /user/update       | 表单参数：`id`, `avatar`, `username`, `email`, `roleId`, `status`           |
+| 重置用户密码        | GET（PUT）      | /user/reset        | Query参数：`userId` → 重置为a1234567                                        |
+| 分页查询用户        | GET      | /manage/user       | Query参数：`pageNum`(默认1), `pageSize`(默认5), `SelectUser`(复合查询条件)  |
+
+## 根路径模块 (RootController)
+
+| 功能描述        | 请求类型 | 路径                | 说明                  |
+|----------------|----------|---------------------|-----------------------|
+| 系统主面板      | GET      | / 或 /api/dashboard | 渲染系统仪表盘视图    |
+
+
+
+
+
+
+
+# 数据库设计：
+## role 角色表：
 | 列名          | 数据类型         | 约束      | 描述    |
 |-------------|--------------|---------|-------|
 | id          | INT          | PRIMARY | 角色id    |
@@ -60,14 +101,14 @@
 | create_time     | DATETIME     |         | 注册时间          |
 | last_login_time | DATETIME     |         | 最后登录时间        |
 
-##### category 分类表：
+## category 分类表：
 | 列名          | 数据类型         | 约束       | 描述           |
 |-------------|--------------|----------|--------------|
 | id`         | INT          | PRIMARY  | 分类id         |
 | name        | VARCHAR(50)  | NOT NULL | 分类名称（如种植/养殖） |
 | description | VARCHAR(255) |          | 分类描述         |
 
-##### post 帖子表：
+## post 帖子表：
 | 列名          | 数据类型         | 约束        | 描述                     |
 |-------------|--------------|-----------|------------------------|
 | id          | INT          | PRIMARY   | 帖子id                   |
@@ -82,7 +123,7 @@
 | update_time | DATETIME |           | 最后更新时间 |
 | view_count  | INT      | DEFAULT 0 | 浏览数    |
 
-##### comment 评论表：
+## comment 评论表：
 | 列名          | 数据类型     | 约束      | 描述            |
 |-------------|----------|---------|---------------|
 | id          | INT      | PRIMARY | 评论id          |
@@ -92,7 +133,7 @@
 | parent_id   | INT      | FOREIGN | 父评论ID（实现二级回复） |
 | create_time | DATETIME |         | 评论时间          |
 
-##### interaction 用户行为表：
+## interaction 用户行为表：
 | 列名          | 数据类型     | 约束       | 描述            |
 |-------------|----------|----------|---------------|
 | id          | INT      | PRIMARY  | 行为id          |
@@ -102,7 +143,7 @@
 | create_time | DATETIME |          | 互动时间          |
 
 
-##### attachment 附件表：
+## attachment 附件表：
 | 列名          | 数据类型         | 约束       | 描述                          |
 |-------------|--------------|----------|-----------------------------|
 | id          | INT          | PRIMARY  | 附件id                        |
@@ -111,7 +152,7 @@
 | file_type   | VARCHAR(50)  |          | 文件类型（image/jpeg, video/mp4） |
 | upload_time | DATETIME     |          | 上传时间                        |
 
-##### audit_log 审核日志表：
+## audit_log 审核日志表：
 | 列名         | 数据类型         | 约束       | 描述            |
 |------------|--------------|----------|---------------|
 | id         | INT          | PRIMARY  | 日志id          |
@@ -121,16 +162,6 @@
 | audit_time | DATETIME     |          | 审核时间          |
 | reason     | VARCHAR(255) |          | 审核意见（拒绝时填写）   |
 
-1. 用户模块
-接口：
-
-POST /api/register：用户注册（密码加密） 表单内容转为数据传输实体dto.RegisterUser
-
-POST /api/login：登录（生成Session）表单内容转为数据传输实体dto.LoginUser
-
-GET /api/users/{id}：获取用户信息
-
-PUT /api/users/{id}：修改个人信息
 
 
 
