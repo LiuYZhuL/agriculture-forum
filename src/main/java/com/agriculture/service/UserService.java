@@ -33,6 +33,7 @@ public interface UserService {
 
     // 分页查询用户列表（管理员）
     PageInfo<User> listUsers(int pageNum, int pageSize, User user);
+    void updateAvatar(Integer userId, String avatar);
 
 
 }

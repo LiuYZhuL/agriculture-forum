@@ -269,5 +269,28 @@ public class UserServiceImpl implements UserService {
         List<User> users = userMapper.selectUserByCondition(user);
         return new PageInfo<>(users);
     }
+    /**
+     * 更新用户头像
+     * @param userId
+     * @param avatar
+     */
+    @Override
+    @Transactional
+    public void updateAvatar(Integer userId, String avatar) {
+        if (userId == null){
+            throw new RuntimeException("用户ID不能为空");
+        }
+        if (userMapper.getUserById(userId) == null){
+            throw new RuntimeException("用户不存在");
+        }
+        if (avatar == null || avatar.isEmpty()){
+            throw new RuntimeException("头像路径不能为空");
+        }
+        User newUser = new User();
+        newUser.setId(userId);
+        newUser.setAvatar(avatar);
+        userMapper.updateUser(newUser);
+    }
+
 
 }

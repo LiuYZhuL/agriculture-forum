@@ -50,7 +50,7 @@
     </ul>
 </div>
     <div id="avatar" class="content-section">
-        <form action="${pageContext.request.contextPath}/user/avatar" method="post"
+        <form action="${pageContext.request.contextPath}/api/user/avatar" method="post"
               enctype="multipart/form-data">
             <div class="preview">
                 <img id="avatarPreview"
@@ -87,6 +87,15 @@
 </body>
 </html>
 <script>
+    // 在原有script中添加
+    window.onload = function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const activeSection = urlParams.get('activeSection');
+        if (activeSection) {
+            loadContent(activeSection); // 调用已有的切换函数
+        }
+    };
+
     // 内容切换逻辑
     function loadContent(sectionId) {
         // 移除所有active状态
