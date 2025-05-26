@@ -197,6 +197,30 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
+     * 重置密码
+     *
+     * @param userId 用户ID
+     */
+
+    @Override
+    @Transactional
+    public void resetPassword(Integer userId) {
+        if (userId == null){
+            throw new RuntimeException("用户ID不能为空");
+        }
+        User user = userMapper.getUserById(userId);
+        if (user == null){
+            throw new RuntimeException("用户不存在");
+        }
+        String newPassword = "a1234567";
+        User newUser = new User();
+        newUser.setId(user.getId());
+        newUser.setPassword(PasswordUtil.encode(newPassword));
+        userMapper.updateUser(newUser);
+
+    }
+
+    /**
      * 修改用户状态
      * @param userId
      * @param status

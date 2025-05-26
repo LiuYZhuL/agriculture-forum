@@ -63,6 +63,9 @@
     </div>
 
     <div id="userMgt" class="content-section" style="display: none;">
+        <c:if test="${not empty userMsg}">
+            <div style="color: ${userSuccess ? 'green' : 'red'};">${userMsg}</div>
+        </c:if>
         <form  action="${pageContext.request.contextPath}/api/admin/manage/user" method="get">
             <div>
                 <label for="id">ID：</label>
@@ -92,6 +95,7 @@
                 <tr>
                     <th>ID</th>
                     <th>用户名</th>
+                    <th>密码</th>
                     <th>邮箱</th>
                     <th>角色</th>
                     <th>状态</th>
@@ -105,6 +109,9 @@
                     <tr>
                         <td>${itemUser.id}</td>
                         <td>${itemUser.username}</td>
+                        <td>
+                            <a href="${pageContext.request.contextPath}/api/admin/user/reset?userId=${itemUser.id}">重置密码</a>
+                        </td>
                         <td>${itemUser.email}</td>
                         <td>
                             <c:if test="${itemUser.roleId==1}">
@@ -126,7 +133,7 @@
                         <td>${itemUser.createTime}</td>
                         <td>${itemUser.lastLoginTime}</td>
                         <td>
-                            <a href="${pageContext.request.contextPath}/api/admin/manage?userId=${itemUser.id}">修改</a>
+                            <a href="${pageContext.request.contextPath}/api/admin/user/update?userId=${itemUser.id}">修改</a>
                         </td>
                     </tr>
                 </c:forEach>
@@ -181,8 +188,6 @@
             </div>
         </div>
     </div>
-</div>
-
 
     <div id="postMgt" class="content-section" style="display: none;">
         <h2>帖子列表</h2>
@@ -198,6 +203,9 @@
         <h2>未定</h2>
         <p>未定</p>
     </div>
+</div>
+
+
 
 </body>
 <footer>

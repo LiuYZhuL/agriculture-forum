@@ -26,6 +26,7 @@ public interface UserService {
 
     // 重置密码（忘记密码流程）
     String resetPassword(String username, String email);
+    void resetPassword(Integer userId);
 
     // 封禁/解封用户（管理员）
     void updateUserStatus(Integer userId, Integer status);
