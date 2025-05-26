@@ -121,6 +121,17 @@
 | audit_time | DATETIME     |          | 审核时间          |
 | reason     | VARCHAR(255) |          | 审核意见（拒绝时填写）   |
 
+1. 用户模块
+接口：
+
+POST /api/register：用户注册（密码加密） 表单内容转为数据传输实体dto.RegisterUser
+
+POST /api/login：登录（生成Session）表单内容转为数据传输实体dto.LoginUser
+
+GET /api/users/{id}：获取用户信息
+
+PUT /api/users/{id}：修改个人信息
+
 
 
 
