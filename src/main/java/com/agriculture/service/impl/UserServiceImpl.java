@@ -158,7 +158,7 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("用户不存在");
         }
         User user = userMapper.getUserById(updateUser.getId());
-        if (!user.getPassword().equals(PasswordUtil.encode(updateUser.getPassword()))){
+        if (!PasswordUtil.matches(updateUser.getPassword(),user.getPassword())){
             throw new RuntimeException("旧密码错误");
         }
         User newUser = new User();
@@ -267,7 +267,7 @@ public class UserServiceImpl implements UserService {
         // 单次分页查询
         PageHelper.startPage(pageNum, pageSize);
         List<User> users = userMapper.selectUserByCondition(user);
-        return new PageInfo<>(users);
+        return new PageInfo<>(users, pageSize);
     }
     /**
      * 获取全部用户列表

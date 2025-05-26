@@ -84,6 +84,10 @@
         <label for="collect">我的收藏（待开发）</label>
     </div>
 
+<a href="${pageContext.request.contextPath}/api/dashboard"
+   style="display: inline-block; padding: 6px 12px; background: #eee; border: 1px solid #ccc; text-decoration: none;">
+    返回首页
+</a>
 </body>
 </html>
 <script>

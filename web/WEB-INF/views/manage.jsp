@@ -1,4 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <html>
 <head>
     <title>管理员系统</title>
@@ -36,6 +37,10 @@
             border-radius: 5px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
+        ul,li{list-style: none;}
+        li{float: left; display: block; margin-right: 10px;}
+        .user-table tr th,
+        .user-table tr td{text-align: center; padding: 10px; background-color: #f2f2f2; border: 1px solid #ddd;}
     </style>
 </head>
 <body>
@@ -45,21 +50,20 @@
     <ul class="nav-menu">
         <li class="nav-item active" onclick="loadContent('dashboard')">控制台</li>
         <li class="nav-item" onclick="loadContent('userMgt')">用户列表</li>
-        <li class="nav-item" onclick="loadContent('contentMgt')">修改用户状态</li>
-        <li class="nav-item" onclick="loadContent('systemConfig')">修改用户角色</li>
-        <li class="nav-item" onclick="loadContent('auditLog')">获取用户信息</li>
+        <li class="nav-item" onclick="loadContent('postMgt')">帖子列表</li>
+        <li class="nav-item" onclick="loadContent('contentMgt')">审核列表</li>
+        <li class="nav-item" onclick="loadContent('asdfasdf')">未定功能</li>
     </ul>
 </div>
 
 <div class="content-area">
-    <div id="dashboard" class="content-section">
+    <div id="dashboard" class="content-section" style="display: block;">
         <h2>系统概览</h2>
         <p>这里是管理员控制台，待添加统计信息和快捷操作。</p>
     </div>
 
     <div id="userMgt" class="content-section" style="display: none;">
         <h2>用户列表</h2>
-        <div class="table-container">
             <table class="user-table">
                 <thead>
                 <tr>
@@ -74,64 +78,122 @@
                 </tr>
                 </thead>
                 <tbody>
-                <c:forEach items="${userList}" var="user">
+                <c:forEach items="${pageInfo.list}" step="1" var="itemUser">
                     <tr>
-                        <td>${user.id}</td>
-                        <td>${user.username}</td>
-                        <td>${user.email}</td>
-                        <td>${user.roleId == 1 ? '管理员' : '普通用户'}</td>
-                        <td>${user.status == 1 ? '正常' : '锁定'}</td>
-                        <td><fmt:formatDate value="${user.createTime}" pattern="yyyy-MM-dd HH:mm"/></td>
-                        <td><fmt:formatDate value="${user.lastLoginTime}" pattern="yyyy-MM-dd HH:mm"/></td>
+                        <td>${itemUser.id}</td>
+                        <td>${itemUser.username}</td>
+                        <td>${itemUser.email}</td>
                         <td>
-                            <button onclick="editUser(${user.id})">编辑</button>
-                            <button onclick="changeStatus(${user.id}, ${user.status == 1 ? 0 : 1})">
-                                    ${user.status == 1 ? '锁定' : '解锁'}
-                            </button>
+                            <c:if test="${itemUser.roleId==1}">
+                                <span style="color: green;">用户</span>
+                            </c:if>
+                            <c:if test="${itemUser.roleId==2}">
+                                <span style="color: blue;">管理员</span>
+                            </c:if>
+                        </td>
+                        <td>
+                            <c:if test="${itemUser.status==1}">
+                                <span style="color: green;">启用</span>
+                            </c:if>
+                            <c:if test="${itemUser.status==0}">
+                                <span style="color: red;">禁用</span>
+                            </c:if>
+                        </td>
+                        <!-- 创建时间 YYYY-MM-DD HH:mm:ss -->
+                        <td>${itemUser.createTime}</td>
+                        <td>${itemUser.lastLoginTime}</td>
+                        <td>
+                            <a href="${pageContext.request.contextPath}/api/admin/manage?userId=${itemUser.id}">修改</a>
                         </td>
                     </tr>
                 </c:forEach>
                 </tbody>
             </table>
+        <div class="table-container">
+            <div style="line-height: 30px;">
+                当前第<span class="pageStyle">${pageInfo.pageNum}</span>页
+                共<span class="pageStyle">${pageInfo.pages}</span>页
+                总计<span class="pageStyle">${pageInfo.total}</span>条
+            </div>
+            <div>
+                <nav aria-label="Page navigation" class="pull-right">
+                    <ul class="pagination pagination-sm" style="margin: 0px; display: inline-block;">
+                        <li>
+                            <a href="${pageContext.request.contextPath}/api/admin/manage/user?pageNum=1">首页</a>
+                        </li>
+                        <c:if test="${pageInfo.pageNum!=1}">
+                            <li>
+                                <a href="${pageContext.request.contextPath}/api/admin/manage/user?pageNum=${pageInfo.pageNum-1}" aria-label="Previous" class="prePage">
+                                    <span aria-hidden="true">上一页</span>
+                                </a>
+                            </li>
+                        </c:if>
+
+                        <c:forEach items="${pageInfo.navigatepageNums}" step="1" var="itemPage">
+                            <c:if test="${pageInfo.pageNum == itemPage}">
+                                <li class="active">
+                                    <a
+                                            href="${pageContext.request.contextPath}/api/admin/manage/user?pageNum=${itemPage}">${itemPage}</a>
+                                </li>
+                            </c:if>
+                            <c:if test="${pageInfo.pageNum != itemPage}">
+                                <li>
+                                    <a
+                                            href="${pageContext.request.contextPath}/api/admin/manage/user?pageNum=${itemPage}">${itemPage}</a>
+                                </li>
+                            </c:if>
+                        </c:forEach>
+                        <c:if test="${pageInfo.pageNum != pageInfo.pages}">
+                            <li>
+                                <a href="${pageContext.request.contextPath}/api/admin/manage/user?pageNum=${pageInfo.pageNum+1}" aria-label="Next" class="nextPage">
+                                    <span aria-hidden="true">下一页</span>
+                                </a>
+                            </li>
+                        </c:if>
+                        <li><a
+                                href="${pageContext.request.contextPath}/api/admin/manage/user?pageNum=${pageInfo.pages}">尾页</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
         </div>
     </div>
-    </div>
-
-
-    <div id="contentMgt" class="content-section" style="display: none;">
-        <h2>修改用户状态</h2>
-        <form id="statusForm"action="${pageContext.request.contextPath}/api/admin/manage" method="post">
-            <div>
-                <label for="userId">用户ID:</label>
-                <input type="number" id="userId" name="userId" required>
-            </div>
-            <div>
-                <label for="status">状态:</label>
-                <select id="status" name="status" required>
-                    <option value="1">启用</option>
-                    <option value="0">禁用</option>
-                </select>
-            </div>
-            <button type="submit">更新状态</button>
-        </form>
-
-        <p>修改用户状态</p>
-    </div>
-
-    <div id="systemConfig" class="content-section" style="display: none;">
-        <h2>修改用户角色</h2>
-        <p>修改用户角色</p>
-    </div>
-
-    <div id="auditLog" class="content-section" style="display: none;">
-        <h2>获取用户信息</h2>
-        <p>获取用户信息</p>
-    </div>
-
 </div>
 
+
+    <div id="postMgt" class="content-section" style="display: none;">
+        <h2>帖子列表</h2>
+        <p>帖子列表</p>
+    </div>
+
+    <div id="contentMgt" class="content-section" style="display: none;">
+        <h2>审核列表</h2>
+        <p>审核列表</p>
+    </div>
+
+    <div id="asdfasdf" class="content-section" style="display: none;">
+        <h2>未定</h2>
+        <p>未定</p>
+    </div>
+
+</body>
+<footer>
+    <a href="${pageContext.request.contextPath}/api/dashboard"
+       style="display: inline-block; padding: 6px 12px; background: #eee; border: 1px solid #ccc; text-decoration: none;">
+        返回首页
+    </a>
+</footer>
+
 <script>
-    // 内容切换逻辑（与原有逻辑一致）
+    window.onload = function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        let activeSection = urlParams.get('activeSection');
+
+        // 双重保障：优先取URL参数，没有则取Model中的值
+        if(!activeSection) activeSection = "${activeSection}";
+
+        if(activeSection) loadContent(activeSection);
+    };
     function loadContent(sectionId) {
         // 移除所有active状态
         document.querySelectorAll('.nav-item').forEach(item => {

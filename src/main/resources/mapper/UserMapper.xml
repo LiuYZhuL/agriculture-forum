@@ -68,7 +68,7 @@
         UPDATE user SET last_login_time = CURRENT_TIMESTAMP WHERE id = #{id}
     </update>
     <select id="selectUserByCondition" resultMap="BaseResultMap">
-        SELECT * FROM user WHERE
+        SELECT * FROM user
         <where>
             <if test="id!= null">
                 id = #{id}
