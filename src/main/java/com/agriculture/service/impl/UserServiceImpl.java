@@ -270,6 +270,16 @@ public class UserServiceImpl implements UserService {
         return new PageInfo<>(users);
     }
     /**
+     * 获取全部用户列表
+     * @return List<User> 用户列表
+     */
+    @Override
+    @Transactional
+    public List<User> AllUsers() {
+        return userMapper.getAllUsers();
+    }
+
+    /**
      * 更新用户头像
      * @param userId
      * @param avatar

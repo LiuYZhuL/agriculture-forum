@@ -6,6 +6,8 @@ import com.agriculture.model.dto.UpdateUser;
 import com.agriculture.model.po.User;
 import com.github.pagehelper.PageInfo;
 
+import java.util.List;
+
 public interface UserService {
     User login(LoginUser loginUser);
     User register(RegisterUser registerUser);
@@ -30,10 +32,12 @@ public interface UserService {
 
     // 修改用户角色（管理员）
     void updateUserRole(Integer userId, Integer roleId);
+    List<User> AllUsers();
 
     // 分页查询用户列表（管理员）
     PageInfo<User> listUsers(int pageNum, int pageSize, User user);
     void updateAvatar(Integer userId, String avatar);
+
 
 
 }
