@@ -63,7 +63,7 @@
         </form>
     </div>
     <div id="info" class="content-section" style="display: none;">
-        <form action="${pageContext.request.contextPath}/user/update" method="post">
+        <form action="${pageContext.request.contextPath}/api/user/update" method="post">
             <label for="username">用户名:</label>
             <input type="text" id="username" name="username" value="${sessionScope.user.username}" readonly>
             <label for="email">邮箱:</label>
@@ -72,7 +72,7 @@
         </form>
     </div>
     <div id="change" class="content-section" style="display: none;">
-        <form action="${pageContext.request.contextPath}/user/change" method="post">
+        <form action="${pageContext.request.contextPath}/api/user/change" method="post">
             <label for="password">旧密码:</label>
             <input type="password" id="password" name="password" required>
             <label for="newPassword">新密码:</label>
