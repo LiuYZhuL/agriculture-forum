@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.List;
+
 @Controller
 @RequestMapping("/api/admin")
 public class AdminController {
@@ -42,25 +44,19 @@ public class AdminController {
  }
     //获取用户列表
 @GetMapping("/manage/user")
-public ModelAndView listUsers(
-        @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
-        @RequestParam(value = "pageSize", defaultValue = "5") Integer pageSize,
-        User user){
+public ModelAndView getAllUsers(){
     ModelAndView mv = new ModelAndView("manage");
-    try{
-        PageInfo<User> pageInfo = userService.listUsers(pageNum, pageSize, user);
-        mv.addObject("pageInfo", pageInfo);
+    try {
+        List<User> userList = userService.AllUsers();
+        mv.addObject("userList", userList);
         mv.addObject("success", true);
-        mv.addObject("message", "用户列表获取成功");
-        mv.setViewName("manage");
-        return mv;
-    }catch (RuntimeException e) {
+        mv.addObject("message", "获取所有用户成功");
+    } catch (RuntimeException e) {
         mv.addObject("success", false);
         mv.addObject("message", e.getMessage());
-        mv.setViewName("manage");
-        return mv;
     }
-        }
+    return mv;
+}
     //获取用户信息
 
 

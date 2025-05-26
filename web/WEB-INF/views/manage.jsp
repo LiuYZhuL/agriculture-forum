@@ -70,48 +70,31 @@
                     <th>状态</th>
                     <th>创建时间</th>
                     <th>最后登录</th>
+                    <th>操作</th>
                 </tr>
                 </thead>
                 <tbody>
-                <c:forEach items="${pageInfo.list}" var="user">
+                <c:forEach items="${userList}" var="user">
                     <tr>
                         <td>${user.id}</td>
                         <td>${user.username}</td>
                         <td>${user.email}</td>
-                        <td>${user.roleId}</td>
+                        <td>${user.roleId == 1 ? '管理员' : '普通用户'}</td>
                         <td>${user.status == 1 ? '正常' : '锁定'}</td>
                         <td><fmt:formatDate value="${user.createTime}" pattern="yyyy-MM-dd HH:mm"/></td>
                         <td><fmt:formatDate value="${user.lastLoginTime}" pattern="yyyy-MM-dd HH:mm"/></td>
+                        <td>
+                            <button onclick="editUser(${user.id})">编辑</button>
+                            <button onclick="changeStatus(${user.id}, ${user.status == 1 ? 0 : 1})">
+                                    ${user.status == 1 ? '锁定' : '解锁'}
+                            </button>
+                        </td>
                     </tr>
                 </c:forEach>
                 </tbody>
             </table>
-
-            <!-- 分页导航 -->
-            <div class="pagination">
-                <c:if test="${pageInfo.hasPreviousPage}">
-                    <a href="?pageNum=${pageInfo.prePage}&pageSize=${pageInfo.pageSize}">上一页</a>
-                </c:if>
-
-                <c:forEach items="${pageInfo.navigatepageNums}" var="num">
-                    <c:choose>
-                        <c:when test="${num == pageInfo.pageNum}">
-                            <span class="current">${num}</span>
-                        </c:when>
-                        <c:otherwise>
-                            <a href="?pageNum=${num}&pageSize=${pageInfo.pageSize}">${num}</a>
-                        </c:otherwise>
-                    </c:choose>
-                </c:forEach>
-
-                <c:if test="${pageInfo.hasNextPage}">
-                    <a href="?pageNum=${pageInfo.nextPage}&pageSize=${pageInfo.pageSize}">下一页</a>
-                </c:if>
-
-                <span>共 ${pageInfo.pages} 页</span>
-                <span>总 ${pageInfo.total} 条</span>
-            </div>
         </div>
+    </div>
     </div>
 
 
