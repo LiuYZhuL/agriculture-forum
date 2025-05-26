@@ -31,16 +31,20 @@ import java.util.Set;
 public class UserController {
     @Autowired
     private UserService userService;
+
+    /**
+     * 登录页面
+     * @return ModelAndView
+     */
     @GetMapping("/login")
     public ModelAndView login() {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("login");
         return modelAndView;
     }
-    /*
+    /**
      * 登录
      * @param loginUser 登录用户名和密码
-     * @param bindingResult 验证结果
      * @param session 会话
      * @return ModelAndView
      * @throws RuntimeException 运行时异常
@@ -62,16 +66,19 @@ public class UserController {
         modelAndView.setViewName("dashboard");
         return modelAndView;
     }
+    /**
+     * 注册页面
+     * @return ModelAndView
+     */
     @GetMapping("/register")
     public ModelAndView register() {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("register");
         return modelAndView;
     }
-    /*
+    /**
      * 注册
      * @param registerUser 注册用户名、密码、邮箱
-     * @param bindingResult 验证结果
      * @param session 会话
      * @return ModelAndView
      * @throws RuntimeException 运行时异常
@@ -98,6 +105,12 @@ public class UserController {
         modelAndView.setViewName("login");
         return modelAndView;
     }
+
+    /**
+     * 注销
+     * @param session 会话
+     * @return ModelAndView
+     */
     @GetMapping("/logout")
     public ModelAndView logout(HttpSession session) {
         ModelAndView modelAndView = new ModelAndView();
@@ -113,6 +126,12 @@ public class UserController {
         modelAndView.setViewName("dashboard");
         return modelAndView;
     }
+
+    /**
+     * 个人中心页面
+     * @param session 会话
+     * @return ModelAndView
+     */
     @GetMapping("/home")
     public ModelAndView home(HttpSession session) {
         ModelAndView modelAndView = new ModelAndView();
@@ -125,29 +144,40 @@ public class UserController {
         modelAndView.setViewName("home");
         return modelAndView;
     }
-    //  重置密码
+
+    /**
+     * 忘记密码页面
+     * @return ModelAndView
+     */
     @GetMapping("/reset")
     public ModelAndView reset() {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("reset");
         return modelAndView;
     }
+
+    /**
+     * 忘记密码
+     * @param username 用户名
+     * @param email 邮箱
+     * @return ModelAndView
+     */
     @PostMapping("/reset")
     public ModelAndView reset(
             @RequestParam("username") String username,
             @RequestParam("email") String email)
     {
-       ModelAndView  modelAndView = new ModelAndView();
-       try {
-           String newPassword = userService.resetPassword(username, email);
-           modelAndView.addObject("newPassword", "新密码是"+newPassword);
-           modelAndView.setViewName("reset");
-           return modelAndView;
-       }catch (RuntimeException runtimeException){
-           modelAndView.setViewName("reset");
-           modelAndView.addObject("error", runtimeException.getMessage());
-           return modelAndView;
-       }
+        ModelAndView  modelAndView = new ModelAndView();
+        try {
+            String newPassword = userService.resetPassword(username, email);
+            modelAndView.addObject("newPassword", "新密码是"+newPassword);
+            modelAndView.setViewName("reset");
+            return modelAndView;
+        }catch (RuntimeException runtimeException){
+            modelAndView.setViewName("reset");
+            modelAndView.addObject("error", runtimeException.getMessage());
+            return modelAndView;
+        }
     }
     /**
      * 修改头像
@@ -170,19 +200,19 @@ public class UserController {
         modelAndView.setViewName("home");
         try {
             if (avatar.isEmpty()) {
-                modelAndView.addObject("message", "请选择上传文件");
+                modelAndView.addObject("msgAvatar", "请选择上传文件");
                 return modelAndView;
             }
              // 添加文件大小校验（最大10MB）
             if (avatar.getSize() > 10 * 1024 * 1024) {
-                modelAndView.addObject("message", "文件大小超过10MB限制");
+                modelAndView.addObject("msgAvatar", "文件大小超过10MB限制");
                 return modelAndView;
             }
             Set<String> allowedExtensions = Set.of("jpg", "jpeg", "png", "gif");
             String extension = FilenameUtils.getExtension(avatar.getOriginalFilename()).toLowerCase();
 
             if (!allowedExtensions.contains(extension)) {
-                modelAndView.addObject("message", "仅支持JPG/PNG/GIF格式");
+                modelAndView.addObject("msgAvatar", "仅支持JPG/PNG/GIF格式");
                 return modelAndView;
             }
 
@@ -201,16 +231,58 @@ public class UserController {
             // 6. 更新会话中的用户信息
             user = userService.getUserById(user.getId());
             session.setAttribute("user", user);
-            modelAndView.addObject("message", "上传成功");
+            modelAndView.addObject("msgAvatar", "上传成功");
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (RuntimeException runtimeException) {
-            modelAndView.addObject("message", runtimeException.getMessage());
+            modelAndView.addObject("msgAvatar", runtimeException.getMessage());
             return modelAndView;
         }
         return modelAndView;
 
     }
+    /**
+     * 修改个人信息
+     * @Param username  用户名
+     * @Param email 邮箱
+     * @Param session 会话
+     * @return ModelAndView
+     */
+     @PostMapping("/update")
+     public ModelAndView update(
+             @RequestParam("username") String username,
+             @RequestParam("email") String email,
+             HttpSession session){
+         ModelAndView modelAndView = new ModelAndView();
+         User user = (User) session.getAttribute("user");
+         if (user == null){
+             modelAndView.setViewName("login");
+             return modelAndView;
+         }
+         modelAndView.addObject("activeSection", "info");
+         modelAndView.setViewName("home");
+         UpdateUser updateUser = new UpdateUser();
+         updateUser.setId(user.getId());
+         updateUser.setUsername(username);
+         updateUser.setEmail(email);
+         try {
+             userService.updateUserInfo(updateUser);
+             modelAndView.addObject("msgUpdate", "修改成功");
+             return modelAndView;
+         }catch (RuntimeException runtimeException){
+             modelAndView.addObject("msgUpdate", runtimeException.getMessage());
+             return modelAndView;
+         }
+     }
+
+    /**
+     * 修改个人密码
+     * @param password 旧密码
+     * @param newPassword 新密码
+     * @param session 会话
+     * @return ModelAndView
+     * msgChange: 修改成功/失败信息
+     */
     @PostMapping("/change")
     public ModelAndView change(
 
@@ -227,10 +299,10 @@ public class UserController {
         modelAndView.setViewName("home");
             try {
                 userService.changePassword(new UpdateUser(user.getId(),user.getUsername(), password, newPassword,user.getEmail()));
-                modelAndView.addObject("message", "修改成功");
+                modelAndView.addObject("msgChange", "修改成功");
                 return modelAndView;
             }catch (RuntimeException runtimeException){
-                modelAndView.addObject("message", runtimeException.getMessage());
+                modelAndView.addObject("msgChange", runtimeException.getMessage());
                 return modelAndView;
             }
     }

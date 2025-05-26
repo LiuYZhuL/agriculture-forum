@@ -1,3 +1,4 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%--
   Created by IntelliJ IDEA.
   User: Liu
@@ -50,6 +51,11 @@
     </ul>
 </div>
     <div id="avatar" class="content-section">
+        <c:if test="${not empty msgAvatar}">
+            <div style="color: red; margin-bottom: 15px;">
+                    ${msgAvatar}
+            </div>
+        </c:if>
         <form action="${pageContext.request.contextPath}/api/user/avatar" method="post"
               enctype="multipart/form-data">
             <div class="preview">
@@ -63,15 +69,25 @@
         </form>
     </div>
     <div id="info" class="content-section" style="display: none;">
+        <c:if test="${not empty msgUpdate}">
+            <div style="color: red; margin-bottom: 15px;">
+                    ${msgUpdate}
+            </div>
+        </c:if>
         <form action="${pageContext.request.contextPath}/api/user/update" method="post">
             <label for="username">用户名:</label>
-            <input type="text" id="username" name="username" value="${sessionScope.user.username}" readonly>
+            <input type="text" id="username" name="username" value="${sessionScope.user.username}">
             <label for="email">邮箱:</label>
-            <input type="text" id="email" name="email" value="${sessionScope.user.email}" readonly>
+            <input type="text" id="email" name="email" value="${sessionScope.user.email}">
             <input type="submit" value="修改个人信息">
         </form>
     </div>
     <div id="change" class="content-section" style="display: none;">
+        <c:if test="${not empty msgChange}">
+            <div style="color: red; margin-bottom: 15px;">
+                    ${msgChange}
+            </div>
+        </c:if>
         <form action="${pageContext.request.contextPath}/api/user/change" method="post">
             <label for="password">旧密码:</label>
             <input type="password" id="password" name="password" required>
@@ -81,6 +97,11 @@
         </form>
     </div>
     <div id="collect" class="content-section" style="display: none;">
+        <c:if test="${not empty msgCollect}">
+            <div style="color: red; margin-bottom: 15px;">
+                    ${msgCollect}
+            </div>
+        </c:if>
         <label for="collect">我的收藏（待开发）</label>
     </div>
 
@@ -94,7 +115,8 @@
     // 在原有script中添加
     window.onload = function() {
         const urlParams = new URLSearchParams(window.location.search);
-        const activeSection = urlParams.get('activeSection');
+        let activeSection = urlParams.get('activeSection');
+        if(!activeSection) activeSection = "${activeSection}";
         if (activeSection) {
             loadContent(activeSection); // 调用已有的切换函数
         }

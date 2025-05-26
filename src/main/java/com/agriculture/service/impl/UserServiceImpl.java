@@ -141,7 +141,7 @@ public class UserServiceImpl implements UserService {
         newUser.setId(updateUser.getId());
         newUser.setUsername(updateUser.getUsername());
         newUser.setEmail(updateUser.getEmail());
-        userMapper.updateUser(user);
+        userMapper.updateUser(newUser);
     }
     /**
      * 修改密码
