@@ -63,6 +63,29 @@
     </div>
 
     <div id="userMgt" class="content-section" style="display: none;">
+        <form  action="${pageContext.request.contextPath}/api/admin/manage/user" method="get">
+            <div>
+                <label for="id">ID：</label>
+                <input type="text" id="id" name="id" placeholder="请输入ID" value="${selectUser.id}">
+                <label for="username">用户名：</label>
+                <input type="text" id="username" name="username" placeholder="请输入用户名" value="${selectUser.username}">
+                <label for="email">邮箱：</label>
+                <input type="text" id="email" name="email" placeholder="请输入邮箱" value="${selectUser.email}">
+                <label for="roleId">角色：</label>
+                <select name="roleId" id="roleId">
+                    <option value="0" ${selectUser.roleId == 0 ? 'selected' : ''}>全部</option>
+                    <option value="1" ${selectUser.roleId == 1 ? 'selected' : ''}>用户</option>
+                    <option value="2" ${selectUser.roleId == 2 ? 'selected' : ''}>管理员</option>
+                </select>
+                <label for="status">状态：</label>
+                <select name="status" id="status">
+                    <option value="2" ${selectUser.status == 2 ? 'selected' : ''}>全部</option>
+                    <option value="1" ${selectUser.status == 1 ? 'selected' : ''}>启用</option>
+                    <option value="0" ${selectUser.status == 0 ? 'selected' : ''}>禁用</option>
+                </select>
+                <button type="submit">搜索</button>
+            </div>
+        </form>
         <h2>用户列表</h2>
             <table class="user-table">
                 <thead>

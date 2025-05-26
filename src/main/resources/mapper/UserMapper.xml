@@ -74,16 +74,16 @@
                 id = #{id}
             </if>
             <if test="username != null">
-                username LIKE CONCAT('%', #{username}, '%')
+                and username LIKE CONCAT('%', #{username}, '%')
             </if>
             <if test="email != null">
-                AND email = #{email}
+                and email LIKE CONCAT('%', #{email}, '%')
             </if>
             <if test="status != null">
-                AND status = #{status}
+                and status = #{status}
             </if>
             <if test="roleId != null">
-                AND role_id = #{roleId}
+                and role_id = #{roleId}
             </if>
         </where>
     </select>
