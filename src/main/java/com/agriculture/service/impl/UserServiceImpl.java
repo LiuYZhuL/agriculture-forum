@@ -164,7 +164,7 @@ public class UserServiceImpl implements UserService {
         User newUser = new User();
         newUser.setId(updateUser.getId());
         newUser.setPassword(PasswordUtil.encode(updateUser.getNewPassword()));
-        userMapper.updateUser(user);
+        userMapper.updateUser(newUser);
 
     }
 

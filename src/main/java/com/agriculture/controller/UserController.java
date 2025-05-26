@@ -2,6 +2,7 @@ package com.agriculture.controller;
 
 import com.agriculture.model.dto.LoginUser;
 import com.agriculture.model.dto.RegisterUser;
+import com.agriculture.model.dto.UpdateUser;
 import com.agriculture.model.po.User;
 import com.agriculture.service.UserService;
 import jakarta.servlet.http.HttpSession;
@@ -209,5 +210,28 @@ public class UserController {
         }
         return modelAndView;
 
+    }
+    @PostMapping("/change")
+    public ModelAndView change(
+
+            @RequestParam("password") String password,
+            @RequestParam("newPassword") String newPassword,
+            HttpSession session){
+        ModelAndView modelAndView = new ModelAndView();
+        User user = (User) session.getAttribute("user");
+        if (user == null){
+            modelAndView.setViewName("login");
+            return modelAndView;
+        }
+        modelAndView.addObject("activeSection", "change");
+        modelAndView.setViewName("home");
+            try {
+                userService.changePassword(new UpdateUser(user.getId(),user.getUsername(), password, newPassword,user.getEmail()));
+                modelAndView.addObject("message", "修改成功");
+                return modelAndView;
+            }catch (RuntimeException runtimeException){
+                modelAndView.addObject("message", runtimeException.getMessage());
+                return modelAndView;
+            }
     }
 }
