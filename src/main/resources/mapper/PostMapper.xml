@@ -77,7 +77,10 @@
     <delete id="deletePost">
         DELETE FROM post WHERE id = #{id}
     </delete>
-
+    <!-- 查询所有帖子 -->
+    <select id="selectAllPost" resultMap="BaseResultMap">
+        SELECT * FROM post
+    </select>
     <!-- 根据状态查询帖子 -->
     <select id="getPostsByStatus" resultMap="BaseResultMap">
         SELECT * FROM post WHERE status = #{status}
@@ -86,7 +89,10 @@
 <select id="getPostsByTitle" resultMap="BaseResultMap">
         SELECT * FROM post WHERE title=#{title}
     </select>
-
+    <!-- 根据标题查询帖子-->
+    <select id="searchCategoryByTitle" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT * FROM post WHERE title LIKE CONCAT('%', #{title}, '%')
+    </select>
     <!-- 根据分类ID查询帖子 -->
     <select id="getPostsByCategory" resultMap="BaseResultMap">
         SELECT * FROM post WHERE category_id = #{categoryId}
@@ -113,5 +119,32 @@
     <!-- 根据状态统计帖子数量 -->
     <select id="getPostCountByStatus" resultType="int">
         SELECT COUNT(*) FROM post WHERE status = #{status}
+    </select>
+    <select id="selectPostByCondition" resultMap="BaseResultMap">
+        SELECT * FROM post
+        <where>
+        <if test="id!= null">
+            id = #{id}
+        </if>
+        <if test="title != null">
+            and title LIKE CONCAT('%', #{title}, '%')
+        </if>
+          <if test="status != null">
+            and status = #{status}
+        </if>
+        <if test="isTop != null">
+            and is_top = #{isTop}
+        </if>
+        <if test="isEssence != null">
+            and is_essence = #{isEssence}
+        </if>
+
+        <if test="bestAnswerId != null">
+            and best_answer_id = #{bestAnswerId}
+        </if>
+        <if test="viewCount !=null">
+            and view_count = #{viewCount}
+        </if>
+        </where>
     </select>
 </mapper>

@@ -10,27 +10,60 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Post {
+    /**
+     * 帖子ID
+     */
     private Integer id;
 
+    /**
+     * 发帖用户ID
+     */
     private Integer userId;
 
+    /**
+     * 分类ID
+     */
     private Integer categoryId;
 
+    /**
+     * 帖子标题
+     */
     private String title;
+
+    /**
+     * 帖子内容
+     */
     private String content;
 
-    private Integer status; // 0-待审核 1-已发布 2-已拒绝
+    /**
+     * 状态: 0-待审核 1-已发布 2-已拒绝
+     */
+    private Integer status;
 
+    /**
+     * 是否置顶: 0-否 1-是
+     */
     private Integer isTop;
 
+    /**
+     * 是否精华: 0-否 1-是
+     */
     private Integer isEssence;
 
-    private Integer bestAnswerId;
 
+    /**
+     * 创建时间
+     */
     private Date createTime;
 
+    /**
+     * 更新时间
+     */
     private Date updateTime;
 
+    /**
+     * 浏览量
+     */
     private Integer viewCount;
     public static final Integer STATUS_WAITING_AUDIT = 0;
     public static final Integer STATUS_PUBLISHED = 1;

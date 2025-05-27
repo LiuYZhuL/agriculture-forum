@@ -18,6 +18,8 @@ public interface PostMapper {
     List<Post> getHotPosts();
     int getPostCount();
     int getPostCountByStatus(int status);
-
     Post  getPostsByTitle(String title);
+    List<Post> selectAllPost();
+    List<Post> selectPostByCondition();
+    List<Post> searchPostsByTitle(String title);
 }

@@ -26,6 +26,7 @@ public interface UserService {
 
     // 重置密码（忘记密码流程）
     String resetPassword(String username, String email);
+    // 重置密码（管理员）
     void resetPassword(Integer userId);
 
     // 封禁/解封用户（管理员）
@@ -37,6 +38,7 @@ public interface UserService {
 
     // 分页查询用户列表（管理员）
     PageInfo<User> listUsers(int pageNum, int pageSize, User user);
+    // 更新用户头像
     void updateAvatar(Integer userId, String avatar);
 
 

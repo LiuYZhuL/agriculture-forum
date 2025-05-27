@@ -2,9 +2,11 @@ package com.agriculture.controller;
 
 import com.agriculture.model.dto.SelectUser;
 import com.agriculture.model.po.Category;
+import com.agriculture.model.po.Post;
 import com.agriculture.model.po.Role;
 import com.agriculture.model.po.User;
 import com.agriculture.service.CategoryService;
+import com.agriculture.service.PostService;
 import com.agriculture.service.UserService;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,8 @@ public class ManageController {
 
     @Autowired
     private CategoryService categoryService;
+    @Autowired
+    private PostService postService;
     /**
      * 管理用户页面
      * @return ModelAndView
@@ -114,6 +118,35 @@ public class ManageController {
         }catch (RuntimeException e) {
             mv.addObject("categorySuccess", false);
             mv.addObject("categoryMsg", e.getMessage());
+            mv.setViewName("manage");
+            return mv;
+        }
+    }
+    @GetMapping("/post")
+    public ModelAndView ListPosts(
+            @RequestParam(value = "pageNum", defaultValue = "1")Integer pageNum,
+            @RequestParam(value = "pageSize", defaultValue = "5") Integer pageSize,
+            @RequestParam(value = "searchPost", required = false) String searchPost)
+    {
+        ModelAndView mv = new ModelAndView();
+        mv.addObject("activeSection","postMgt");
+        mv.addObject("searchPost", searchPost);
+        try {
+            if(searchPost != null && !searchPost.isEmpty()){
+                PageInfo<Post> pagePost = postService.searchPosts(searchPost, pageNum, pageSize);
+                mv.addObject("pagePost", pagePost);
+            }
+            else{
+                PageInfo<Post> pagePost = postService.listPosts(pageNum, pageSize);
+                mv.addObject("pagePost", pagePost);
+            }
+            mv.addObject("postSuccess", true);
+            mv.addObject("postMsg", "帖子列表获取成功");
+            mv.setViewName("manage");
+            return mv;
+        }catch (RuntimeException e){
+            mv.addObject("postSuccess", false);
+            mv.addObject("postMsg", e.getMessage());
             mv.setViewName("manage");
             return mv;
         }
