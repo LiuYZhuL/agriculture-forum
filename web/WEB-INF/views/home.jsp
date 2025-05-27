@@ -133,8 +133,8 @@
         <li class="nav-item active" onclick="loadContent('avatar')">我的头像</li>
         <li class="nav-item" onclick="loadContent('info')">我的信息</li>
         <li class="nav-item" onclick="loadContent('change')">修改密码</li>
-        <li class="nav-item" onclick="loadContent('collect')">我的收藏</li>
-        <li class="nav-item">栏目5（待开发）</li>
+        <li class="nav-item" onclick="loadContent('collect')">我的收藏（待开发）</li>
+        <li class="nav-item" onclick="loadContent('post')">我的发帖（待开发）</li>
         <li class="nav-item">栏目6（待开发）</li>
     </ul>
 </div>
@@ -192,6 +192,14 @@
             </div>
         </c:if>
         <label for="collect">我的收藏（待开发）</label>
+    </div>
+    <div id="post" class="content-section" style="display: none;">
+        <c:if test="${not empty msgPost}">
+            <div style="color:  green; margin-bottom: 15px;">
+                    ${msgPost}
+            </div>
+        </c:if>
+        <label for="post">我的发帖（待开发）</label>
     </div>
 </div>
 </body>

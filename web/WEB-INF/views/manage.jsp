@@ -126,9 +126,10 @@
     <ul class="nav-menu">
         <li class="nav-item active" onclick="loadContent('dashboard')">控制台</li>
         <li class="nav-item" onclick="loadContent('userMgt')">用户列表</li>
-        <li class="nav-item" onclick="loadContent('postMgt')">帖子列表</li>
-        <li class="nav-item" onclick="loadContent('contentMgt')">审核列表</li>
-        <li class="nav-item" onclick="loadContent('asdfasdf')">未定功能</li>
+        <li class="nav-item" onclick="loadContent('categoryMgt')">分类列表（待开发）</li>
+        <li class="nav-item" onclick="loadContent('postMgt')">帖子列表（待开发）</li>
+        <li class="nav-item" onclick="loadContent('contentMgt')">审核列表（待开发）</li>
+        <li class="nav-item">未定功能（待开发）</li>
     </ul>
 </div>
 
@@ -265,6 +266,10 @@
         </div>
     </div>
 
+    <div id="categoryMgt" class="content-section" style="display: none;">
+        <h2>分类列表</h2>
+        <p>分类列表</p>
+    </div>
     <div id="postMgt" class="content-section" style="display: none;">
         <h2>帖子列表</h2>
         <p>帖子列表</p>
@@ -275,10 +280,6 @@
         <p>审核列表</p>
     </div>
 
-    <div id="asdfasdf" class="content-section" style="display: none;">
-        <h2>未定</h2>
-        <p>未定</p>
-    </div>
 </div>
 
 
