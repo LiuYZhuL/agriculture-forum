@@ -84,7 +84,7 @@
                 <a href="${pageContext.request.contextPath}/api/dashboard">首页</a>
                 <a href="${pageContext.request.contextPath}/api/user/home">用户中心</a>
                 <c:if test="${sessionScope.user.roleId == 2}">
-                    <a href="${pageContext.request.contextPath}/api/admin/manage">管理员中心</a>
+                    <a href="${pageContext.request.contextPath}/api/admin/manage/">管理员中心</a>
                 </c:if>
                 <a href="${pageContext.request.contextPath}/api/user/logout">登出</a>
             </div>
