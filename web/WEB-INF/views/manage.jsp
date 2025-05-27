@@ -93,6 +93,24 @@
         .dropdown-menu a:hover {
             background: #f5f5f5;
         }
+        .pagination.pagination-sm li {
+            float: none; /* 移除原有浮动 */
+            display: inline-flex; /* 改为弹性布局 */
+            align-items: center; /* 垂直居中 */
+            justify-content: center; /* 水平居中 */
+            height: 30px; /* 固定高度 */
+        }
+
+        .pagination.pagination-sm form {
+            height: 100%;
+            display: flex;
+            align-items: center;
+        }
+
+        .pagination.pagination-sm input[type="submit"] {
+            padding: 0 8px;
+            line-height: 30px; /* 与容器高度一致 */
+        }
     </style>
 </head>
 <body>
@@ -224,41 +242,83 @@
             </div>
             <div>
                 <nav aria-label="Page navigation" class="pull-right">
-                    <ul class="pagination pagination-sm" style="margin: 0px; display: inline-block;">
+                    <ul class="pagination pagination-sm" style="margin: 0; display: inline-block;">
                         <li>
-                            <a href="${pageContext.request.contextPath}/api/admin/manage/user?pageNum=1">首页</a>
+                            <form  action="${pageContext.request.contextPath}/api/admin/manage/user" method="get">
+                                <input type="hidden" name="id" value="${selectUser.id}">
+                                <input type="hidden" name="username" value="${selectUser.username}">
+                                <input type="hidden" name="email" value="${selectUser.email}">
+                                <input type="hidden" name="roleId" value="${selectUser.roleId}">
+                                <input type="hidden" name="status" value="${selectUser.status}">
+                                <input type="hidden" name="pageNum" value="1">
+                                <input type="submit" value="首页" style="border: none; background: none;">
+                            </form>
                         </li>
                         <c:if test="${pageInfo.pageNum!=1}">
                             <li>
-                                <a href="${pageContext.request.contextPath}/api/admin/manage/user?pageNum=${pageInfo.pageNum-1}" aria-label="Previous" class="prePage">
-                                    <span aria-hidden="true">上一页</span>
-                                </a>
+                                <form  action="${pageContext.request.contextPath}/api/admin/manage/user" method="get">
+                                    <input type="hidden" name="id" value="${selectUser.id}">
+                                    <input type="hidden" name="username" value="${selectUser.username}">
+                                    <input type="hidden" name="email" value="${selectUser.email}">
+                                    <input type="hidden" name="roleId" value="${selectUser.roleId}">
+                                    <input type="hidden" name="status" value="${selectUser.status}">
+                                    <input type="hidden" name="pageNum" value="${pageInfo.pageNum-1}">
+                                    <input type="submit" value="上一页" style="border: none; background: none;">
+                                </form>
                             </li>
                         </c:if>
 
                         <c:forEach items="${pageInfo.navigatepageNums}" step="1" var="itemPage">
                             <c:if test="${pageInfo.pageNum == itemPage}">
                                 <li class="active">
-                                    <a
-                                            href="${pageContext.request.contextPath}/api/admin/manage/user?pageNum=${itemPage}">${itemPage}</a>
+                                    <form  action="${pageContext.request.contextPath}/api/admin/manage/user" method="get">
+                                        <input type="hidden" name="id" value="${selectUser.id}">
+                                        <input type="hidden" name="username" value="${selectUser.username}">
+                                        <input type="hidden" name="email" value="${selectUser.email}">
+                                        <input type="hidden" name="roleId" value="${selectUser.roleId}">
+                                        <input type="hidden" name="status" value="${selectUser.status}">
+                                        <input type="hidden" name="pageNum" value="${itemPage}">
+                                        <input type="submit" value="${itemPage}" style="border: none; background: none;">
+                                    </form>
                                 </li>
                             </c:if>
                             <c:if test="${pageInfo.pageNum != itemPage}">
                                 <li>
-                                    <a
-                                            href="${pageContext.request.contextPath}/api/admin/manage/user?pageNum=${itemPage}">${itemPage}</a>
+                                    <form  action="${pageContext.request.contextPath}/api/admin/manage/user" method="get">
+                                        <input type="hidden" name="id" value="${selectUser.id}">
+                                        <input type="hidden" name="username" value="${selectUser.username}">
+                                        <input type="hidden" name="email" value="${selectUser.email}">
+                                        <input type="hidden" name="roleId" value="${selectUser.roleId}">
+                                        <input type="hidden" name="status" value="${selectUser.status}">
+                                        <input type="hidden" name="pageNum" value="${itemPage}">
+                                        <input type="submit" value="${itemPage}" style="border: none; background: none;">
+                                    </form>
                                 </li>
                             </c:if>
                         </c:forEach>
                         <c:if test="${pageInfo.pageNum != pageInfo.pages}">
                             <li>
-                                <a href="${pageContext.request.contextPath}/api/admin/manage/user?pageNum=${pageInfo.pageNum+1}" aria-label="Next" class="nextPage">
-                                    <span aria-hidden="true">下一页</span>
-                                </a>
+                                <form  action="${pageContext.request.contextPath}/api/admin/manage/user" method="get">
+                                    <input type="hidden" name="id" value="${selectUser.id}">
+                                    <input type="hidden" name="username" value="${selectUser.username}">
+                                    <input type="hidden" name="email" value="${selectUser.email}">
+                                    <input type="hidden" name="roleId" value="${selectUser.roleId}">
+                                    <input type="hidden" name="status" value="${selectUser.status}">
+                                    <input type="hidden" name="pageNum" value="${pageInfo.pageNum+1}">
+                                    <input type="submit" value="下一页" style="border: none; background: none;">
+                                </form>
                             </li>
                         </c:if>
-                        <li><a
-                                href="${pageContext.request.contextPath}/api/admin/manage/user?pageNum=${pageInfo.pages}">尾页</a>
+                        <li>
+                            <form  action="${pageContext.request.contextPath}/api/admin/manage/user" method="get">
+                                <input type="hidden" name="id" value="${selectUser.id}">
+                                <input type="hidden" name="username" value="${selectUser.username}">
+                                <input type="hidden" name="email" value="${selectUser.email}">
+                                <input type="hidden" name="roleId" value="${selectUser.roleId}">
+                                <input type="hidden" name="status" value="${selectUser.status}">
+                                <input type="hidden" name="pageNum" value="${pageInfo.pages}">
+                                <input type="submit" value="尾页" style="border: none; background: none;">
+                            </form>
                         </li>
                     </ul>
                 </nav>
@@ -314,5 +374,4 @@
         event.target.classList.add('active');
     }
 </script>
-</body>
 </html>
