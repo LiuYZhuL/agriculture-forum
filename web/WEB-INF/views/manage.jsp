@@ -39,8 +39,8 @@
         }
         ul,li{list-style: none;}
         li{float: left; display: block; margin-right: 10px;}
-        .user-table tr th,
-        .user-table tr td{text-align: center; padding: 10px; background-color: #f2f2f2; border: 1px solid #ddd;}
+        .user-table tr th, .category-table tr th,
+        .user-table tr td, .category-table tr td{text-align: center; padding: 10px; background-color: #f2f2f2; border: 1px solid #ddd;}
         .header {
             background: #2c3e50;
             color: white;
@@ -271,7 +271,7 @@
                         <c:forEach items="${pageInfo.navigatepageNums}" step="1" var="itemPage">
                             <c:if test="${pageInfo.pageNum == itemPage}">
                                 <li class="active">
-                                    <form  action="${pageContext.request.contextPath}/api/admin/manage/user" method="get">
+                                    <form  action="${pageContext.request.contextPath}/api/admin/manage/user" method="get" style="background: whitesmoke">
                                         <input type="hidden" name="id" value="${selectUser.id}">
                                         <input type="hidden" name="username" value="${selectUser.username}">
                                         <input type="hidden" name="email" value="${selectUser.email}">
@@ -327,8 +327,118 @@
     </div>
 
     <div id="categoryMgt" class="content-section" style="display: none;">
+        <c:if test="${not empty categoryMsg}">
+            <div style="color: ${categorySuccess ? 'green' : 'red'}; margin-bottom: 15px;">
+                    ${categoryMsg}
+            </div>
+        </c:if>
+        <form action="${pageContext.request.contextPath}/api/admin/manage/category" method="get">
+            <div class="form-group">
+                <label for="searchCategory">搜索分类：</label>
+                <input type="text" id="searchCategory" name="searchCategory" class="form-control" placeholder="请输入分类名称" value="${searchCategory}">
+                <button type="submit" class="btn btn-primary">搜索</button>
+            </div>
+
+        </form>
+        <form action="api/admin/category/add" method="post">
+            <div class="form-group">
+                <label for="categoryName">分类名称：</label>
+                <input type="text" id="categoryName" name="categoryName" class="form-control" placeholder="请输入分类名称">
+                <label  for="categoryDesc">分类描述：</label>
+                <input type="text" id="categoryDesc" name="categoryDesc" class="form-control" placeholder="请输入分类描述">
+                <button type="submit" class="btn btn-primary">添加</button>
+            </div>
+        </form>
         <h2>分类列表</h2>
-        <p>分类列表</p>
+        <table class="category-table">
+            <thead>
+            <tr>
+                <th>分类ID</th>
+                <th>分类名称</th>
+                <th>分类描述</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <c:forEach items="${pageCategory.list}" var="category">
+                <tr>
+                    <td>${category.id}</td>
+                    <td>${category.name}</td>
+                    <td>${category.description}</td>
+                    <td>
+                        <a href="api/admin/category/update?categoryId=${category.id}">修改</a>
+                        <a href="api/admin/category/delete?categoryId=${category.id}">删除</a>
+                    </td>
+                </tr>
+            </c:forEach>
+            </tbody>
+        </table>
+        <div class="table-container">
+            <div style="line-height: 30px;">
+                当前第<span class="pageStyle">${pageCategory.pageNum}</span>页
+                共<span class="pageStyle">${pageCategory.pages}</span>页
+                总计<span class="pageStyle">${pageCategory.total}</span>条
+            </div>
+            <div>
+                <nav aria-label="Page navigation" class="pull-right">
+                    <ul class="pagination pagination-sm" style="margin: 0; display: inline-block;">
+                        <li>
+                            <form  action="${pageContext.request.contextPath}/api/admin/manage/category" method="get">
+                                <input type="hidden" name="searchCategory" value="${searchCategory}">
+                                <input type="hidden" name="pageNum" value="1">
+                                <input type="submit" value="首页" style="border: none; background: none;">
+                            </form>
+                        </li>
+                        <c:if test="${pageCategory.pageNum!=1}">
+                            <li>
+                                <form  action="${pageContext.request.contextPath}/api/admin/manage/category" method="get">
+                                    <input type="hidden" name="searchCategory" value="${searchCategory}">
+                                    <input type="hidden" name="pageNum" value="${pageCategory.pageNum-1}">
+                                    <input type="submit" value="上一页" style="border: none; background: none;">
+                                </form>
+                            </li>
+                        </c:if>
+
+                        <c:forEach items="${pageCategory.navigatepageNums}" step="1" var="itemPage">
+                            <c:if test="${pageCategory.pageNum == itemPage}">
+                                <li class="active">
+                                    <form  action="${pageContext.request.contextPath}/api/admin/manage/category" method="get" style="background: whitesmoke">
+                                        <input type="hidden" name="searchCategory" value="${searchCategory}">
+                                        <input type="hidden" name="pageNum" value="${itemPage}">
+                                        <input type="submit" value="${itemPage}" style="border: none; background: none;">
+                                    </form>
+                                </li>
+                            </c:if>
+                            <c:if test="${pageCategory.pageNum != itemPage}">
+                                <li>
+                                    <form  action="${pageContext.request.contextPath}/api/admin/manage/category" method="get">
+                                        <input type="hidden" name="searchCategory" value="${searchCategory}">
+                                        <input type="hidden" name="pageNum" value="${itemPage}">
+                                        <input type="submit" value="${itemPage}" style="border: none; background: none;">
+                                    </form>
+                                </li>
+                            </c:if>
+                        </c:forEach>
+                        <c:if test="${pageCategory.pageNum != pageCategory.pages}">
+                            <li>
+                                <form  action="${pageContext.request.contextPath}/api/admin/manage/category" method="get">
+                                    <input type="hidden" name="searchCategory" value="${searchCategory}">
+                                    <input type="hidden" name="pageNum" value="${pageCategory.pageNum+1}">
+                                    <input type="submit" value="下一页" style="border: none; background: none;">
+                                </form>
+                            </li>
+                        </c:if>
+                        <li>
+                            <form  action="${pageContext.request.contextPath}/api/admin/manage/category" method="get">
+                                <input type="hidden" name="searchCategory" value="${searchCategory}">
+                                <input type="hidden" name="pageNum" value="${pageCategory.pages}">
+                                <input type="submit" value="尾页" style="border: none; background: none;">
+                            </form>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
     </div>
     <div id="postMgt" class="content-section" style="display: none;">
         <h2>帖子列表</h2>

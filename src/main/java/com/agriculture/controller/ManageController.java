@@ -1,8 +1,10 @@
 package com.agriculture.controller;
 
 import com.agriculture.model.dto.SelectUser;
+import com.agriculture.model.po.Category;
 import com.agriculture.model.po.Role;
 import com.agriculture.model.po.User;
+import com.agriculture.service.CategoryService;
 import com.agriculture.service.UserService;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,9 @@ import javax.validation.Valid;
 public class ManageController {
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private CategoryService categoryService;
     /**
      * 管理用户页面
      * @return ModelAndView
@@ -27,8 +32,6 @@ public class ManageController {
     public ModelAndView manage(){
         ModelAndView mv = new ModelAndView();
         mv.setViewName("manage");
-        PageInfo<User> pageInfo = userService.listUsers(1, 5, new User());
-        mv.addObject("pageInfo", pageInfo);
         return mv;
     }
 
@@ -76,6 +79,41 @@ public class ManageController {
         }catch (RuntimeException e) {
             mv.addObject("userSuccess", false);
             mv.addObject("userMsg", e.getMessage());
+            mv.setViewName("manage");
+            return mv;
+        }
+    }
+
+    /**
+     * 获取分类列表（分页查询）
+     * @param pageNum 页码
+     * @param pageSize 页容量
+     * @param searchCategory 分类名称
+     * @return ModelAndView
+     */
+    @GetMapping("/category")
+    public ModelAndView ListCategories(
+            @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
+            @RequestParam(value = "pageSize", defaultValue = "5") Integer pageSize,
+            @RequestParam(value = "searchCategory", required = false) String searchCategory){
+        ModelAndView mv = new ModelAndView();
+        mv.addObject("activeSection","categoryMgt");
+        mv.addObject("searchCategory", searchCategory);
+        try {
+            if (searchCategory != null && !searchCategory.isEmpty()){
+                PageInfo<Category> pageCategory = categoryService.searchCategories(searchCategory, pageNum, pageSize);
+                mv.addObject("pageCategory", pageCategory);
+            }else{
+                PageInfo<Category> pageCategory = categoryService.listCategories(pageNum, pageSize);
+                mv.addObject("pageCategory", pageCategory);
+            }
+            mv.addObject("categorySuccess", true);
+            mv.addObject("categoryMsg", "分类列表获取成功");
+            mv.setViewName("manage");
+            return mv;
+        }catch (RuntimeException e) {
+            mv.addObject("categorySuccess", false);
+            mv.addObject("categoryMsg", e.getMessage());
             mv.setViewName("manage");
             return mv;
         }
