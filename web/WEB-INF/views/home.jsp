@@ -52,7 +52,7 @@
 </div>
     <div id="avatar" class="content-section">
         <c:if test="${not empty msgAvatar}">
-            <div style="color: red; margin-bottom: 15px;">
+            <div style="color: green; margin-bottom: 15px;">
                     ${msgAvatar}
             </div>
         </c:if>
@@ -70,7 +70,7 @@
     </div>
     <div id="info" class="content-section" style="display: none;">
         <c:if test="${not empty msgUpdate}">
-            <div style="color: red; margin-bottom: 15px;">
+            <div style="color:  green; margin-bottom: 15px;">
                     ${msgUpdate}
             </div>
         </c:if>
@@ -84,7 +84,7 @@
     </div>
     <div id="change" class="content-section" style="display: none;">
         <c:if test="${not empty msgChange}">
-            <div style="color: red; margin-bottom: 15px;">
+            <div style="color: green; margin-bottom: 15px;">
                     ${msgChange}
             </div>
         </c:if>
@@ -98,7 +98,7 @@
     </div>
     <div id="collect" class="content-section" style="display: none;">
         <c:if test="${not empty msgCollect}">
-            <div style="color: red; margin-bottom: 15px;">
+            <div style="color:  green; margin-bottom: 15px;">
                     ${msgCollect}
             </div>
         </c:if>
