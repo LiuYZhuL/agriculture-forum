@@ -340,7 +340,7 @@
             </div>
 
         </form>
-        <form action="api/admin/category/add" method="post">
+        <form action="${pageContext.request.contextPath}/api/admin/category/add" method="post">
             <div class="form-group">
                 <label for="categoryName">分类名称：</label>
                 <input type="text" id="categoryName" name="categoryName" class="form-control" placeholder="请输入分类名称">
@@ -366,8 +366,8 @@
                     <td>${category.name}</td>
                     <td>${category.description}</td>
                     <td>
-                        <a href="api/admin/category/update?categoryId=${category.id}">修改</a>
-                        <a href="api/admin/category/delete?categoryId=${category.id}">删除</a>
+                        <a href="${pageContext.request.contextPath}/api/admin/category/update?categoryId=${category.id}">修改</a>
+                        <a href="${pageContext.request.contextPath}/api/admin/category/delete?categoryId=${category.id}">删除</a>
                     </td>
                 </tr>
             </c:forEach>

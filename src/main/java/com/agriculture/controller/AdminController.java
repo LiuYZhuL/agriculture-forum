@@ -1,7 +1,9 @@
 package com.agriculture.controller;
 import com.agriculture.model.dto.SelectUser;
 import com.agriculture.model.dto.UpdateUser;
+import com.agriculture.model.po.Category;
 import com.agriculture.model.po.Role;
+import com.agriculture.service.CategoryService;
 import com.github.pagehelper.PageInfo;
 import com.agriculture.model.po.User;
 import com.agriculture.service.UserService;
@@ -26,6 +28,10 @@ import java.util.Set;
 public class AdminController {
     @Autowired
     private UserService userService;
+    @Autowired
+    private CategoryService categoryService;
+
+
     /**
      * 前往修改用户页面
      * @param userId 用户id
@@ -139,6 +145,47 @@ public class AdminController {
         return mv;
     }
 
+    @GetMapping("/category/delete")
+    public ModelAndView deleteCategory(
+            @RequestParam("categoryId") Integer categoryId){
+        ModelAndView mv = new ModelAndView();
+        try {
+            String categoryName = categoryService.getCategoryById(categoryId).getName();
+            categoryService.deleteCategory(categoryId);
+            mv.addObject("categorySuccess", true);
+            mv.addObject("categoryMsg", "分类[" + categoryName + "]删除成功");
+        } catch (RuntimeException e) {
+            mv.addObject("categorySuccess", false);
+            mv.addObject("categoryMsg", e.getMessage());
+        }
+        mv.addObject("activeSection","categoryMgt");
+        PageInfo<Category> pageCategory = categoryService.listCategories(1, 5);
+        mv.addObject("pageCategory", pageCategory);
+        mv.setViewName("manage");
+        return mv;
+    }
+    @PostMapping("/category/add")
+    public ModelAndView addCategory(
+            @RequestParam("categoryName") String categoryName,
+            @RequestParam("categoryDesc") String categoryDesc){
+        ModelAndView mv = new ModelAndView();
+        try {
+            Category category = new Category();
+            category.setName(categoryName);
+            category.setDescription(categoryDesc);
+            categoryService.addCategory(category);
+            mv.addObject("categorySuccess", true);
+            mv.addObject("categoryMsg", "分类[" + categoryName + "]添加成功");
+        } catch (RuntimeException e) {
+            mv.addObject("categorySuccess", false);
+            mv.addObject("categoryMsg", e.getMessage());
+        }
+        mv.addObject("activeSection","categoryMgt");
+        PageInfo<Category> pageCategory = categoryService.listCategories(1, 5);
+        mv.addObject("pageCategory", pageCategory);
+        mv.setViewName("manage");
+        return mv;
+    }
 
 
 }
