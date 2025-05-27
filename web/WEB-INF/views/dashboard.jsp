@@ -81,6 +81,7 @@
                  style="width: 40px; height: 40px; object-fit: cover;">
             <span>欢迎，${sessionScope.user.username}</span>
             <div class="dropdown-menu">
+                <a href="${pageContext.request.contextPath}/api/dashboard">首页</a>
                 <a href="${pageContext.request.contextPath}/api/user/home">用户中心</a>
                 <c:if test="${sessionScope.user.roleId == 2}">
                     <a href="${pageContext.request.contextPath}/api/admin/manage">管理员中心</a>
