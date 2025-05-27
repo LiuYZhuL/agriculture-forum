@@ -82,6 +82,10 @@
     <select id="getPostsByStatus" resultMap="BaseResultMap">
         SELECT * FROM post WHERE status = #{status}
     </select>
+    <!-- 根据标题查询帖子 -->
+<select id="getPostsByTitle" resultMap="BaseResultMap">
+        SELECT * FROM post WHERE title=#{title}
+    </select>
 
     <!-- 根据分类ID查询帖子 -->
     <select id="getPostsByCategory" resultMap="BaseResultMap">
