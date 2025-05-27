@@ -10,6 +10,7 @@ public interface CategoryService {
     void deleteCategory(Integer categoryId);
     Category getCategoryById(Integer categoryId);
     PageInfo<Category> listCategories(int pageNum, int pageSize);
+    PageInfo<Category> searchCategories(String searchText, int pageNum, int pageSize);
     Map<Integer, String> listCategoriesForMap();
 
 }

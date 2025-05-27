@@ -87,7 +87,17 @@ public class CategoryServiceImpl implements CategoryService {
         } catch (Exception e){
             throw new RuntimeException("获取分类列表失败");
         }
+    }
 
+    @Override
+    public PageInfo<Category> searchCategories(String searchText, int pageNum, int pageSize) {
+        try {
+            PageHelper.startPage(pageNum, pageSize);
+            List<Category> categories = categoryMapper.searchCategoryByName(searchText);
+            return new PageInfo<>(categories, pageSize);
+        } catch (Exception e){
+            throw new RuntimeException("搜索分类失败");
+        }
     }
 
     @Override
