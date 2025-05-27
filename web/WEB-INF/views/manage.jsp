@@ -41,11 +41,46 @@
         li{float: left; display: block; margin-right: 10px;}
         .user-table tr th,
         .user-table tr td{text-align: center; padding: 10px; background-color: #f2f2f2; border: 1px solid #ddd;}
+        .header {
+            background: #2c3e50;
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+        }
+        .user-info {
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+        }
+        /* 在home.css中添加样式 */
+        .user-info img {
+            width: 40px;  /* 直径=2*半径 */
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover; /* 保持比例裁剪 */
+            display: block; /* 消除图片底部间隙 */
+            margin-right: 10px;
+        }
     </style>
 </head>
 <body>
-
-<h1>管理员系统</h1>
+<div class="header">
+    <div class="logo">管理员系统首页</div>
+    <div class="user-info">
+        <c:if test="${sessionScope.user == null}">
+            未登录
+        </c:if>
+        <c:if test="${sessionScope.user!= null}">
+            <img src="${pageContext.request.contextPath}/static/uploads/img/${sessionScope.user.avatar}"
+                 alt="头像"
+                 style="width: 40px; height: 40px; object-fit: cover;">
+            欢迎，${sessionScope.user.username}
+        </c:if>
+    </div>
+</div>
 <div class="sidebar">
     <ul class="nav-menu">
         <li class="nav-item active" onclick="loadContent('dashboard')">控制台</li>
