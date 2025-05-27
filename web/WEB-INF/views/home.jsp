@@ -15,24 +15,36 @@
         #avatarPreview { width: 100%; height: 100%; object-fit: cover; }
         .sidebar {
             background: #34495e;
+            width: 200px;
+            float: left;
+            min-height: 500px;
         }
         .nav-menu {
             list-style: none;
-            display: inline-block;
+            padding: 0;
+            margin: 0;
         }
-
         .nav-item {
             padding: 12px 20px;
             color: #ecf0f1;
             cursor: pointer;
             transition: 0.3s;
-            float: left;
         }
-
         .nav-item:hover,
         .nav-item.active {
             background: #3a5169;
-            border-top: 4px solid #2c3e50;
+            border-left: 4px solid #2c3e50;
+        }
+        .content-area {
+            margin-left: 220px;
+            padding: 20px;
+        }
+        .content-section {
+            display: none;
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
         .header {
             background: #2c3e50;
@@ -91,7 +103,7 @@
 </head>
 <body>
 <div class="header">
-    <div class="logo">首页</div>
+    <div class="logo">用户中心</div>
     <div class="user-info">
         <c:if test="${sessionScope.user == null}">
             <span>还未登录,来登录吧！</span>
@@ -126,7 +138,8 @@
         <li class="nav-item">栏目6（待开发）</li>
     </ul>
 </div>
-    <div id="avatar" class="content-section">
+<div class="content-area">
+    <div id="avatar" class="content-section" style="display: block;">
         <c:if test="${not empty msgAvatar}">
             <div style="color: green; margin-bottom: 15px;">
                     ${msgAvatar}
@@ -180,7 +193,7 @@
         </c:if>
         <label for="collect">我的收藏（待开发）</label>
     </div>
-
+</div>
 </body>
 </html>
 <script>
