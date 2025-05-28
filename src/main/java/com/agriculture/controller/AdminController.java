@@ -101,11 +101,21 @@ public class AdminController {
                 Path uploadDir = Paths.get(
                         session.getServletContext().getRealPath("/static/uploads/img")
                 );
-
+                String oldFileName = userService.getUserById(id).getAvatar();
                 Files.createDirectories(uploadDir);
                 avatar.transferTo(uploadDir.resolve(newFileName));
+
                 // 5. 更新用户头像路径（需实现UserService
                 userService.updateAvatar(id, newFileName);
+                if (!oldFileName.equals("default_avatar.png")){
+                    Path oldFilePath = Paths.get(
+                            session.getServletContext().getRealPath("/static/uploads/img"),
+                            oldFileName
+                    );
+                    if (Files.exists(oldFilePath)) {
+                        Files.delete(oldFilePath);
+                    }
+                }
             }
 
             userService.updateUserStatus(id, status);
