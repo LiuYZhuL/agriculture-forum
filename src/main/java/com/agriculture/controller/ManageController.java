@@ -5,6 +5,7 @@ import com.agriculture.model.po.Category;
 import com.agriculture.model.po.Post;
 import com.agriculture.model.po.Role;
 import com.agriculture.model.po.User;
+import com.agriculture.model.vo.PostBU;
 import com.agriculture.service.CategoryService;
 import com.agriculture.service.PostService;
 import com.agriculture.service.UserService;

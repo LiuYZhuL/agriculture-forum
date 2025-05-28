@@ -1,13 +1,14 @@
 package com.agriculture.dao;
 
 import com.agriculture.model.po.Post;
+import com.agriculture.model.vo.PostBU;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
 
 @Mapper
 public interface PostMapper {
-    Post getPostById(int id);
+    PostBU getPostById(int id);
     List<Post> getAllPosts();
     int insertPost(Post post);
     void updatePost(Post post);

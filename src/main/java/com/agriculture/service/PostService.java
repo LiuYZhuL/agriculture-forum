@@ -2,6 +2,7 @@ package com.agriculture.service;
 
 import com.agriculture.model.dto.AddPost;
 import com.agriculture.model.po.Post;
+import com.agriculture.model.po.User;
 import com.github.pagehelper.PageInfo;
 
 public interface PostService {
@@ -23,4 +24,6 @@ public interface PostService {
     void updatePostEssence(Integer postId, Integer essence);
     // 搜索帖子
     PageInfo<Post> searchPosts(String searchText, int pageNum, int pageSize);
+    //通过userid找用户
+    User selectUserById(Integer userId);
 }

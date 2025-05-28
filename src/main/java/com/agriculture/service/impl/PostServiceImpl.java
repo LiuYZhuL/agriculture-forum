@@ -6,6 +6,7 @@ import com.agriculture.model.dto.AddPost;
 import com.agriculture.model.po.Category;
 import com.agriculture.model.po.Post;
 import com.agriculture.model.po.User;
+import com.agriculture.model.vo.PostBU;
 import com.agriculture.service.PostService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -19,6 +20,8 @@ import java.util.List;
 public class PostServiceImpl implements PostService {
     @Autowired
     private PostMapper postMapper;
+    @Autowired
+    private UserMapper userMapper;
     @Override
     public Post add(AddPost addPost) {
         if(addPost.getTitle()==null||addPost.getTitle().isEmpty()){
@@ -64,7 +67,7 @@ public class PostServiceImpl implements PostService {
             List<Post> posts= postMapper.searchPostsByTitle(searchText);
             return new PageInfo<>(posts, pageSize);
         } catch (Exception e){
-            throw new RuntimeException("搜索分类失败");
+            throw new RuntimeException("搜索帖子失败");
         }
     }
     @Override
@@ -110,6 +113,14 @@ public class PostServiceImpl implements PostService {
             throw new RuntimeException("修改失败");
         }
 
+    }
+    @Override
+    public User selectUserById(Integer userId) {
+        User user = userMapper.getUserById(userId);
+        if(user==null){
+            throw new RuntimeException("用户不存在");
+        }
+        return user;
     }
 
 }
