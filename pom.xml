@@ -144,9 +144,10 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>RELEASE</version>
+            <version>1.18.30</version> <!-- 替换RELEASE占位符 -->
             <scope>provided</scope>
         </dependency>
+
         <!-- PageHelper -->
         <dependency>
             <groupId>com.github.pagehelper</groupId>

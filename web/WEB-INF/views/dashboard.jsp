@@ -228,8 +228,8 @@
     <c:if test="${not empty sessionScope.user}">
         <div class="post-action">
             <H2>发表帖子</H2>
-            <form action="${pageContext.request.contextPath}/api/post/add" method="post" enctype="multipart/form-data">
-                    <%-- 表单项容器 --%>
+            <form action="${pageContext.request.contextPath}/api/post/add" method="post" enctype="multipart/form-data" id="postForm">
+                <!-- 表单项容器 -->
                 <div class="form-group">
                     <input type="text" name="title" class="form-input" placeholder="标题">
                 </div>
@@ -238,17 +238,21 @@
                     <textarea name="content" class="form-input auto-resize" placeholder="内容"></textarea>
                 </div>
 
-                    <%-- 多媒体上传 --%>
+                <!-- 多媒体上传 -->
                 <div class="media-upload">
                     <label class="upload-btn">
-                        <input type="file" name="images" accept="image/*" multiple hidden>
-                        <span>📷 添加图片</span>
+                        <input type="file" id="imageInput" accept="image/*" multiple hidden>
+                        <span>添加图片</span>
                     </label>
                     <label class="upload-btn">
-                        <input type="file" name="videos" accept="video/*" hidden>
-                        <span>🎥 添加视频</span>
+                        <input type="file" id="videoInput" accept="video/*" multiple hidden>
+                        <span>添加视频</span>
                     </label>
                 </div>
+
+                <!-- 隐藏的存储容器 -->
+                <input type="file" id="hiddenImages" name="images" multiple hidden>
+                <input type="file" id="hiddenVideos" name="videos" multiple hidden>
 
                 <div class="form-group">
                     <select name="categoryId" class="form-input">
@@ -257,9 +261,8 @@
                         </c:forEach>
                     </select>
                 </div>
-                <div class="upload-progress">
 
-                </div>
+                <div class="upload-progress"></div>
 
                 <button type="submit" class="submit-btn">发布</button>
             </form>
@@ -283,11 +286,22 @@
 </html>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // 处理图片和视频预览
-        function handleFilePreview(input, isImage) {
-            const files = input.files;
-            const previewContainer = document.querySelector('.upload-progress');
+        // 存储所有选择的文件
+        let allImageFiles = [];
+        let allVideoFiles = [];
 
+        // 图片输入框
+        const imageInput = document.getElementById('imageInput');
+        // 视频输入框
+        const videoInput = document.getElementById('videoInput');
+        // 隐藏的表单元素
+        const hiddenImages = document.getElementById('hiddenImages');
+        const hiddenVideos = document.getElementById('hiddenVideos');
+        // 预览容器
+        const previewContainer = document.querySelector('.upload-progress');
+
+        // 处理文件预览
+        function handleFilePreview(files, isImage) {
             Array.from(files).forEach(file => {
                 const reader = new FileReader();
 
@@ -299,6 +313,7 @@
                     const media = document.createElement(isImage ? 'img' : 'video');
                     media.className = 'preview-media';
                     media.src = e.target.result;
+
                     if(!isImage) {
                         media.controls = true;
                         media.style.objectFit = 'contain';
@@ -308,12 +323,26 @@
                     const removeBtn = document.createElement('button');
                     removeBtn.className = 'remove-btn';
                     removeBtn.innerHTML = '×';
-                    removeBtn.onclick = () => previewItem.remove();
+                    removeBtn.onclick = () => {
+                        // 从数组中移除文件
+                        const fileList = isImage ? allImageFiles : allVideoFiles;
+                        const index = Array.from(fileList).findIndex(f =>
+                            f.name === file.name && f.size === file.size
+                        );
 
-                    // 文件信息（使用纯JavaScript处理）
+                        if (index !== -1) {
+                            fileList.splice(index, 1);
+                            updateHiddenInputs();
+                        }
+
+                        // 移除预览
+                        previewItem.remove();
+                    };
+
+                    // 文件信息
                     const info = document.createElement('div');
-                    info.style = 'padding: 4px; font-size: 12px;';
-                    info.textContent = file.name + ' (' + (file.size/1024).toFixed(2) + 'KB)'; // 修正这里
+                    info.style.cssText = 'padding: 4px; font-size: 12px;';
+                    info.textContent = file.name + ' (' + (file.size/1024).toFixed(2) + 'KB)';
 
                     previewItem.appendChild(media);
                     previewItem.appendChild(removeBtn);
@@ -325,14 +354,65 @@
             });
         }
 
-        // 绑定图片上传事件
-        document.querySelector('input[name="images"]').addEventListener('change', function() {
-            handleFilePreview(this, true);
+        // 更新隐藏的输入框
+        function updateHiddenInputs() {
+            // 创建新的DataTransfer对象
+            const imageDataTransfer = new DataTransfer();
+            const videoDataTransfer = new DataTransfer();
+
+            // 添加所有图片文件
+            allImageFiles.forEach(file => {
+                imageDataTransfer.items.add(file);
+            });
+
+            // 添加所有视频文件
+            allVideoFiles.forEach(file => {
+                videoDataTransfer.items.add(file);
+            });
+
+            // 更新隐藏input的files
+            hiddenImages.files = imageDataTransfer.files;
+            hiddenVideos.files = videoDataTransfer.files;
+        }
+
+        // 图片选择事件
+        imageInput.addEventListener('change', function() {
+            if (this.files.length > 0) {
+                // 将新文件添加到数组
+                allImageFiles = [...allImageFiles, ...this.files];
+
+                // 处理预览
+                handleFilePreview(this.files, true);
+
+                // 更新隐藏input
+                updateHiddenInputs();
+
+                // 重置输入框允许再次选择
+                this.value = '';
+            }
         });
 
-        // 绑定视频上传事件
-        document.querySelector('input[name="videos"]').addEventListener('change', function() {
-            handleFilePreview(this, false);
+        // 视频选择事件
+        videoInput.addEventListener('change', function() {
+            if (this.files.length > 0) {
+                // 将新文件添加到数组
+                allVideoFiles = [...allVideoFiles, ...this.files];
+
+                // 处理预览
+                handleFilePreview(this.files, false);
+
+                // 更新隐藏input
+                updateHiddenInputs();
+
+                // 重置输入框允许再次选择
+                this.value = '';
+            }
+        });
+
+        // 表单提交事件
+        document.getElementById('postForm').addEventListener('submit', function() {
+            // 确保隐藏input包含所有文件
+            updateHiddenInputs();
         });
     });
     function autoResize(textarea) {

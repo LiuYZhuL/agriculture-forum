@@ -1,10 +1,13 @@
 package com.agriculture.controller;
 
 import com.agriculture.model.dto.AddPost;
+import com.agriculture.model.po.Attachment;
 import com.agriculture.model.po.Post;
 import com.agriculture.model.po.User;
+import com.agriculture.service.AttachmentService;
 import com.agriculture.service.PostService;
 import jakarta.servlet.http.HttpSession;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,12 +17,21 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 @Controller
 @RequestMapping("/api/post")
 public class PostController {
     @Autowired
     private PostService postService;
+    @Autowired
+    private AttachmentService attachmentService;
     @PostMapping("/selectUserById")
     public ModelAndView selectUserById(
             @RequestParam("userId") Integer userId) {
@@ -50,12 +62,58 @@ public class PostController {
         addPost.setUserId(user.getId());
         try {
             Post post = postService.add(addPost);
+            List<Attachment> attachments = new ArrayList<>();
+            for (MultipartFile image : images){
+                if (image.isEmpty()) {
+                    continue;
+                }
+                Attachment attachment = new Attachment();
+                attachment.setPostId(post.getId());
+                Set<String> allowedExtensions = Set.of("jpg", "jpeg", "png", "gif");
+                String extension = FilenameUtils.getExtension(image.getOriginalFilename()).toLowerCase();
+                if (!allowedExtensions.contains(extension)) {
+                    throw new RuntimeException("仅支持JPG/PNG/GIF格式");
+                }
+                attachment.setFileType("image/" + extension);
+                String newFileName = post.getId() + "_" + System.currentTimeMillis() + "." + extension;
+                attachment.setFilePath(newFileName);
+                Path uploadDir = Paths.get(
+                        session.getServletContext().getRealPath("/static/uploads/attachments/img/")
+                );
+                attachments.add(attachment);
+                Files.createDirectories(uploadDir);
+                image.transferTo(uploadDir.resolve(newFileName));
+            }
+            if (videos!= null &&!videos.isEmpty()){
+                Attachment attachment = new Attachment();
+                attachment.setPostId(post.getId());
+                Set<String> allowedExtensions = Set.of("mp4", "mkv");
+                String extension = FilenameUtils.getExtension(videos.getOriginalFilename()).toLowerCase();
+                if (!allowedExtensions.contains(extension)) {
+                    throw new RuntimeException("仅支持MP4/MKV格式");
+                }
+                attachment.setFileType("video/" + extension);
+                String newFileName = post.getId() + "_" + System.currentTimeMillis() + "." + extension;
+                attachment.setFilePath(newFileName);
+                Path uploadDir = Paths.get(
+                        session.getServletContext().getRealPath("/static/uploads/attachments/video/")
+                );
+                attachments.add(attachment);
+                Files.createDirectories(uploadDir);
+                videos.transferTo(uploadDir.resolve(newFileName));
+            }
+            attachmentService.postAttachment(attachments);
             mv.setViewName("redirect:/");
             return mv;
         }catch (RuntimeException e) {
             mv.setViewName("dashboard");
             mv.addObject("errorMsg", "发布失败，请检查输入内容");
             mv.addObject("error", e.getMessage());
+            mv.setViewName("redirect:/");
+            return mv;
+        } catch (IOException e) {
+            mv.addObject("errorMsg", "上传文件失败");
+            mv.setViewName("redirect:/");
             return mv;
         }
     }

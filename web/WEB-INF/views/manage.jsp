@@ -454,7 +454,7 @@
                 <label for="postId">id:</label>
                 <input type="text" id="postId" name="postId" value="${selectPost.postId}">
                 <label for="user">用户名:</label>
-                <input type="text" id="user" name="username" value="${selectPost.user}">
+                <input type="text" id="user" name="user" value="${selectPost.user}">
                 <label for="title">标题:</label>
                 <input type="text" id="title" name="title" value="${selectPost.title}">
                 <label for="status">状态:</label>
