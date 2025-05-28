@@ -457,7 +457,7 @@
                 <input type="text" id="user" name="user" value="${selectPost.user}">
                 <label for="title">标题:</label>
                 <input type="text" id="title" name="title" value="${selectPost.title}">
-                <label for="status">状态:</label>
+                <label for="sts">状态:</label>
                 <select id="sts" name="status">
                     <option value="">全部</option>
                     <option value="0" <c:if test="${selectPost.sts == 0}">selected</c:if>>未审核</option>

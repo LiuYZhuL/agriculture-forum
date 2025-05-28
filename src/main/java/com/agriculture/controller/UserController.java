@@ -2,9 +2,15 @@ package com.agriculture.controller;
 
 import com.agriculture.model.dto.LoginUser;
 import com.agriculture.model.dto.RegisterUser;
+import com.agriculture.model.dto.SelectPost;
 import com.agriculture.model.dto.UpdateUser;
+import com.agriculture.model.po.Category;
+import com.agriculture.model.po.Post;
 import com.agriculture.model.po.User;
+import com.agriculture.service.CategoryService;
+import com.agriculture.service.PostService;
 import com.agriculture.service.UserService;
+import com.github.pagehelper.PageInfo;
 import jakarta.servlet.http.HttpSession;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.ibatis.annotations.Param;
@@ -23,6 +29,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -31,6 +38,10 @@ import java.util.Set;
 public class UserController {
     @Autowired
     private UserService userService;
+    @Autowired
+    private PostService postService;
+    @Autowired
+    private CategoryService categoryService;
 
     /**
      * 登录页面
@@ -317,5 +328,47 @@ public class UserController {
                 modelAndView.addObject("msgChange", runtimeException.getMessage());
                 return modelAndView;
             }
+    }
+    /**
+     * 获取用户列表
+     * @param pageNum 页码
+     * @param pageSize 每页数量
+     * @param selectPost 查询条件
+     * @return ModelAndView
+     */
+    @GetMapping("/post")
+    public ModelAndView ListPosts(
+            @RequestParam(value = "pageNum", defaultValue = "1")Integer pageNum,
+            @RequestParam(value = "pageSize", defaultValue = "5") Integer pageSize,
+            @Valid SelectPost selectPost)
+    {
+        ModelAndView mv = new ModelAndView();
+        mv.addObject("activeSection","post");
+        mv.addObject("selectPost", selectPost);
+        Post post = new Post();
+        post.setId(selectPost.getPostId());
+        post.setTitle(selectPost.getTitle());
+        post.setUsername(selectPost.getUser());
+        post.setCategoryId(selectPost.getCategoryId());
+        post.setStatus(selectPost.getSts());
+        post.setIsTop(selectPost.getIsTop());
+        post.setIsEssence(selectPost.getIsEssence());
+        PageInfo<Post> pagePost;
+        try {
+            pagePost = postService.searchPosts(pageNum, pageSize, post);
+            List<Category> categories = categoryService.listCategories();
+            mv.addObject("categories", categories);
+            mv.addObject("postSuccess", true);
+            mv.addObject("postMsg", "帖子列表获取成功");
+            mv.addObject("pagePost", pagePost);
+            mv.setViewName("home");
+            return mv;
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            mv.addObject("postSuccess", false);
+            mv.addObject("postMsg", e.getMessage());
+            mv.setViewName("home");
+            return mv;
+        }
     }
 }
