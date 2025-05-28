@@ -49,7 +49,14 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Post getbyId(Integer postId) {
-        return null;
+        if(postId==null||postId<=0){
+            throw new RuntimeException("帖子id不能为空");
+        }
+        Post post = postMapper.getPostById(postId);
+        if(post==null){
+            throw new RuntimeException("帖子不存在");
+        }
+        return post;
     }
     /**
      * 获取帖子列表

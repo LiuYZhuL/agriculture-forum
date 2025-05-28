@@ -2,14 +2,18 @@ package com.agriculture.controller;
 
 import com.agriculture.model.dto.AddPost;
 import com.agriculture.model.po.Attachment;
+import com.agriculture.model.po.Category;
 import com.agriculture.model.po.Post;
 import com.agriculture.model.po.User;
 import com.agriculture.service.AttachmentService;
+import com.agriculture.service.CategoryService;
 import com.agriculture.service.PostService;
+import com.agriculture.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -31,7 +35,11 @@ public class PostController {
     @Autowired
     private PostService postService;
     @Autowired
+    private UserService userService;
+    @Autowired
     private AttachmentService attachmentService;
+    @Autowired
+    private CategoryService categoryService;
     @PostMapping("/selectUserById")
     public ModelAndView selectUserById(
             @RequestParam("userId") Integer userId) {
@@ -116,5 +124,26 @@ public class PostController {
             mv.setViewName("redirect:/");
             return mv;
         }
+    }
+    @GetMapping("/detail")
+    public ModelAndView detail(
+            @RequestParam("postId") Integer postId) {
+        ModelAndView mv = new ModelAndView();
+        try {
+            Post post = postService.getbyId(postId);
+            User postUser = userService.getUserById(post.getUserId());
+            Category category = categoryService.getCategoryById(post.getCategoryId());
+            List<Attachment> attachments = attachmentService.getAttachmentByPostId(postId);
+            mv.addObject("category", category);
+            mv.addObject("postUser", postUser);
+            mv.addObject("post", post);
+            mv.addObject("attachments", attachments);
+            mv.setViewName("post");
+        } catch (RuntimeException e) {
+            mv.addObject("error", e.getMessage());
+            mv.setViewName("redirect:/");
+            mv.addObject("errorMsg", "查询帖子失败，帖子ID：" + postId);
+        }
+        return mv;
     }
 }
