@@ -1,11 +1,11 @@
 package com.agriculture.controller;
 
+import com.agriculture.model.dto.SelectPost;
 import com.agriculture.model.dto.SelectUser;
 import com.agriculture.model.po.Category;
 import com.agriculture.model.po.Post;
 import com.agriculture.model.po.Role;
 import com.agriculture.model.po.User;
-import com.agriculture.model.vo.PostBU;
 import com.agriculture.service.CategoryService;
 import com.agriculture.service.PostService;
 import com.agriculture.service.UserService;
@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @Controller
 @RequestMapping("/api/admin/manage")
@@ -127,25 +128,32 @@ public class ManageController {
     public ModelAndView ListPosts(
             @RequestParam(value = "pageNum", defaultValue = "1")Integer pageNum,
             @RequestParam(value = "pageSize", defaultValue = "5") Integer pageSize,
-            @RequestParam(value = "searchPost", required = false) String searchPost)
+            @Valid SelectPost selectPost)
     {
         ModelAndView mv = new ModelAndView();
         mv.addObject("activeSection","postMgt");
-        mv.addObject("searchPost", searchPost);
+        mv.addObject("selectPost", selectPost);
+        Post post = new Post();
+        post.setId(selectPost.getPostId());
+        post.setTitle(selectPost.getTitle());
+        post.setUsername(selectPost.getUser());
+        post.setCategoryId(selectPost.getCategoryId());
+        post.setStatus(selectPost.getSts());
+        post.setIsTop(selectPost.getIsTop());
+        post.setIsEssence(selectPost.getIsEssence());
+        PageInfo<Post> pagePost;
         try {
-            if(searchPost != null && !searchPost.isEmpty()){
-                PageInfo<Post> pagePost = postService.searchPosts(searchPost, pageNum, pageSize);
-                mv.addObject("pagePost", pagePost);
-            }
-            else{
-                PageInfo<Post> pagePost = postService.listPosts(pageNum, pageSize);
-                mv.addObject("pagePost", pagePost);
-            }
+            pagePost = postService.searchPosts(pageNum, pageSize, post);
+
+            List<Category> categories = categoryService.listCategories();
+            mv.addObject("categories", categories);
             mv.addObject("postSuccess", true);
             mv.addObject("postMsg", "帖子列表获取成功");
+            mv.addObject("pagePost", pagePost);
             mv.setViewName("manage");
             return mv;
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
+            e.printStackTrace();
             mv.addObject("postSuccess", false);
             mv.addObject("postMsg", e.getMessage());
             mv.setViewName("manage");

@@ -13,46 +13,23 @@
         <result column="status" property="status" jdbcType="TINYINT" />
         <result column="is_top" property="isTop" jdbcType="TINYINT" />
         <result column="is_essence" property="isEssence" jdbcType="TINYINT" />
-        <result column="best_answer_id" property="bestAnswerId" jdbcType="INTEGER" />
         <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
         <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
         <result column="view_count" property="viewCount" jdbcType="INTEGER" />
+        <result column="username" property="username" jdbcType="VARCHAR" />
+        <result column="category" property="category" jdbcType="VARCHAR"/>
     </resultMap>
 
     <!-- 根据ID查询单个帖子 -->
     <select id="getPostById" resultMap="BaseResultMap">
         SELECT * FROM post WHERE id = #{id}
     </select>
-
-    <!-- 查询所有帖子 -->
-    <select id="getAllPosts" resultMap="BaseResultMap">
-        SELECT * FROM post
-    </select>
-
-    <!-- 分页查询帖子（按创建时间降序排列） -->
-    <select id="getPostsByPage" resultMap="BaseResultMap">
-        SELECT * FROM post
-        ORDER BY create_time DESC
-            LIMIT #{offset}, #{pageSize}
-    </select>
-
-    <!-- 关联查询帖子及用户信息（返回Map格式） -->
-    <select id="getPostWithUser" resultType="map">
-        SELECT p.*, u.username, u.avatar
-        FROM post p
-                 LEFT JOIN user u ON p.user_id = u.id
-        WHERE p.id = #{postId}
-    </select>
-
     <!-- 插入新帖子（使用自增主键） -->
     <insert id="insertPost" parameterType="com.agriculture.model.po.Post" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO post
-        (user_id, category_id, title, content, status,
-         is_top, is_essence, best_answer_id, view_count)
+        (user_id, category_id, title, content)
         VALUES
-            (#{userId}, #{categoryId}, #{title}, #{content}, #{status},
-             #{isTop,jdbcType=TINYINT}, #{isEssence,jdbcType=TINYINT},
-             #{bestAnswerId,jdbcType=INTEGER}, #{viewCount,jdbcType=INTEGER})
+            (#{userId}, #{categoryId}, #{title}, #{content})
     </insert>
 
     <!-- 更新帖子信息（动态SQL） -->
@@ -65,7 +42,6 @@
             <if test="status != null"> status = #{status}, </if>
             <if test="isTop != null"> is_top = #{isTop}, </if>
             <if test="isEssence != null"> is_essence = #{isEssence}, </if>
-            <if test="bestAnswerId != null"> best_answer_id = #{bestAnswerId}, </if>
             <!-- 强制更新时间为当前时间 -->
             update_time = CURRENT_TIMESTAMP,
             <if test="viewCount != null"> view_count = #{viewCount}, </if>
@@ -77,38 +53,23 @@
     <delete id="deletePost">
         DELETE FROM post WHERE id = #{id}
     </delete>
-    <!-- 查询所有帖子 -->
-    <select id="selectAllPost" resultMap="BaseResultMap">
-        SELECT * FROM post
-    </select>
     <!-- 根据状态查询帖子 -->
     <select id="getPostsByStatus" resultMap="BaseResultMap">
         SELECT * FROM post WHERE status = #{status}
-    </select>
-    <!-- 根据标题查询帖子 -->
-<select id="getPostsByTitle" resultMap="BaseResultMap">
-        SELECT * FROM post WHERE title=#{title}
-    </select>
-    <!-- 根据标题查询帖子-->
-    <select id="searchCategoryByTitle" parameterType="java.lang.String" resultMap="BaseResultMap">
-        SELECT * FROM post WHERE title LIKE CONCAT('%', #{title}, '%')
     </select>
     <!-- 根据分类ID查询帖子 -->
     <select id="getPostsByCategory" resultMap="BaseResultMap">
         SELECT * FROM post WHERE category_id = #{categoryId}
     </select>
-
     <!-- 根据用户ID查询帖子 -->
     <select id="getPostsByUser" resultMap="BaseResultMap">
         SELECT * FROM post WHERE user_id = #{userId}
     </select>
-
     <!-- 查询热门帖子（按浏览量、精华帖、置顶帖排序） -->
     <select id="getHotPosts" resultMap="BaseResultMap">
         SELECT * FROM post
         WHERE status = 1  -- 只查询已发布的帖子
         ORDER BY view_count DESC, is_essence DESC, is_top DESC
-            LIMIT #{limit}
     </select>
 
     <!-- 统计所有帖子数量 -->
@@ -120,31 +81,57 @@
     <select id="getPostCountByStatus" resultType="int">
         SELECT COUNT(*) FROM post WHERE status = #{status}
     </select>
-    <select id="selectPostByCondition" resultMap="BaseResultMap">
-        SELECT * FROM post
-        <where>
-        <if test="id!= null">
-            id = #{id}
-        </if>
-        <if test="title != null">
-            and title LIKE CONCAT('%', #{title}, '%')
-        </if>
-          <if test="status != null">
-            and status = #{status}
-        </if>
-        <if test="isTop != null">
-            and is_top = #{isTop}
-        </if>
-        <if test="isEssence != null">
-            and is_essence = #{isEssence}
-        </if>
 
-        <if test="bestAnswerId != null">
-            and best_answer_id = #{bestAnswerId}
-        </if>
-        <if test="viewCount !=null">
-            and view_count = #{viewCount}
-        </if>
+    <select id="selectAllPost" resultMap="BaseResultMap">
+        SELECT p.*, u.username, c.name as category
+        FROM post p
+        LEFT JOIN user u ON p.user_id = u.id
+        LEFT JOIN category c ON p.category_id = c.id
+    </select>
+
+    <select id="searchPostsByTitle" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT p.*, u.username, c.name as category
+        FROM post p
+        LEFT JOIN user u ON p.user_id = u.id
+        LEFT JOIN category c ON p.category_id = c.id
+        WHERE p.title LIKE CONCAT('%', #{title}, '%')
+    </select>
+    <select id="searchPostsByUsername" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT p.*, u.username, c.name as category
+        FROM post p
+        LEFT JOIN user u ON p.user_id = u.id
+        LEFT JOIN category c ON p.category_id = c.id
+        WHERE u.username LIKE CONCAT('%', #{username}, '%')
+    </select>
+
+    <select id="selectPostByCondition" parameterType="com.agriculture.model.po.Post" resultMap="BaseResultMap">
+        SELECT p.*, u.username, c.name as category
+        FROM post p
+        LEFT JOIN user u ON p.user_id = u.id
+        LEFT JOIN category c ON p.category_id = c.id
+        <where>
+            1 = 1
+            <if test="id!= null">
+                and p.id = #{id}
+            </if>
+            <if test="username != null">
+                and u.username LIKE CONCAT('%', #{username}, '%')
+            </if>
+            <if test="categoryId != null">
+                and p.category_id = #{categoryId}
+            </if>
+            <if test="title != null">
+                and p.title LIKE CONCAT('%', #{title}, '%')
+            </if>
+              <if test="status != null">
+                and p.status = #{status}
+            </if>
+            <if test="isTop != null">
+                and p.is_top = #{isTop}
+            </if>
+            <if test="isEssence != null">
+                and p.is_essence = #{isEssence}
+            </if>
         </where>
     </select>
 </mapper>

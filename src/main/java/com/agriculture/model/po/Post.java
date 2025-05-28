@@ -72,4 +72,12 @@ public class Post {
     public static final Integer IS_TOP = 1;
     public static final Integer IS_NOT_ESSENCE = 0;
     public static final Integer IS_ESSENCE = 1;
+    /**
+     * 非数据库字段，用于存放发送该帖子的用户名称
+     */
+    private String username;
+    /**
+     * 非数据库字段，用于存放该帖子的分类名称
+     */
+    private String category;
 }

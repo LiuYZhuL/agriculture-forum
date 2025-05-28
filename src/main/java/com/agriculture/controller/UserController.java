@@ -63,7 +63,8 @@ public class UserController {
             return modelAndView;
         }
         session.setAttribute("user", user);
-        modelAndView.setViewName("dashboard");
+        //重定向到首页
+        modelAndView.setViewName("redirect:/");
         return modelAndView;
     }
     /**
@@ -123,7 +124,7 @@ public class UserController {
             return modelAndView;
         }
         session.invalidate();
-        modelAndView.setViewName("dashboard");
+        modelAndView.setViewName("redirect:/");
         return modelAndView;
     }
 

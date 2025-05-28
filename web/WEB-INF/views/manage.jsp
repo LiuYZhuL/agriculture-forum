@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <html>
 <head>
     <title>管理员系统</title>
@@ -225,8 +226,8 @@
                             </c:if>
                         </td>
                         <!-- 创建时间 YYYY-MM-DD HH:mm:ss -->
-                        <td>${itemUser.createTime}</td>
-                        <td>${itemUser.lastLoginTime}</td>
+                        <td><fmt:formatDate value="${itemUser.createTime}" pattern="yyyy-MM-dd HH:mm"/></td>
+                        <td><fmt:formatDate value="${itemUser.lastLoginTime}" pattern="yyyy-MM-dd HH:mm"/></td>
                         <td>
                             <a href="${pageContext.request.contextPath}/api/admin/user/update?userId=${itemUser.id}">修改</a>
                         </td>
@@ -442,14 +443,46 @@
     </div>
     <div id="postMgt" class="content-section" style="display: none;">
         <h2>帖子列表</h2>
-
+        <c:if test="${not empty postMsg}">
+            <div style="color: ${postSuccess ? 'green' : 'red'}; margin-bottom: 15px;">
+                ${postMsg}
+            </div>
+        </c:if>
         <!-- 搜索表单 -->
         <form action="${pageContext.request.contextPath}/api/admin/manage/post" method="get">
             <div class="form-group">
-                <label for="searchPost">搜索帖子：</label>
-                <input type="text" id="searchPost" name="searchPost"
-                       class="form-control" placeholder="请输入搜索内容"
-                       value="${searchPost}">
+                <label for="postId">id:</label>
+                <input type="text" id="postId" name="postId" value="${selectPost.postId}">
+                <label for="user">用户名:</label>
+                <input type="text" id="user" name="username" value="${selectPost.user}">
+                <label for="title">标题:</label>
+                <input type="text" id="title" name="title" value="${selectPost.title}">
+                <label for="status">状态:</label>
+                <select id="sts" name="status">
+                    <option value="">全部</option>
+                    <option value="0" <c:if test="${selectPost.sts == 0}">selected</c:if>>未审核</option>
+                    <option value="1" <c:if test="${selectPost.sts == 1}">selected</c:if>>已审核</option>
+                    <option value="2" <c:if test="${selectPost.sts == 2}">selected</c:if>>已删除</option>
+                </select>
+                <label for="category">分类:</label>
+                <select id="category" name="categoryId">
+                    <option value="">全部</option>
+                    <c:forEach items="${categories}" var="category">
+                        <option value="${category.id}" <c:if test="${selectPost.categoryId == category.id}">selected</c:if>>${category.name}</option>
+                    </c:forEach>
+                </select>
+                <label for="isTop">置顶:</label>
+                <select id="isTop" name="isTop">
+                    <option value="">全部</option>
+                    <option value="0" <c:if test="${selectPost.isTop == 0}">selected</c:if>>否</option>
+                    <option value="1" <c:if test="${selectPost.isTop == 1}">selected</c:if>>是</option>
+                </select>
+                <label for="isEssence">精华:</label>
+                <select id="isEssence" name="isEssence">
+                    <option value="">全部</option>
+                    <option value="0" <c:if test="${selectPost.isEssence == 0}">selected</c:if>>否</option>
+                    <option value="1" <c:if test="${selectPost.isEssence == 1}">selected</c:if>>是</option>
+                </select>
                 <button type="submit" class="btn btn-primary">搜索</button>
             </div>
         </form>
@@ -461,7 +494,12 @@
                 <th>帖子ID</th>
                 <th>帖子标题</th>
                 <th>作者</th>
+                <th>分类</th>
+                <th>状态</th>
+                <th>置顶</th>
+                <th>精华</th>
                 <th>发布时间</th>
+                <th>浏览量</th>
                 <th>操作</th>
             </tr>
             </thead>
@@ -470,8 +508,37 @@
                 <tr>
                     <td>${post.id}</td>
                     <td>${post.title}</td>
-                    <td>${post.author}</td>
+                    <td>${post.username}</td>
+                    <td>${post.category}</td>
+                    <td>
+                        <c:if test="${post.status == 0}">
+                            <span style="color: red;">未审核</span>
+                        </c:if>
+                        <c:if test="${post.status == 1}">
+                            <span style="color: green;">已审核</span>
+                        </c:if>
+                        <c:if test="${post.status == 2}">
+                            <span style="color: gray;">已删除</span>
+                        </c:if>
+                    </td>
+                    <td>
+                        <c:if test="${post.isTop == 0}">
+                            <span style="color: red;">否</span>
+                        </c:if>
+                        <c:if test="${post.isTop == 1}">
+                            <span style="color: green;">是</span>
+                        </c:if>
+                    </td>
+                    <td>
+                        <c:if test="${post.isEssence == 0}">
+                            <span style="color: red;">否</span>
+                        </c:if>
+                        <c:if test="${post.isEssence == 1}">
+                            <span style="color: green;">是</span>
+                        </c:if>
+                    </td>
                     <td><fmt:formatDate value="${post.createTime}" pattern="yyyy-MM-dd HH:mm"/></td>
+                    <td>${post.viewCount}</td>
                     <td>
                         <a href="${pageContext.request.contextPath}/api/admin/post/update?postId=${post.id}">修改</a>
                         <a href="${pageContext.request.contextPath}/api/admin/post/delete?postId=${post.id}">删除</a>
@@ -493,7 +560,13 @@
                     <ul class="pagination pagination-sm" style="margin: 0; display: inline-block;">
                         <li>
                             <form action="${pageContext.request.contextPath}/api/admin/manage/post" method="get">
-                                <input type="hidden" name="searchPost" value="${searchPost}">
+                                <input type="hidden" name="postId" value="${selectPost.postId}">
+                                <input type="hidden" name="user" value="${selectPost.user}">
+                                <input type="hidden" name="title" value="${selectPost.title}">
+                                <input type="hidden" name="status" value="${selectPost.sts}">
+                                <input type="hidden" name="categoryId" value="${selectPost.categoryId}">
+                                <input type="hidden" name="isTop" value="${selectPost.isTop}">
+                                <input type="hidden" name="isEssence" value="${selectPost.isEssence}">
                                 <input type="hidden" name="pageNum" value="1">
                                 <input type="submit" value="首页" style="border: none; background: none;">
                             </form>
@@ -501,7 +574,13 @@
                         <c:if test="${pagePost.pageNum != 1}">
                             <li>
                                 <form action="${pageContext.request.contextPath}/api/admin/manage/post" method="get">
-                                    <input type="hidden" name="searchPost" value="${searchPost}">
+                                    <input type="hidden" name="postId" value="${selectPost.postId}">
+                                    <input type="hidden" name="user" value="${selectPost.user}">
+                                    <input type="hidden" name="title" value="${selectPost.title}">
+                                    <input type="hidden" name="status" value="${selectPost.sts}">
+                                    <input type="hidden" name="categoryId" value="${selectPost.categoryId}">
+                                    <input type="hidden" name="isTop" value="${selectPost.isTop}">
+                                    <input type="hidden" name="isEssence" value="${selectPost.isEssence}">
                                     <input type="hidden" name="pageNum" value="${pagePost.pageNum - 1}">
                                     <input type="submit" value="上一页" style="border: none; background: none;">
                                 </form>
@@ -512,7 +591,13 @@
                                 <c:when test="${pagePost.pageNum == itemPage}">
                                     <li class="active">
                                         <form action="${pageContext.request.contextPath}/api/admin/manage/post" method="get" style="background: whitesmoke">
-                                            <input type="hidden" name="searchPost" value="${searchPost}">
+                                            <input type="hidden" name="postId" value="${selectPost.postId}">
+                                            <input type="hidden" name="user" value="${selectPost.user}">
+                                            <input type="hidden" name="title" value="${selectPost.title}">
+                                            <input type="hidden" name="status" value="${selectPost.sts}">
+                                            <input type="hidden" name="categoryId" value="${selectPost.categoryId}">
+                                            <input type="hidden" name="isTop" value="${selectPost.isTop}">
+                                            <input type="hidden" name="isEssence" value="${selectPost.isEssence}">
                                             <input type="hidden" name="pageNum" value="${itemPage}">
                                             <input type="submit" value="${itemPage}" style="border: none; background: none;">
                                         </form>
@@ -521,7 +606,13 @@
                                 <c:otherwise>
                                     <li>
                                         <form action="${pageContext.request.contextPath}/api/admin/manage/post" method="get">
-                                            <input type="hidden" name="searchPost" value="${searchPost}">
+                                            <input type="hidden" name="postId" value="${selectPost.postId}">
+                                            <input type="hidden" name="user" value="${selectPost.user}">
+                                            <input type="hidden" name="title" value="${selectPost.title}">
+                                            <input type="hidden" name="status" value="${selectPost.sts}">
+                                            <input type="hidden" name="categoryId" value="${selectPost.categoryId}">
+                                            <input type="hidden" name="isTop" value="${selectPost.isTop}">
+                                            <input type="hidden" name="isEssence" value="${selectPost.isEssence}">
                                             <input type="hidden" name="pageNum" value="${itemPage}">
                                             <input type="submit" value="${itemPage}" style="border: none; background: none;">
                                         </form>
@@ -532,7 +623,13 @@
                         <c:if test="${pagePost.pageNum != pagePost.pages}">
                             <li>
                                 <form action="${pageContext.request.contextPath}/api/admin/manage/post" method="get">
-                                    <input type="hidden" name="searchPost" value="${searchPost}">
+                                    <input type="hidden" name="postId" value="${selectPost.postId}">
+                                    <input type="hidden" name="user" value="${selectPost.user}">
+                                    <input type="hidden" name="title" value="${selectPost.title}">
+                                    <input type="hidden" name="status" value="${selectPost.sts}">
+                                    <input type="hidden" name="categoryId" value="${selectPost.categoryId}">
+                                    <input type="hidden" name="isTop" value="${selectPost.isTop}">
+                                    <input type="hidden" name="isEssence" value="${selectPost.isEssence}">
                                     <input type="hidden" name="pageNum" value="${pagePost.pageNum + 1}">
                                     <input type="submit" value="下一页" style="border: none; background: none;">
                                 </form>
@@ -540,7 +637,13 @@
                         </c:if>
                         <li>
                             <form action="${pageContext.request.contextPath}/api/admin/manage/post" method="get">
-                                <input type="hidden" name="searchPost" value="${searchPost}">
+                                <input type="hidden" name="postId" value="${selectPost.postId}">
+                                <input type="hidden" name="user" value="${selectPost.user}">
+                                <input type="hidden" name="title" value="${selectPost.title}">
+                                <input type="hidden" name="status" value="${selectPost.sts}">
+                                <input type="hidden" name="categoryId" value="${selectPost.categoryId}">
+                                <input type="hidden" name="isTop" value="${selectPost.isTop}">
+                                <input type="hidden" name="isEssence" value="${selectPost.isEssence}">
                                 <input type="hidden" name="pageNum" value="${pagePost.pages}">
                                 <input type="submit" value="尾页" style="border: none; background: none;">
                             </form>

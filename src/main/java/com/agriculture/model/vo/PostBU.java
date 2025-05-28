@@ -11,15 +11,14 @@ import java.util.Date;
 public class PostBU {
     private Integer postId;
     private String title;
-    private String user;
+    private Integer userId;
+    private String username;
+    private Integer categoryId;
     private String category;
+    private Integer status;
     private Integer top;
     private Integer essence;
     private Date  createTime;
     private Date updateTime;
-    private Integer  status;
-    private Integer  viewCount;
-
-
-    
+    private Integer viewCount;
 }

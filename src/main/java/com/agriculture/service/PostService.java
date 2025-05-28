@@ -23,7 +23,7 @@ public interface PostService {
     //  置顶
     void updatePostEssence(Integer postId, Integer essence);
     // 搜索帖子
-    PageInfo<Post> searchPosts(String searchText, int pageNum, int pageSize);
+    PageInfo<Post> searchPosts(int pageNum, int pageSize, Post post);
     //通过userid找用户
     User selectUserById(Integer userId);
 }

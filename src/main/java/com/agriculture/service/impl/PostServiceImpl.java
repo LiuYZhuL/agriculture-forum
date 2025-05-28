@@ -6,7 +6,6 @@ import com.agriculture.model.dto.AddPost;
 import com.agriculture.model.po.Category;
 import com.agriculture.model.po.Post;
 import com.agriculture.model.po.User;
-import com.agriculture.model.vo.PostBU;
 import com.agriculture.service.PostService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -24,6 +23,12 @@ public class PostServiceImpl implements PostService {
     private UserMapper userMapper;
     @Override
     public Post add(AddPost addPost) {
+        if(addPost==null){
+            throw new RuntimeException("参数错误");
+        }
+        if(addPost.getUserId()==null||addPost.getUserId()<=0){
+            throw new RuntimeException("用户id不能为空");
+        }
         if(addPost.getTitle()==null||addPost.getTitle().isEmpty()){
             throw new RuntimeException("帖子名不能为空");
         }
@@ -34,6 +39,7 @@ public class PostServiceImpl implements PostService {
             throw new RuntimeException("帖子分类不能为空");
         }
         Post post = new Post();
+        post.setUserId(addPost.getUserId());
         post.setTitle(addPost.getTitle());
         post.setContent(addPost.getContent());
         post.setCategoryId(addPost.getCategoryId());
@@ -59,14 +65,14 @@ public class PostServiceImpl implements PostService {
         return new PageInfo<>(posts, pageSize);
     }
 
-
     @Override
-    public PageInfo<Post> searchPosts(String searchText, int pageNum, int pageSize) {
+    public PageInfo<Post> searchPosts(int pageNum, int pageSize, Post post){
         try {
             PageHelper.startPage(pageNum, pageSize);
-            List<Post> posts= postMapper.searchPostsByTitle(searchText);
+            List<Post> posts = postMapper.selectPostByCondition(post);
             return new PageInfo<>(posts, pageSize);
         } catch (Exception e){
+            e.printStackTrace();
             throw new RuntimeException("搜索帖子失败");
         }
     }

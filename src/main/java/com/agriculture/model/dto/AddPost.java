@@ -11,4 +11,5 @@ public class AddPost {
     private String title;
     private String content;
     private Integer categoryId;
+    private Integer userId;
 }

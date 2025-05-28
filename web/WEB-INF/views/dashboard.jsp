@@ -225,45 +225,46 @@
     </div>
 </c:if>
 <div class="main">
-    <div class="post-action">
-        <H2>发表帖子</H2>
-        <form action="${pageContext.request.contextPath}/api/post/create" method="post" enctype="multipart/form-data">
-            <%-- 表单项容器 --%>
-            <div class="form-group">
-                <input type="text" name="title" id="title" class="form-input" placeholder="标题">
-            </div>
+    <c:if test="${not empty sessionScope.user}">
+        <div class="post-action">
+            <H2>发表帖子</H2>
+            <form action="${pageContext.request.contextPath}/api/post/add" method="post" enctype="multipart/form-data">
+                    <%-- 表单项容器 --%>
+                <div class="form-group">
+                    <input type="text" name="title" class="form-input" placeholder="标题">
+                </div>
 
-            <div class="form-group">
-                <textarea name="content" id="content" class="form-input auto-resize" placeholder="内容"></textarea>
-            </div>
+                <div class="form-group">
+                    <textarea name="content" class="form-input auto-resize" placeholder="内容"></textarea>
+                </div>
 
-            <%-- 多媒体上传 --%>
-            <div class="media-upload">
-                <label class="upload-btn">
-                    <input type="file" name="images" accept="image/*" multiple hidden>
-                    <span>📷 添加图片</span>
-                </label>
-                <label class="upload-btn">
-                    <input type="file" name="videos" accept="video/*" hidden>
-                    <span>🎥 添加视频</span>
-                </label>
-            </div>
+                    <%-- 多媒体上传 --%>
+                <div class="media-upload">
+                    <label class="upload-btn">
+                        <input type="file" name="images" accept="image/*" multiple hidden>
+                        <span>📷 添加图片</span>
+                    </label>
+                    <label class="upload-btn">
+                        <input type="file" name="videos" accept="video/*" hidden>
+                        <span>🎥 添加视频</span>
+                    </label>
+                </div>
 
-            <div class="form-group">
-                <select name="categoryId" class="form-input">
-                    <option value="">请选择分类</option>
-                    <c:forEach items="${categories}" var="category">
-                        <option value="${category.id}">${category.name}</option>
-                    </c:forEach>
-                </select>
-            </div>
+                <div class="form-group">
+                    <select name="categoryId" class="form-input">
+                        <c:forEach items="${categories}" var="category">
+                            <option value="${category.id}">${category.name}</option>
+                        </c:forEach>
+                    </select>
+                </div>
                 <div class="upload-progress">
 
                 </div>
 
-            <button type="submit" class="submit-btn">发布</button>
-        </form>
-    </div>
+                <button type="submit" class="submit-btn">发布</button>
+            </form>
+        </div>
+    </c:if>
 
     <div class="post">
         <div class="post-header">

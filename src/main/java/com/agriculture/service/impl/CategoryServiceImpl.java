@@ -113,4 +113,14 @@ public class CategoryServiceImpl implements CategoryService {
             throw new RuntimeException("获取分类列表失败");
         }
     }
+
+    @Override
+    public List<Category> listCategories() {
+        try {
+            List<Category> categories = categoryMapper.selectAllCategory();
+            return categories;
+        } catch (Exception e){
+            throw new RuntimeException("获取分类列表失败");
+        }
+    }
 }

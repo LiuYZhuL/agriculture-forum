@@ -1,15 +1,13 @@
 package com.agriculture.dao;
 
 import com.agriculture.model.po.Post;
-import com.agriculture.model.vo.PostBU;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
 
 @Mapper
 public interface PostMapper {
-    PostBU getPostById(int id);
-    List<Post> getAllPosts();
+    Post getPostById(int id);
     int insertPost(Post post);
     void updatePost(Post post);
     void deletePost(int id);
@@ -19,8 +17,9 @@ public interface PostMapper {
     List<Post> getHotPosts();
     int getPostCount();
     int getPostCountByStatus(int status);
-    Post  getPostsByTitle(String title);
     List<Post> selectAllPost();
-    List<Post> selectPostByCondition();
     List<Post> searchPostsByTitle(String title);
+    List<Post> searchPostsByUsername(String username);
+    List<Post> selectPostByCondition(Post post);
+
 }
