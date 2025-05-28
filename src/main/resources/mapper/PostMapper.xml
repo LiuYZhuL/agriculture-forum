@@ -117,6 +117,9 @@
             <if test="username != null">
                 and u.username LIKE CONCAT('%', #{username}, '%')
             </if>
+        <if test="userId != null">
+                and p.user_id = #{userId}
+            </if>
             <if test="categoryId != null">
                 and p.category_id = #{categoryId}
             </if>

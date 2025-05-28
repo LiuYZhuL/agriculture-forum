@@ -353,9 +353,10 @@ public class UserController {
         mv.addObject("selectPost", selectPost);
         User user = (User) session.getAttribute("user");
         Post post = new Post();
+        post.setUserId(user.getId());
         post.setId(selectPost.getPostId());
         post.setTitle(selectPost.getTitle());
-        post.setUsername(user.getUsername());
+        post.setUsername(selectPost.getUser());
         post.setCategoryId(selectPost.getCategoryId());
         post.setStatus(selectPost.getSts());
         post.setIsTop(selectPost.getIsTop());
@@ -378,7 +379,7 @@ public class UserController {
             return mv;
         }
     }
-    @GetMapping("/show")
+    @GetMapping("post/show")
     public ModelAndView detail(
             @RequestParam("postId") Integer postId) {
         ModelAndView mv = new ModelAndView();
