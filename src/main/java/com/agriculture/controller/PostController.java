@@ -58,9 +58,5 @@ public class PostController {
             mv.addObject("error", e.getMessage());
             return mv;
         }
-
-
     }
-
-
 }
