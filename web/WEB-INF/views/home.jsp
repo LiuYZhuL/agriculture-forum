@@ -1,4 +1,5 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%--
   Created by IntelliJ IDEA.
   User: Liu
@@ -98,7 +99,26 @@
         .dropdown-menu a:hover {
             background: #f5f5f5;
         }
+        .pagination.pagination-sm li {
+            float: none; /* 移除原有浮动 */
+            display: inline-flex; /* 改为弹性布局 */
+            align-items: center; /* 垂直居中 */
+            justify-content: center; /* 水平居中 */
+            height: 30px; /* 固定高度 */
+        }
 
+        .pagination.pagination-sm form {
+            height: 100%;
+            display: flex;
+            align-items: center;
+        }
+
+        .pagination.pagination-sm input[type="submit"] {
+            padding: 0 8px;
+            line-height: 30px; /* 与容器高度一致 */
+        }
+        .category-table tr th,
+        .category-table tr td{text-align: center; padding: 10px; background-color: #f2f2f2; border: 1px solid #ddd;}
     </style>
 </head>
 <body>
@@ -284,7 +304,7 @@
                     <td><fmt:formatDate value="${post.createTime}" pattern="yyyy-MM-dd HH:mm"/></td>
                     <td>${post.viewCount}</td>
                     <td>
-                        <a href="${pageContext.request.contextPath}/api/user/post/show?postId=${post.id}">查看详情</a>
+                        <a href="${pageContext.request.contextPath}/api/post/detail?postId=${post.id}">查看详情</a>
                         <a href="${pageContext.request.contextPath}/api/user/post/delete?postId=${post.id}">删除</a>
                     </td>
                 </tr>
