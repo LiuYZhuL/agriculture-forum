@@ -4,13 +4,16 @@ import com.agriculture.model.dto.LoginUser;
 import com.agriculture.model.dto.RegisterUser;
 import com.agriculture.model.dto.SelectPost;
 import com.agriculture.model.dto.UpdateUser;
+import com.agriculture.model.po.Attachment;
 import com.agriculture.model.po.Category;
 import com.agriculture.model.po.Post;
 import com.agriculture.model.po.User;
+import com.agriculture.service.AttachmentService;
 import com.agriculture.service.CategoryService;
 import com.agriculture.service.PostService;
 import com.agriculture.service.UserService;
 import com.github.pagehelper.PageInfo;
+import com.mysql.cj.Session;
 import jakarta.servlet.http.HttpSession;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.ibatis.annotations.Param;
@@ -42,6 +45,8 @@ public class UserController {
     private PostService postService;
     @Autowired
     private CategoryService categoryService;
+    @Autowired
+    private AttachmentService attachmentService;
 
     /**
      * 登录页面
@@ -340,15 +345,17 @@ public class UserController {
     public ModelAndView ListPosts(
             @RequestParam(value = "pageNum", defaultValue = "1")Integer pageNum,
             @RequestParam(value = "pageSize", defaultValue = "5") Integer pageSize,
-            @Valid SelectPost selectPost)
+            @Valid SelectPost selectPost,
+            HttpSession   session )
     {
         ModelAndView mv = new ModelAndView();
         mv.addObject("activeSection","post");
         mv.addObject("selectPost", selectPost);
+        User user = (User) session.getAttribute("user");
         Post post = new Post();
         post.setId(selectPost.getPostId());
         post.setTitle(selectPost.getTitle());
-        post.setUsername(selectPost.getUser());
+        post.setUsername(user.getUsername());
         post.setCategoryId(selectPost.getCategoryId());
         post.setStatus(selectPost.getSts());
         post.setIsTop(selectPost.getIsTop());
@@ -370,5 +377,26 @@ public class UserController {
             mv.setViewName("home");
             return mv;
         }
+    }
+    @GetMapping("/show")
+    public ModelAndView detail(
+            @RequestParam("postId") Integer postId) {
+        ModelAndView mv = new ModelAndView();
+        try {
+            Post post = postService.getbyId(postId);
+            User postUser = userService.getUserById(post.getUserId());
+            Category category = categoryService.getCategoryById(post.getCategoryId());
+            List<Attachment> attachments = attachmentService.getAttachmentByPostId(postId);
+            mv.addObject("category", category);
+            mv.addObject("postUser", postUser);
+            mv.addObject("post", post);
+            mv.addObject("attachments", attachments);
+            mv.setViewName("show");
+        } catch (RuntimeException e) {
+            mv.addObject("error", e.getMessage());
+            mv.setViewName("redirect:/");
+            mv.addObject("errorMsg", "查询帖子失败，帖子ID：" + postId);
+        }
+        return mv;
     }
 }
