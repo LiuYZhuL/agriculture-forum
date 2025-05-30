@@ -21,5 +21,6 @@ public interface PostMapper {
     List<Post> searchPostsByTitle(String title);
     List<Post> searchPostsByUsername(String username);
     List<Post> selectPostByCondition(Post post);
+    void updatePostViewCount(int id);
 
 }

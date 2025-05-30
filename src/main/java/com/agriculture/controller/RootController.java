@@ -1,18 +1,31 @@
 package com.agriculture.controller;
 
 import com.agriculture.model.po.Category;
+import com.agriculture.model.po.Post;
+import com.agriculture.model.vo.PostVO;
+import com.agriculture.service.AttachmentService;
 import com.agriculture.service.CategoryService;
+import com.agriculture.service.PostService;
+import com.agriculture.service.UserService;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
 public class RootController {
     @Autowired
     private CategoryService categoryService;
+    @Autowired
+    private PostService postService;
+    @Autowired
+    private UserService  userService;
+    @Autowired
+    private AttachmentService attachmentService;
 
     @GetMapping({"/", "/api/dashboard"})
     public ModelAndView root() {
@@ -20,6 +33,23 @@ public class RootController {
         modelAndView.setViewName("dashboard");
         try {
             List<Category> categories = categoryService.listCategories();
+            List<PostVO> postVOs = new ArrayList<>();
+            Post post = new Post();
+            post.setStatus(Post.STATUS_PUBLISHED);
+            post.setIsEssence(Post.IS_ESSENCE);
+            PageInfo<Post> postList = postService.searchPosts(1,6, post);
+            for (Post p : postList.getList()) {
+                PostVO postVO = new PostVO(p,
+                        userService.getUserById(p.getUserId()).getUsername(),
+                        categoryService.getCategoryById(p.getCategoryId()).getName(),
+                        attachmentService.getAttachmentByPostId(p.getId()).get(0),
+                        0,
+                        0,
+                        0,
+                        0);
+                postVOs.add(postVO);
+            }
+            modelAndView.addObject("postVOs", postVOs);
             modelAndView.addObject("categories", categories);
         }catch (RuntimeException e){
             modelAndView.addObject("error", e.getMessage());

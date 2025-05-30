@@ -7,6 +7,7 @@
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <html>
 <head>
     <title>首页</title>
@@ -189,6 +190,93 @@
             align-items: center;
             justify-content: center;
         }
+        /* 帖子项容器 */
+        .post-item {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            gap: 20px;
+        }
+
+        /* 左侧文字区 */
+        .post-left {
+            flex: 3;
+            min-width: 0; /* 防止内容溢出 */
+        }
+
+        .post-title {
+            margin: 0 0 12px 0;
+            color: #2c3e50;
+            font-size: 18px;
+        }
+
+        .post-summary {
+            color: #666;
+            margin-bottom: 15px;
+            line-height: 1.6;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* 统计信息 */
+        .post-stats {
+            display: flex;
+            gap: 15px;
+            font-size: 12px;
+            color: #999;
+        }
+
+        .post-stats span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* 右侧媒体区 */
+        .post-right {
+            flex: 1;
+            max-width: 200px;
+            min-width: 120px;
+        }
+
+        .post-media {
+            width: 100%;
+            height: 120px;
+            border-radius: 4px;
+            object-fit: cover;
+            background: #f8f8f8;
+        }
+
+        video.post-media {
+            object-fit: contain;
+            background: #000;
+        }
+        /* 用户和分类信息 */
+        .post-meta {
+            margin-bottom: 10px;
+            font-size: 13px;
+            color: #666;
+            display: flex;
+            gap: 15px;
+        }
+
+        .post-author {
+            color: #2c3e50;
+            font-weight: 500;
+        }
+
+        .post-category {
+            padding: 2px 8px;
+            background: #f0f0f0;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+
 
     </style>
 </head>
@@ -277,7 +365,48 @@
             </div>
         </div>
         <div class="post-content">
+            <c:forEach items="${postVOs}" var="postvo">
+                <div class="post-item" onclick="location.href='${pageContext.request.contextPath}/api/post/detail?postId=${postvo.post.id}'">
+                    <!-- 左区（文字内容） -->
+                    <div class="post-left">
+                        <h3 class="post-title">${postvo.post.title}</h3>
+                        <!-- 新增用户和分类信息 -->
+                        <div class="post-meta">
+                            <span class="post-author">${postvo.user}</span>
+                            <span class="post-category">${postvo.category}</span>
+                        </div>
+                        <div class="post-summary">
+                                ${fn:substring(postvo.post.content, 0, 100)}...
+                        </div>
+                        <!-- 下区（统计信息） -->
+                        <div class="post-stats">
+                            <span>👁️ ${postvo.viewCount}</span>
+                            <span>👍 ${postvo.likeCount}</span>
+                            <span>💬 ${postvo.commentCount}</span>
+                            <span>⭐ ${postvo.collectionCount}</span>
+                        </div>
+                    </div>
 
+                    <!-- 右区（媒体内容） -->
+                    <div class="post-right">
+                        <c:if test="${not empty postvo.attachment}">
+                            <c:choose>
+                                <c:when test="${fn:startsWith(postvo.attachment.fileType, 'image/')}">
+                                    <img src="${pageContext.request.contextPath}/static/uploads/attachments/img/${postvo.attachment.filePath}"
+                                    class="post-media"
+                                    alt="封面图"
+                                    onerror="this.style.display='none'">
+                                </c:when>
+                                <c:when test="${fn:startsWith(postvo.attachment.fileType, 'video/')}">
+                                    <video class="post-media" controls>
+                                        <source src="${pageContext.request.contextPath}/static/uploads/attachments/video/${postvo.attachment.filePath}" type="${postvo.attachment.fileType}">
+                                    </video>
+                                </c:when>
+                            </c:choose>
+                        </c:if>
+                    </div>
+                </div>
+            </c:forEach>
         </div>
     </div>
 </div>

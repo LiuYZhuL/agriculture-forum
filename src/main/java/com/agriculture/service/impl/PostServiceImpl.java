@@ -85,22 +85,55 @@ public class PostServiceImpl implements PostService {
     }
     @Override
     public void deletePost(Integer postId) {
-
+        if(postId==null||postId<=0){
+            throw new RuntimeException("帖子id不能为空");
+        }
+        try {
+            postMapper.deletePost(postId);
+        } catch (Exception e){
+            e.printStackTrace();
+            throw new RuntimeException("删除帖子失败");
+        }
     }
 
     @Override
     public void updatePostStatus(Integer postId, Integer status) {
-
+        try {
+            Post post = new Post();
+            post.setId(postId);
+            post.setStatus(status);
+            postMapper.updatePost(post);
+        } catch (Exception e){
+            e.printStackTrace();
+            throw new RuntimeException("修改帖子状态失败");
+        }
     }
 
     @Override
-    public void updatePostRecommend(Integer postId, Integer recommend) {
+    public void updatePostTop(Integer postId, Integer top) {
+        try {
+            Post post = new Post();
+            post.setId(postId);
+            post.setIsTop(top);
+            postMapper.updatePost(post);
+        } catch (Exception e){
+            e.printStackTrace();
+            throw new RuntimeException("修改帖子置顶状态失败");
+        }
 
     }
 
     @Override
     public void updatePostEssence(Integer postId, Integer essence) {
-
+        try {
+            Post post = new Post();
+            post.setId(postId);
+            post.setIsEssence(essence);
+            postMapper.updatePost(post);
+        } catch (Exception e){
+            e.printStackTrace();
+            throw new RuntimeException("修改帖子精华状态失败");
+        }
     }
 
     @Override
@@ -136,4 +169,12 @@ public class PostServiceImpl implements PostService {
         return user;
     }
 
+    @Override
+    public void updatePostViewCount(Integer postId) {
+        try {
+            postMapper.updatePostViewCount(postId);
+        } catch (Exception e){
+            throw new RuntimeException("更新帖子浏览次数失败");
+        }
+    }
 }

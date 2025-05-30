@@ -379,25 +379,5 @@ public class UserController {
             return mv;
         }
     }
-    @GetMapping("post/show")
-    public ModelAndView detail(
-            @RequestParam("postId") Integer postId) {
-        ModelAndView mv = new ModelAndView();
-        try {
-            Post post = postService.getbyId(postId);
-            User postUser = userService.getUserById(post.getUserId());
-            Category category = categoryService.getCategoryById(post.getCategoryId());
-            List<Attachment> attachments = attachmentService.getAttachmentByPostId(postId);
-            mv.addObject("category", category);
-            mv.addObject("postUser", postUser);
-            mv.addObject("post", post);
-            mv.addObject("attachments", attachments);
-            mv.setViewName("show");
-        } catch (RuntimeException e) {
-            mv.addObject("error", e.getMessage());
-            mv.setViewName("redirect:/");
-            mv.addObject("errorMsg", "查询帖子失败，帖子ID：" + postId);
-        }
-        return mv;
-    }
+
 }

@@ -19,9 +19,10 @@ public interface PostService {
     // 修改帖子状态
     void updatePostStatus(Integer postId, Integer status);
     //  推荐
-    void updatePostRecommend(Integer postId, Integer recommend);
+    void updatePostTop(Integer postId, Integer top);
     //  置顶
     void updatePostEssence(Integer postId, Integer essence);
+    void updatePostViewCount(Integer postId);
     // 搜索帖子
     PageInfo<Post> searchPosts(int pageNum, int pageSize, Post post);
     //通过userid找用户

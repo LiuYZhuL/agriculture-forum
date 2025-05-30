@@ -282,7 +282,7 @@
                             <span style="color: green;">已审核</span>
                         </c:if>
                         <c:if test="${post.status == 2}">
-                            <span style="color: gray;">已删除</span>
+                            <span style="color: gray;">待修改</span>
                         </c:if>
                     </td>
                     <td>
@@ -304,8 +304,8 @@
                     <td><fmt:formatDate value="${post.createTime}" pattern="yyyy-MM-dd HH:mm"/></td>
                     <td>${post.viewCount}</td>
                     <td>
-                        <a href="${pageContext.request.contextPath}/api/post/detail?postId=${post.id}">查看详情</a>
-                        <a href="${pageContext.request.contextPath}/api/user/post/delete?postId=${post.id}">删除</a>
+                        <a href="${pageContext.request.contextPath}/api/post/show?postId=${post.id}">查看详情</a>
+                        <a href="${pageContext.request.contextPath}/api/post/delete?postId=${post.id}">删除</a>
                     </td>
                 </tr>
             </c:forEach>

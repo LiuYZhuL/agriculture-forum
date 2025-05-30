@@ -40,20 +40,6 @@ public class PostController {
     private AttachmentService attachmentService;
     @Autowired
     private CategoryService categoryService;
-    @PostMapping("/selectUserById")
-    public ModelAndView selectUserById(
-            @RequestParam("userId") Integer userId) {
-        ModelAndView mv = new ModelAndView();
-        try {
-            User user = postService.selectUserById(userId);
-            mv.addObject("user", user);
-            mv.setViewName("userDetails");
-        } catch (RuntimeException e) {
-            mv.setViewName("error");
-            mv.addObject("errorMsg", "查询用户失败，用户ID：" + userId);
-        }
-        return mv;
-    }
     @PostMapping("/add")
     public ModelAndView add(
             @Valid AddPost addPost,
@@ -125,8 +111,47 @@ public class PostController {
             return mv;
         }
     }
-    @GetMapping("/detail")
-    public ModelAndView detail(
+    @GetMapping("/delete")
+    public ModelAndView delete(
+            @RequestParam("postId") Integer postId,
+            HttpSession session) {
+        ModelAndView mv = new ModelAndView();
+        mv.addObject("activeSection", "post");
+        mv.setViewName("home");
+        Post post = null;
+        try {
+            post = postService.getbyId(postId);
+            List<Attachment> attachments = attachmentService.getAttachmentByPostId(postId);
+            attachmentService.deleteAttachmentByPostId(postId);
+            postService.deletePost(postId);
+            for (Attachment attachment : attachments) {
+                if (attachment.getFileType().startsWith("image")) {
+                    Path filePath = Paths.get(
+                            session.getServletContext().getRealPath("/static/uploads/attachments/img/" + attachment.getFilePath())
+                    );
+                    Files.delete(filePath);
+                } else if (attachment.getFileType().startsWith("video")) {
+                    Path filePath = Paths.get(
+                            session.getServletContext().getRealPath("/static/uploads/attachments/video/" + attachment.getFilePath())
+                    );
+                    Files.delete(filePath);
+                }
+            }
+            mv.addObject("postSuccess", true);
+            mv.addObject("postMsg", "删除帖子[" + post.getTitle() + "]成功");
+            return mv;
+        }catch (RuntimeException e){
+            mv.addObject("postSuccess", false);
+
+            mv.addObject("postMsg", e.getMessage());
+
+            return mv;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    @GetMapping("/show")
+    public ModelAndView show(
             @RequestParam("postId") Integer postId) {
         ModelAndView mv = new ModelAndView();
         try {
@@ -138,11 +163,85 @@ public class PostController {
             mv.addObject("postUser", postUser);
             mv.addObject("post", post);
             mv.addObject("attachments", attachments);
+            mv.setViewName("show");
+        } catch (RuntimeException e) {
+            mv.addObject("error", e.getMessage());
+            mv.setViewName("redirect:/");
+            mv.addObject("errorMsg", "查询帖子失败，帖子ID：" + postId);
+        }
+        return mv;
+    }
+    @GetMapping("/detail")
+    public ModelAndView detail(
+            @RequestParam("postId") Integer postId) {
+        ModelAndView mv = new ModelAndView();
+        try {
+            Post post = postService.getbyId(postId);
+            User postUser = userService.getUserById(post.getUserId());
+            Category category = categoryService.getCategoryById(post.getCategoryId());
+            List<Attachment> attachments = attachmentService.getAttachmentByPostId(postId);
+            postService.updatePostViewCount(postId);
+
+            mv.addObject("category", category);
+            mv.addObject("postUser", postUser);
+            mv.addObject("post", post);
+            mv.addObject("attachments", attachments);
             mv.setViewName("post");
         } catch (RuntimeException e) {
             mv.addObject("error", e.getMessage());
             mv.setViewName("redirect:/");
             mv.addObject("errorMsg", "查询帖子失败，帖子ID：" + postId);
+        }
+        return mv;
+    }
+    @GetMapping("/status")
+    public ModelAndView status(
+            @RequestParam("postId") Integer postId,
+            @RequestParam("status") Integer status) {
+        ModelAndView mv = new ModelAndView();
+        mv.setViewName("manage");
+        mv.addObject("activeSection", "postMgt");
+        try {
+            postService.updatePostStatus(postId, status);
+            mv.addObject("postSuccess", true);
+            mv.addObject("postMsg", "更新帖子[" + postId + "]状态成功");
+        } catch (RuntimeException e) {
+            mv.addObject("postSuccess", false);
+            mv.addObject("postMsg", e.getMessage());
+        }
+        return mv;
+    }
+    @GetMapping("/top")
+    public ModelAndView top(
+            @RequestParam("postId") Integer postId,
+            @RequestParam("isTop") Integer top) {
+        ModelAndView mv = new ModelAndView();
+        mv.setViewName("manage");
+        mv.addObject("activeSection", "postMgt");
+        try {
+            postService.updatePostTop(postId, top);
+            mv.addObject("postSuccess", true);
+            mv.addObject("postMsg", "更新帖子[" + postId + "]置顶成功");
+        } catch (RuntimeException e) {
+            mv.addObject("postSuccess", false);
+            mv.addObject("postMsg", e.getMessage());
+        }
+        return mv;
+    }
+    @GetMapping("/essence")
+    public ModelAndView essence(
+            @RequestParam("postId") Integer postId,
+            @RequestParam("isEssence") Integer essence) {
+        ModelAndView mv = new ModelAndView();
+        mv.setViewName("manage");
+        mv.addObject("activeSection", "postMgt");
+        try {
+            postService.updatePostEssence(postId, essence);
+            mv.addObject("postSuccess", true);
+            mv.addObject("postMsg", "更新帖子[" + postId + "]精华成功");
+        } catch (RuntimeException e) {
+            mv.addObject("postSuccess", false);
+            mv.addObject("postMsg", e.getMessage());
         }
         return mv;
     }

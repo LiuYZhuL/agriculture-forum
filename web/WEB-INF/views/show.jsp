@@ -146,6 +146,10 @@
     </div>
 </div>
 <div class="post-container">
+    <a href="${not empty header.referer ? header.referer : pageContext.request.contextPath + '/api/dashboard'}"
+       style="color: black; text-decoration: none;">
+        &lt; 返回
+    </a>
     <!-- 作者信息 -->
     <div class="author-info">
         <img src="${pageContext.request.contextPath}/static/uploads/img/${postUser.avatar}" class="avatar" alt="用户头像">

@@ -133,9 +133,9 @@
     </div>
     <input type="submit" value="修改">
 </form>
-<a href="${pageContext.request.contextPath}/api/admin/manage/user"
-   style="display: inline-block; padding: 6px 12px; background: #eee; border: 1px solid #ccc; text-decoration: none;">
-    返回用户列表
+<a href="${not empty header.referer ? header.referer : pageContext.request.contextPath + '/api/dashboard'}"
+   style="color: black; text-decoration: none;">
+    &lt; 返回
 </a>
 </body>
 </html>

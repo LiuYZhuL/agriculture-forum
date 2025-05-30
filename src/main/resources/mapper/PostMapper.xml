@@ -137,4 +137,9 @@
             </if>
         </where>
     </select>
+    <update id="updatePostViewCount" parameterType="int">
+        UPDATE post
+        SET view_count = view_count + 1
+        WHERE id = #{id}
+    </update>
 </mapper>
