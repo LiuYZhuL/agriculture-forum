@@ -37,6 +37,10 @@
     <delete id="deleteInteractionById" parameterType="java.lang.Integer" >
         DELETE FROM interaction WHERE id = #{id}
     </delete>
+    <!-- 删除帖子的所有互动记录 -->
+     <delete id="deletePostInteraction" parameterType="java.lang.Integer">
+        DELETE FROM interaction WHERE post_id = #{postId}
+    </delete>
 
     <!-- 根据复合条件删除 -->
     <delete id="deleteInteractionByCondition" parameterType="com.agriculture.model.po.Interaction">

@@ -9,6 +9,8 @@ public interface AttachmentService {
     void deleteAttachment(Attachment attachment);
     void deleteAttachmentByPostId(Integer PostId);
     List<Attachment> getAttachmentByPostId(Integer PostId);
+    void deleteAttachmentById (Integer attachmentId);
+    Attachment  getAttachmentById(Integer attachmentId);
 
 
 }

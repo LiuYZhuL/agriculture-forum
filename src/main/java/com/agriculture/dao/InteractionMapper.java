@@ -20,5 +20,6 @@ public interface InteractionMapper {
     boolean existsInteraction(Interaction interaction);
     int countInteraction();
     int countInteractionByCondition(Interaction interaction);
+    void deletePostInteraction(int postId);
 
 }

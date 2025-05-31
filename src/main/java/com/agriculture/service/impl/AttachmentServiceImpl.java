@@ -46,4 +46,22 @@ public class AttachmentServiceImpl implements AttachmentService {
             throw new RuntimeException("获取附件失败");
         }
     }
+
+    @Override
+    public void deleteAttachmentById(Integer attachmentId) {
+        try {
+             attachmentMapper.deleteAttachmentById(attachmentId);
+        }  catch (Exception e){
+            throw new RuntimeException("删除附件失败");
+        }
+    }
+
+    @Override
+    public Attachment getAttachmentById(Integer attachmentId) {
+        try {
+             return attachmentMapper.selectAttachmentById(attachmentId);
+        }  catch (Exception e){
+             throw new RuntimeException("获取附件失败");
+        }
+    }
 }
