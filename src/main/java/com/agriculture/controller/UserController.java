@@ -8,6 +8,7 @@ import com.agriculture.model.po.Attachment;
 import com.agriculture.model.po.Category;
 import com.agriculture.model.po.Post;
 import com.agriculture.model.po.User;
+import com.agriculture.model.vo.PostVO;
 import com.agriculture.service.AttachmentService;
 import com.agriculture.service.CategoryService;
 import com.agriculture.service.PostService;
@@ -32,6 +33,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -157,6 +159,20 @@ public class UserController {
             modelAndView.setViewName("login");
             return modelAndView;
         }
+        List<PostVO> postVOs = new ArrayList<>();
+        List<Post> postList = postService.getCollectPostsByUser(user.getId());
+        for (Post p : postList) {
+            PostVO postVO = new PostVO(p,
+                    userService.getUserById(p.getUserId()).getUsername(),
+                    categoryService.getCategoryById(p.getCategoryId()).getName(),
+                    attachmentService.getAttachmentByPostId(p.getId()).get(0),
+                    0,
+                    0,
+                    0,
+                    0);
+            postVOs.add(postVO);
+        }
+        modelAndView.addObject("postVOs", postVOs);
         modelAndView.addObject("user", user);
         modelAndView.setViewName("home");
         return modelAndView;
