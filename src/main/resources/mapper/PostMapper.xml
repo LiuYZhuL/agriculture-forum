@@ -42,6 +42,7 @@
             <if test="status != null"> status = #{status}, </if>
             <if test="isTop != null"> is_top = #{isTop}, </if>
             <if test="isEssence != null"> is_essence = #{isEssence}, </if>
+            <if test="categoryId != null">  category_id = #{categoryId},</if>
             <!-- 强制更新时间为当前时间 -->
             update_time = CURRENT_TIMESTAMP,
             <if test="viewCount != null"> view_count = #{viewCount}, </if>
@@ -142,4 +143,19 @@
         SET view_count = view_count + 1
         WHERE id = #{id}
     </update>
+
+    <select id="selectPostLikeCount" parameterType="int" resultType="int">
+        SELECT COUNT(*) FROM interaction WHERE post_id = #{postId} AND type = 1
+    </select>
+    <select id="selectPostCollectionCount" parameterType="int" resultType="int">
+        SELECT COUNT(*) FROM interaction WHERE post_id = #{postId} AND type = 2
+    </select>
+    <select id="selectCollectionPost" parameterType="int" resultMap="BaseResultMap">
+        SELECT p.*, u.username, c.name as category
+        FROM post p
+        LEFT JOIN user u ON p.user_id = u.id
+        LEFT JOIN category c ON p.category_id = c.id
+        LEFT JOIN interaction i ON p.id = i.post_id
+        WHERE i.user_id = #{userId} AND i.type = 2 AND p. status = 1
+    </select>
 </mapper>

@@ -117,6 +117,168 @@
             max-width: 600px;
             background: #000;
         }
+        /* 评论容器 */
+        .comments-section {
+            margin-top: 40px;
+        }
+
+        .comment-item {
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+        }
+
+        .comment-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .comment-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .comment-username {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .comment-time {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .comment-content {
+            margin-left: 50px;
+            margin-top: 5px;
+        }
+
+        .reply-btn {
+            background: none;
+            border: none;
+            color: #1890ff;
+            cursor: pointer;
+            font-size: 14px;
+            margin-left: 50px;
+            margin-top: 5px;
+        }
+
+        .reply-btn:hover {
+            text-decoration: underline;
+        }
+
+        .child-comments {
+            margin-left: 60px;
+            margin-top: 10px;
+        }
+
+        .child-comment {
+            margin-bottom: 10px;
+        }
+
+        .child-comment .comment-header {
+            gap: 5px;
+        }
+
+        .child-comment .comment-username {
+            font-size: 14px;
+        }
+
+
+        /* 固定评论输入框到底部 */
+        #commentInputBox {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 10px 20px;
+            box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        /* 防止输入框遮挡页面内容 */
+        body {
+            padding-bottom: 120px; /* 给固定输入框留出空间 */
+        }
+
+        #commentInputBox textarea {
+            width: 100%;
+            resize: none;
+        }
+        .action-buttons {
+            margin: 20px 0;
+            display: flex;
+            gap: 15px;
+        }
+
+        .action-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn.like {
+            background-color: #e7f2ff;
+            color: #1890ff;
+        }
+
+        .action-btn.like:hover {
+            background-color: #d6ebff;
+        }
+
+        .action-btn.favorite {
+            background-color: #fff2e8;
+            color: #fa8c16;
+        }
+
+        .action-btn.favorite:hover {
+            background-color: #ffe9db;
+        }
+
+        .action-btn.comment {
+            background-color: #e6fffb;
+            color: #13c2c2;
+        }
+
+        .action-btn.comment:hover {
+            background-color: #d6f9f6;
+        }
+
+        /* 徽章数字 */
+        .action-btn span {
+            background-color: #fff;
+            color: #666;
+            padding: 2px 8px;
+            border-radius: 15px;
+            font-size: 12px;
+            min-width: 20px;
+            text-align: center;
+        }
+        .action-btn.like.liked {
+            background-color: #d6ebff;
+            color: #1890ff;
+        }
+
+        .action-btn.favorite.collected {
+            background-color: #ffe9db;
+            color: #fa8c16;
+        }
+
+
+
     </style>
 </head>
 <body>
@@ -184,7 +346,229 @@
             </c:choose>
         </c:forEach>
     </div>
+    <!-- 操作按钮 -->
+    <div class="action-buttons">
+        <button id="likeBtn" onclick="toggleLike()" class="action-btn like ${isLiked ? 'liked' : ''}">
+            <c:if test="${isLiked}">
+                👍 已点赞 <span id="likeCount">${likeCount}</span>
+            </c:if>
+            <c:if test="${!isLiked}">
+                👍 点赞 <span id="likeCount">${likeCount}</span>
+            </c:if>
+        </button>
+
+        <button id="favoriteBtn" onclick="toggleFavorite()" class="action-btn favorite ${isCollected ? 'collected' : ''}">
+             <c:if test="${isCollected}">
+                ⭐ 已收藏 <span id="favoriteCount">${collectionCount}</span>
+            </c:if>
+            <c:if test="${!isCollected}">
+                ⭐ 收藏 <span id="favoriteCount">${collectionCount}</span>
+            </c:if>
+        </button>
+        <button id="commentBtn" onclick="showCommentInputBox()" class="action-btn comment">
+            💬 评论 <span id="commentCount">${commentCount}</span>
+        </button>
+    </div>
+
+    <!-- 评论区 -->
+    <div class="comment-item" data-comment-id="123">
+        <div class="comment-header">
+            <img src="${pageContext.request.contextPath}/static/uploads/img/default_avatar.png" class="comment-avatar" />
+            <span class="comment-username">张三</span>
+            <span class="comment-time">2024-06-01</span>
+        </div>
+        <div class="comment-content">这是一条父级评论。</div>
+        <button class="reply-btn" onclick="showChildComments(this, '张三', 123)">回复</button>
+        <div class="child-comments" style="display: block; background: #f5f5f5; padding: 10px; margin-top: 10px;">
+             <div class="child-comment">
+                <div class="comment-header">
+                    <img src="${pageContext.request.contextPath}/static/uploads/img/default_avatar.png" class="comment-avatar" />
+                    <span class="comment-username">张三</span>
+                    <span class="comment-time">2024-06-01</span>
+                </div>
+                <div class="comment-content">这是一条子级评论。</div>
+                <button class="reply-btn" onclick="showChildComments(this, '张三', 123)">回复</button>
+            </div>
+        </div>
+        <c:forEach items="${comments}" var="comment">
+            <div class="comment-item" data-comment-id="${comment.id}">
+                <div class="comment-header">
+                    <img src="${pageContext.request.contextPath}/static/uploads/img/${comment.avatar}" class="comment-avatar">
+                    <span class="comment-username">${comment.username}</span>
+                    <span class="comment-time"><fmt:formatDate value="${comment.createTime}" pattern="yyyy-MM-dd HH:mm"/></span>
+                </div>
+                <div class="comment-content">${comment.content}</div>
+                <button class="reply-btn" onclick="showChildComments(this, '${comment.username}', ${comment.id})">回复</button>
+                <c:forEach items="${comment.children}" var="child">
+                    <div class="child-comments" style="background: #f5f5f5; padding: 10px; margin-top: 10px;">
+                        <div class="child-comment">
+                            <img src="${pageContext.request.contextPath}/static/uploads/img/${child.avatar}" class="comment-avatar">
+                            <span class="comment-username">${child.username}</span>
+                            <span class="comment-time"><fmt:formatDate value="${child.createTime}" pattern="yyyy-MM-dd HH:mm"/></span>
+                        </div>
+                        <div class="comment-content">${child.content}</div>
+                        <button class="reply-btn" onclick="showChildComments(this, '${child.username}', ${comment.id})">回复</button>
+                    </div>
+                </c:forEach>
+            </div>
+        </c:forEach>
+    </div>
+        <!-- 评论输入框，默认隐藏 -->
+        <div id="commentInputBox" style="display: none;">
+            <textarea id="commentContent" placeholder="写下你的评论..." style="width: 100%; height: 80px;"></textarea>
+            <button onclick="submitComment()">提交评论</button>
+        </div>
 </div>
+
+
 </body>
 </html>
+<script>
+    const commentInputBox = document.getElementById('commentInputBox');
+    const commentContent = document.getElementById('commentContent');
 
+    let currentReplyTo = null; // 当前回复目标用户名
+    let currentParentId = null; // 当前回复的目标评论 ID
+
+    // 显示评论输入框并插入 @ 用户名
+    function showChildComments(btn, username, parentId) {
+        currentReplyTo = username;
+        currentParentId = parentId;
+
+        // 设置输入框内容
+        commentContent.value = `@`+ username;
+        commentContent.focus();
+
+        // 显示输入框
+        commentInputBox.style.display = 'block';
+    }
+    function showCommentInputBox() {
+        commentContent.focus();
+        commentInputBox.style.display = 'block';
+    }
+
+    // 提交评论
+    function submitComment() {
+        const content = commentContent.value.trim();
+        if (!content) return;
+
+        console.log('提交评论:', content);
+        // 调用后端接口保存评论
+        const params = new URLSearchParams();
+        params.append('postId', '${post.id}');
+        params.append('userId', '${sessionScope.user.id}');
+        params.append('content', content);
+
+        // 只有当 currentParentId 存在时才添加
+        if (currentParentId !== null && currentParentId !== '') {
+            params.append('parentId', currentParentId);
+        }
+        fetch( '${pageContext.request.contextPath}/api/comment/add', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: params
+        }).then(() => {
+            alert('评论成功！');
+            window.location.reload();
+        }).catch(error => {
+            console.error('提交评论失败:', error);
+            alert('评论失败，请稍后再试。');
+        });
+        // 清空并隐藏输入框
+        commentContent.value = '';
+        commentInputBox.style.display = 'none';
+
+        // 重置状态
+        currentReplyTo = null;
+        currentParentId = null;
+    }
+
+    // 插入评论到 DOM（示例）
+    function insertCommentToDOM(content, replyTo, parentId) {
+        // 正确选择父评论容器
+        const parentEl = document.querySelector(`[data-comment-id=`+ parentId +`]`);
+        if (!parentEl) return;
+
+        // 获取 child-comments 容器，如果没有就创建一个
+        let container = parentEl.querySelector('.child-comments');
+        if (!container) {
+            container = document.createElement('div');
+            container.className = 'child-comments';
+            container.style.display = 'block'; // 显示容器
+            container.style.background = '#f5f5f5';
+            container.style.padding = '10px';
+             container.style.marginTop = '10px';
+            parentEl.appendChild(container);
+        }
+
+        // 创建子评论 DOM 元素
+        const div = document.createElement('div');
+        div.className = 'child-comment';
+
+        div.innerHTML = `
+        <div class="comment-header">
+            <img src="${sessionScope.user.avatar}" class="comment-avatar" />
+            <span class="comment-username">${sessionScope.user.username}</span>
+            <span class="comment-time">刚刚</span>
+        </div>
+        <div class="comment-content">@` +replyTo + content +`</div>`;
+        // 接口返回评论数据
+
+    }
+
+
+    // 点击非输入框区域隐藏
+    document.addEventListener('click', function (event) {
+        const isClickInside = commentInputBox.contains(event.target);
+        const isReplyButton = event.target.classList.contains('reply-btn');
+        const isCommentButton = event.target.closest('#commentBtn') !== null;
+
+        if (!isClickInside && !isReplyButton && !isCommentButton && commentInputBox.style.display === 'block') {
+            commentInputBox.style.display = 'none';
+            commentContent.value = '';
+            currentReplyTo = null;
+            currentParentId = null;
+        }
+    });
+
+    function toggleLike() {
+        const postId = ${post.id};
+        const btn = document.getElementById('likeBtn');
+        const isLiked = btn.classList.contains('liked');
+
+        fetch('${pageContext.request.contextPath}/api/post/like?postId=' + postId, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+        })
+            .then(() => {
+                window.location.reload();
+            })
+            .catch(err => {
+                console.error(err);
+                alert('网络错误');
+            });
+    }
+
+    function toggleFavorite() {
+        const postId = ${post.id};
+        const btn = document.getElementById('favoriteBtn');
+        const isCollected = btn.classList.contains('collected');
+
+        fetch('${pageContext.request.contextPath}/api/post/collect?postId=' + postId, {
+            method: 'POST'
+        })
+            .then(() => {
+                window.location.reload();
+            })
+            .catch(err => {
+                console.error(err);
+                alert('网络错误');
+            });
+    }
+
+
+</script>
