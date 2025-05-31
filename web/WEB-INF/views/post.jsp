@@ -372,24 +372,6 @@
 
     <!-- 评论区 -->
     <div class="comment-item" data-comment-id="123">
-        <div class="comment-header">
-            <img src="${pageContext.request.contextPath}/static/uploads/img/default_avatar.png" class="comment-avatar" />
-            <span class="comment-username">张三</span>
-            <span class="comment-time">2024-06-01</span>
-        </div>
-        <div class="comment-content">这是一条父级评论。</div>
-        <button class="reply-btn" onclick="showChildComments(this, '张三', 123)">回复</button>
-        <div class="child-comments" style="display: block; background: #f5f5f5; padding: 10px; margin-top: 10px;">
-             <div class="child-comment">
-                <div class="comment-header">
-                    <img src="${pageContext.request.contextPath}/static/uploads/img/default_avatar.png" class="comment-avatar" />
-                    <span class="comment-username">张三</span>
-                    <span class="comment-time">2024-06-01</span>
-                </div>
-                <div class="comment-content">这是一条子级评论。</div>
-                <button class="reply-btn" onclick="showChildComments(this, '张三', 123)">回复</button>
-            </div>
-        </div>
         <c:forEach items="${comments}" var="comment">
             <div class="comment-item" data-comment-id="${comment.id}">
                 <div class="comment-header">
