@@ -1,5 +1,6 @@
 package com.agriculture.service.impl;
 
+import com.agriculture.dao.InteractionMapper;
 import com.agriculture.dao.PostMapper;
 import com.agriculture.dao.UserMapper;
 import com.agriculture.model.dto.AddPost;
@@ -21,6 +22,8 @@ public class PostServiceImpl implements PostService {
     private PostMapper postMapper;
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private InteractionMapper  interactionMapper;
     @Override
     public Post add(AddPost addPost) {
         if(addPost==null){
@@ -177,4 +180,33 @@ public class PostServiceImpl implements PostService {
             throw new RuntimeException("更新帖子浏览次数失败");
         }
     }
+
+    @Override
+    public int getPostLikeCount(Integer postId) {
+        try {
+            return postMapper.selectPostLikeCount(postId);
+        } catch (Exception e){
+            throw new RuntimeException("获取帖子点赞数失败");
+        }
+    }
+
+    @Override
+    public int getPostCollectionCount(Integer postId) {
+        try {
+            return postMapper.selectPostCollectionCount(postId);
+        } catch (Exception e){
+            throw new RuntimeException("获取帖子收藏数失败");
+        }
+
+    }
+
+    @Override
+    public List<Post> getCollectPostsByUser(Integer userId) {
+        try {
+            return postMapper.selectCollectionPost(userId);
+        }catch (Exception e){
+            throw new RuntimeException("获取用户收藏帖子失败");
+        }
+    }
+
 }

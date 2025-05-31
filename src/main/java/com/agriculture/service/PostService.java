@@ -5,6 +5,8 @@ import com.agriculture.model.po.Post;
 import com.agriculture.model.po.User;
 import com.github.pagehelper.PageInfo;
 
+import java.util.List;
+
 public interface PostService {
     // 添加帖子
     Post add(AddPost addPost);
@@ -27,4 +29,7 @@ public interface PostService {
     PageInfo<Post> searchPosts(int pageNum, int pageSize, Post post);
     //通过userid找用户
     User selectUserById(Integer userId);
+    int getPostLikeCount(Integer postId);
+    int getPostCollectionCount(Integer postId);
+    List<Post> getCollectPostsByUser(Integer userId);
 }
