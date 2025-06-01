@@ -3,10 +3,7 @@ package com.agriculture.controller;
 import com.agriculture.model.po.Category;
 import com.agriculture.model.po.Post;
 import com.agriculture.model.vo.PostVO;
-import com.agriculture.service.AttachmentService;
-import com.agriculture.service.CategoryService;
-import com.agriculture.service.PostService;
-import com.agriculture.service.UserService;
+import com.agriculture.service.*;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -26,6 +23,8 @@ public class RootController {
     private UserService  userService;
     @Autowired
     private AttachmentService attachmentService;
+    @Autowired
+    private CommentService  commentService;
 
     @GetMapping({"/", "/api/dashboard"})
     public ModelAndView root() {
@@ -43,10 +42,10 @@ public class RootController {
                         userService.getUserById(p.getUserId()).getUsername(),
                         categoryService.getCategoryById(p.getCategoryId()).getName(),
                         attachmentService.getAttachmentByPostId(p.getId()).get(0),
-                        0,
-                        0,
-                        0,
-                        0);
+                        commentService.getCommentCountByPostId(p.getId()),
+                        p.getViewCount(),
+                        postService.getPostLikeCount(p.getId()),
+                        postService.getPostCollectionCount(p.getId()));
                 postVOs.add(postVO);
             }
             modelAndView.addObject("postVOs", postVOs);

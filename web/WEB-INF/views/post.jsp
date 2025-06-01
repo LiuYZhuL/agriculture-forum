@@ -370,6 +370,10 @@
         </button>
     </div>
 
+
+</div>
+<div class="post-container">
+    <h2>评论区:</h2>
     <!-- 评论区 -->
     <div class="comment-item" data-comment-id="123">
         <c:forEach items="${comments}" var="comment">
@@ -395,13 +399,12 @@
             </div>
         </c:forEach>
     </div>
-        <!-- 评论输入框，默认隐藏 -->
-        <div id="commentInputBox" style="display: none;">
-            <textarea id="commentContent" placeholder="写下你的评论..." style="width: 100%; height: 80px;"></textarea>
-            <button onclick="submitComment()">提交评论</button>
-        </div>
+    <!-- 评论输入框，默认隐藏 -->
+    <div id="commentInputBox" style="display: none;">
+        <textarea id="commentContent" placeholder="写下你的评论..." style="width: 100%; height: 80px;"></textarea>
+        <button onclick="submitComment()">提交评论</button>
+    </div>
 </div>
-
 
 </body>
 </html>
