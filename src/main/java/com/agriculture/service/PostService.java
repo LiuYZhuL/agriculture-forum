@@ -27,6 +27,7 @@ public interface PostService {
     void updatePostViewCount(Integer postId);
     // 搜索帖子
     PageInfo<Post> searchPosts(int pageNum, int pageSize, Post post);
+    PageInfo<Post> searchKnowledges(int pageNum, int pageSize, Post post);
     //通过userid找用户
     User selectUserById(Integer userId);
     int getPostLikeCount(Integer postId);

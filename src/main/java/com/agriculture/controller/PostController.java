@@ -42,6 +42,7 @@ public class PostController {
             @Valid AddPost addPost,
             @RequestParam(name = "images", required = false) MultipartFile[] images,
             @RequestParam(name = "videos", required = false) MultipartFile videos,
+            @RequestParam(name = "files", required = false) MultipartFile[] files,
             HttpSession session) {
         ModelAndView mv = new ModelAndView();
         User user = (User) session.getAttribute("user");
@@ -92,6 +93,26 @@ public class PostController {
                 attachments.add(attachment);
                 Files.createDirectories(uploadDir);
                 videos.transferTo(uploadDir.resolve(newFileName));
+            }
+            for (MultipartFile file : files){
+                if (file.isEmpty()) {
+                    continue;
+                }
+                Attachment attachment = new Attachment();
+                attachment.setPostId(post.getId());
+                Set<String> allowedExtensions = Set.of("pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx", "zip", "7z");
+                String extension = FilenameUtils.getExtension(file.getOriginalFilename()).toLowerCase();
+                if (!allowedExtensions.contains(extension)) {
+                    throw new RuntimeException("仅支持PDF/DOC/DOCX/XLS/XLSX/PPT/PPTX/ZIP/7Z格式");
+                }
+                attachment.setFileType("application/" + extension);
+                attachment.setFilePath(file.getOriginalFilename());
+                Path uploadDir = Paths.get(
+                        session.getServletContext().getRealPath("/static/uploads/attachments/file/")
+                );
+                attachments.add(attachment);
+                Files.createDirectories(uploadDir);
+                file.transferTo(uploadDir.resolve(file.getOriginalFilename()));
             }
             attachmentService.postAttachment(attachments);
             mv.setViewName("redirect:/");

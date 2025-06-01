@@ -8,6 +8,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <html>
 <head>
     <title>首页</title>
@@ -66,10 +67,11 @@
         .main{
             margin: 0 auto;
             width: 60%;
-            height: 100%;
+            height: auto;
             background: #f5f5f5;
         }
-        .post-header{
+        .post-header,
+        .knowledge-header{
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -190,6 +192,9 @@
             align-items: center;
             justify-content: center;
         }
+        .post-content{
+             margin: 20px;
+        }
         /* 帖子项容器 */
         .post-item {
             background: white;
@@ -197,6 +202,7 @@
             padding: 20px;
             margin-bottom: 20px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
             display: flex;
             gap: 20px;
         }
@@ -207,7 +213,8 @@
             min-width: 0; /* 防止内容溢出 */
         }
 
-        .post-title {
+        .post-title,
+        .knowledge-title {
             margin: 0 0 12px 0;
             color: #2c3e50;
             font-size: 18px;
@@ -276,6 +283,95 @@
             border-radius: 12px;
             font-size: 12px;
         }
+        .knowledge-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            padding: 15px;
+        }
+
+        /* 单个知识项样式 */
+        .knowledge-item {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+        .post-item:hover,
+        .knowledge-item:hover{
+            transform: translateY(-5px);
+        }
+
+        /* 媒体区域 */
+        .knowledge-media {
+            width: 100%;
+            height: 200px;
+            position: relative;
+        }
+
+        .knowledge-media img,
+        .knowledge-media video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 8px 8px 0 0;
+        }
+
+        /* 内容区域 */
+        .knowledge-content {
+            padding: 15px;
+        }
+
+        .knowledge-title {
+            font-size: 16px;
+            margin: 0 0 10px 0;
+            color: #2c3e50;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .knowledge-category {
+            font-size: 12px;
+            color: #666;
+            background: #f3f3f3;
+            padding: 4px 8px;
+            border-radius: 12px;
+            display: inline-block;
+            margin-bottom: 8px;
+        }
+
+        .knowledge-meta {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .knowledge-stats {
+            display: flex;
+            gap: 15px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .knowledge-stats span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .knowledge-container {
+                grid-template-columns: 1fr;
+            }
+        }
 
 
     </style>
@@ -326,7 +422,7 @@
                     <textarea name="content" class="form-input auto-resize" placeholder="内容"></textarea>
                 </div>
 
-                <!-- 多媒体上传 -->
+                <!-- 文件上传 -->
                 <div class="media-upload">
                     <label class="upload-btn">
                         <input type="file" id="imageInput" accept="image/*" multiple hidden>
@@ -336,11 +432,23 @@
                         <input type="file" id="videoInput" accept="video/*" multiple hidden>
                         <span>添加视频</span>
                     </label>
+                    <label class="upload-btn">
+                        <input type="file" id="fileInput" accept=".doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,
+                                                                  .ppt,.pptx,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation,
+                                                                  .xls,.xlsx,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,
+                                                                  .pdf,application/pdf,
+                                                                  .zip,application/zip,
+                                                                  .7z,application/x-7z-compressed"
+                               multiple hidden>
+                        <span>添加附件</span>
+                    </label>
                 </div>
+
 
                 <!-- 隐藏的存储容器 -->
                 <input type="file" id="hiddenImages" name="images" multiple hidden>
                 <input type="file" id="hiddenVideos" name="videos" multiple hidden>
+                <input type="file" id="hiddenFiles" name="files" multiple hidden>
 
                 <div class="form-group">
                     <select name="categoryId" class="form-input">
@@ -356,6 +464,52 @@
             </form>
         </div>
     </c:if>
+    <div class="knowledge">
+        <div class="knowledge-header">
+            <div class="knowledge-header-title"><h2>推荐知识</h2></div>
+            <div>
+                <a href="${pageContext.request.contextPath}/api/">查看更多</a>
+            </div>
+        </div>
+        <div class="knowledge-container">
+            <c:forEach items="${postVOs}" var="knowledge" varStatus="status">
+                <div class="knowledge-item"
+                     onclick="location.href='${pageContext.request.contextPath}/api/knowledge/detail?id=${knowledge.post.id}'">
+
+                        <%-- 媒体内容 --%>
+                    <div class="knowledge-media">
+                        <c:choose>
+                            <c:when test="${fn:startsWith(knowledge.attachment.fileType, 'image/')}">
+                                <img src="${pageContext.request.contextPath}/static/uploads/attachments/img/${knowledge.attachment.filePath}"
+                                     alt="知识封面">
+                            </c:when>
+                            <c:when test="${fn:startsWith(knowledge.attachment.fileType, 'video/')}">
+                                <video controls>
+                                    <source src="${pageContext.request.contextPath}/static/uploads/attachments/video/${knowledge.attachment.filePath}"
+                                            type="${knowledge.attachment.fileType}">
+                                </video>
+                            </c:when>
+                        </c:choose>
+                    </div>
+
+                        <%-- 文字内容 --%>
+                    <div class="knowledge-content">
+                        <h3 class="knowledge-title">${knowledge.post.title}</h3>
+                        <div class="knowledge-category">${knowledge.category}</div>
+                        <div class="knowledge-meta">
+                            <span class="author">${knowledge.user}</span>
+                            <span class="date"><fmt:formatDate value="${knowledge.post.createTime}" pattern="yyyy-MM-dd"/></span>
+                        </div>
+                        <div class="knowledge-stats">
+                            <span>👍 ${knowledge.likeCount}</span>
+                            <span>⭐ ${knowledge.collectionCount}</span>
+                            <span>👁️ ${knowledge.viewCount}</span>
+                        </div>
+                    </div>
+                </div>
+            </c:forEach>
+        </div>
+    </div>
 
     <div class="post">
         <div class="post-header">
@@ -415,153 +569,151 @@
 </html>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // 存储所有选择的文件
-        let allImageFiles = [];
-        let allVideoFiles = [];
+        // 统一文件存储结构
+        const fileGroups = {
+            image: {
+                input: document.getElementById('imageInput'),
+                hidden: document.getElementById('hiddenImages'),
+                files: []
+            },
+            video: {
+                input: document.getElementById('videoInput'),
+                hidden: document.getElementById('hiddenVideos'),
+                files: []
+            },
+            file: {
+                input: document.getElementById('fileInput'),
+                hidden: document.getElementById('hiddenFiles'),
+                files: []
+            }
+        };
 
-        // 图片输入框
-        const imageInput = document.getElementById('imageInput');
-        // 视频输入框
-        const videoInput = document.getElementById('videoInput');
-        // 隐藏的表单元素
-        const hiddenImages = document.getElementById('hiddenImages');
-        const hiddenVideos = document.getElementById('hiddenVideos');
         // 预览容器
         const previewContainer = document.querySelector('.upload-progress');
 
-        // 处理文件预览
-        function handleFilePreview(files, isImage) {
-            Array.from(files).forEach(file => {
+        // 通用文件处理函数
+        const handleFileUpload = (type, files) => {
+            fileGroups[type].files = [...fileGroups[type].files, ...files];
+            updateHiddenInputs(type);
+            generatePreviews(type, files);
+            fileGroups[type].input.value = '';
+        };
+
+        // 生成预览
+        const generatePreviews = (type, files) => {
+            files.forEach(file => {
+                const previewItem = createPreviewElement(type, file);
+                previewContainer.appendChild(previewItem);
+            });
+        };
+
+        // 创建预览元素
+        const createPreviewElement = (type, file) => {
+            const previewItem = document.createElement('div');
+            previewItem.className = 'preview-item';
+
+            if (type === 'image' || type === 'video') {
                 const reader = new FileReader();
-
-                reader.onload = function(e) {
-                    const previewItem = document.createElement('div');
-                    previewItem.className = 'preview-item';
-
-                    // 创建媒体元素
-                    const media = document.createElement(isImage ? 'img' : 'video');
-                    media.className = 'preview-media';
-                    media.src = e.target.result;
-
-                    if(!isImage) {
-                        media.controls = true;
-                        media.style.objectFit = 'contain';
-                    }
-
-                    // 创建删除按钮
-                    const removeBtn = document.createElement('button');
-                    removeBtn.className = 'remove-btn';
-                    removeBtn.innerHTML = '×';
-                    removeBtn.onclick = () => {
-                        // 从数组中移除文件
-                        const fileList = isImage ? allImageFiles : allVideoFiles;
-                        const index = Array.from(fileList).findIndex(f =>
-                            f.name === file.name && f.size === file.size
-                        );
-
-                        if (index !== -1) {
-                            fileList.splice(index, 1);
-                            updateHiddenInputs();
-                        }
-
-                        // 移除预览
-                        previewItem.remove();
-                    };
-
-                    // 文件信息
-                    const info = document.createElement('div');
-                    info.style.cssText = 'padding: 4px; font-size: 12px;';
-                    info.textContent = file.name + ' (' + (file.size/1024).toFixed(2) + 'KB)';
-
+                reader.onload = (e) => {
+                    const media = type === 'image'
+                        ? createImageElement(e.target.result)
+                        : createVideoElement(e.target.result);
                     previewItem.appendChild(media);
-                    previewItem.appendChild(removeBtn);
-                    previewItem.appendChild(info);
-                    previewContainer.appendChild(previewItem);
+                    previewItem.appendChild(createFileInfo(file));
+                    previewItem.appendChild(createRemoveButton(type, file, previewItem));
                 };
-
                 reader.readAsDataURL(file);
-            });
-        }
-
-        // 更新隐藏的输入框
-        function updateHiddenInputs() {
-            // 创建新的DataTransfer对象
-            const imageDataTransfer = new DataTransfer();
-            const videoDataTransfer = new DataTransfer();
-
-            // 添加所有图片文件
-            allImageFiles.forEach(file => {
-                imageDataTransfer.items.add(file);
-            });
-
-            // 添加所有视频文件
-            allVideoFiles.forEach(file => {
-                videoDataTransfer.items.add(file);
-            });
-
-            // 更新隐藏input的files
-            hiddenImages.files = imageDataTransfer.files;
-            hiddenVideos.files = videoDataTransfer.files;
-        }
-
-        // 图片选择事件
-        imageInput.addEventListener('change', function() {
-            if (this.files.length > 0) {
-                // 将新文件添加到数组
-                allImageFiles = [...allImageFiles, ...this.files];
-
-                // 处理预览
-                handleFilePreview(this.files, true);
-
-                // 更新隐藏input
-                updateHiddenInputs();
-
-                // 重置输入框允许再次选择
-                this.value = '';
+            } else {
+                previewItem.innerHTML = `
+                    <div class="file-preview">
+                        <i class="file-icon">📁</i>
+                        <div class="file-info">
+                            <div class="file-name">`+file.name+`</div>
+                            <div class="file-size">`+(file.size/1024).toFixed(2)+`KB</div>
+                        </div>
+                        `+createRemoveButton(type, file, previewItem).outerHTML+`
+                    </div>
+                `;
             }
+
+            return previewItem;
+        };
+
+        // 创建删除按钮
+        const createRemoveButton = (type, file, previewItem) => {
+            const button = document.createElement('button');
+            button.className = 'remove-btn';
+            button.innerHTML = '×';
+            button.onclick = () => {
+                fileGroups[type].files = fileGroups[type].files.filter(f =>
+                    f.name !== file.name || f.size !== file.size
+                );
+                previewItem.remove();
+                updateHiddenInputs(type);
+            };
+            return button;
+        };
+
+        // 更新隐藏input
+        const updateHiddenInputs = (type) => {
+            const dataTransfer = new DataTransfer();
+            fileGroups[type].files.forEach(file => dataTransfer.items.add(file));
+            fileGroups[type].hidden.files = dataTransfer.files;
+        };
+
+        // 创建媒体元素
+        const createImageElement = (src) => {
+            const img = document.createElement('img');
+            img.className = 'preview-media';
+            img.src = src;
+            return img;
+        };
+
+        const createVideoElement = (src) => {
+            const video = document.createElement('video');
+            video.className = 'preview-media';
+            video.controls = true;
+            video.src = src;
+            video.style.objectFit = 'contain';
+            return video;
+        };
+
+        // 创建文件信息
+        const createFileInfo = (file) => {
+            const info = document.createElement('div');
+            info.className = 'file-info';
+            info.innerHTML = `
+                <div class="file-name">`+file.name`</div>
+                <div class="file-size">`+(file.size/1024).toFixed(2)+`KB</div>
+            `;
+            return info;
+        };
+
+        // 事件监听统一处理
+        Object.entries(fileGroups).forEach(([type, group]) => {
+            group.input.addEventListener('change', function() {
+                if (this.files.length > 0) {
+                    handleFileUpload(type, Array.from(this.files));
+                }
+            });
         });
 
-        // 视频选择事件
-        videoInput.addEventListener('change', function() {
-            if (this.files.length > 0) {
-                // 将新文件添加到数组
-                allVideoFiles = [...allVideoFiles, ...this.files];
-
-                // 处理预览
-                handleFilePreview(this.files, false);
-
-                // 更新隐藏input
-                updateHiddenInputs();
-
-                // 重置输入框允许再次选择
-                this.value = '';
-            }
-        });
-
-        // 表单提交事件
+        // 表单提交处理
         document.getElementById('postForm').addEventListener('submit', function() {
-            // 确保隐藏input包含所有文件
-            updateHiddenInputs();
+            Object.keys(fileGroups).forEach(type => updateHiddenInputs(type));
         });
     });
-    function autoResize(textarea) {
+
+    // 自动调整文本域高度（保持原有逻辑）
+    const autoResize = textarea => {
         textarea.style.height = 'auto';
         textarea.style.height = textarea.scrollHeight + 'px';
-    }
+    };
 
-    // 初始化时绑定事件
     document.querySelectorAll('.auto-resize').forEach(textarea => {
-        // 初始化设置高度
         autoResize(textarea);
-
-        // 绑定输入事件
-        textarea.addEventListener('input', function() {
-            autoResize(this);
-        });
-
-        // 处理窗口变化
+        textarea.addEventListener('input', () => autoResize(textarea));
         window.addEventListener('resize', () => autoResize(textarea));
     });
-
-
 </script>
+

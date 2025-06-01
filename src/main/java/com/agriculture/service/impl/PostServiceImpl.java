@@ -87,6 +87,17 @@ public class PostServiceImpl implements PostService {
         }
     }
     @Override
+    public PageInfo<Post> searchKnowledges(int pageNum, int pageSize, Post post){
+        try {
+            PageHelper.startPage(pageNum, pageSize);
+            List<Post> posts = postMapper.selectKnowledgeByCondition(post);
+            return new PageInfo<>(posts, pageSize);
+        } catch (Exception e){
+            e.printStackTrace();
+            throw new RuntimeException("搜索帖子失败");
+        }
+    }
+    @Override
     public void deletePost(Integer postId) {
         if(postId==null||postId<=0){
             throw new RuntimeException("帖子id不能为空");

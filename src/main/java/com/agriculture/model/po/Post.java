@@ -37,6 +37,7 @@ public class Post {
 
     /**
      * 状态: 0-待审核 1-已发布 2-已拒绝
+     * 知识类别：3-待审核 4-已发布 5-已拒绝
      */
     private Integer status;
 
@@ -68,6 +69,11 @@ public class Post {
     public static final Integer STATUS_WAITING_AUDIT = 0;
     public static final Integer STATUS_PUBLISHED = 1;
     public static final Integer STATUS_REJECTED = 2;
+
+     public static final Integer STATUS_KNOWLEDGE_WAITING_AUDIT = 3;
+     public static final Integer STATUS_KNOWLEDGE_PUBLISHED = 4;
+     public static final Integer STATUS_KNOWLEDGE_REJECTED = 5;
+
     public static final Integer IS_NOT_TOP = 0;
     public static final Integer IS_TOP = 1;
     public static final Integer IS_NOT_ESSENCE = 0;

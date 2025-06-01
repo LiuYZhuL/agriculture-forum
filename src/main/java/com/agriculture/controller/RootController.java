@@ -2,6 +2,7 @@ package com.agriculture.controller;
 
 import com.agriculture.model.po.Category;
 import com.agriculture.model.po.Post;
+import com.agriculture.model.vo.KnowledgeVO;
 import com.agriculture.model.vo.PostVO;
 import com.agriculture.service.*;
 import com.github.pagehelper.PageInfo;
@@ -41,14 +42,30 @@ public class RootController {
                 PostVO postVO = new PostVO(p,
                         userService.getUserById(p.getUserId()).getUsername(),
                         categoryService.getCategoryById(p.getCategoryId()).getName(),
-                        attachmentService.getAttachmentByPostId(p.getId()).get(0),
+                        attachmentService.getAttachmentByPostId(p.getId()).isEmpty() ? null : attachmentService.getAttachmentByPostId(p.getId()).get(0),
                         commentService.getCommentCountByPostId(p.getId()),
                         p.getViewCount(),
                         postService.getPostLikeCount(p.getId()),
                         postService.getPostCollectionCount(p.getId()));
                 postVOs.add(postVO);
             }
+            Post known = new Post();
+            known.setStatus(Post.STATUS_KNOWLEDGE_PUBLISHED);
+            known.setIsEssence(Post.IS_ESSENCE);
+            PageInfo<Post> knowledgeList = postService.searchKnowledges(1, 6, known);
+            List<KnowledgeVO> knowledgeVOs = new ArrayList<>();
+            for (Post k : knowledgeList.getList()) {
+                KnowledgeVO knowledgeVO = new KnowledgeVO(k,
+                        userService.getUserById(k.getUserId()).getUsername(),
+                        categoryService.getCategoryById(k.getCategoryId()).getName(),
+                        attachmentService.getAttachmentByPostId(k.getId()).isEmpty() ? null : attachmentService.getAttachmentByPostId(k.getId()).get(0),
+                        k.getViewCount(),
+                        postService.getPostLikeCount(k.getId()),
+                        postService.getPostCollectionCount(k.getId()));
+                knowledgeVOs.add(knowledgeVO);
+            }
             modelAndView.addObject("postVOs", postVOs);
+            modelAndView.addObject("knowledgeVOs", knowledgeVOs);
             modelAndView.addObject("categories", categories);
         }catch (RuntimeException e){
             modelAndView.addObject("error", e.getMessage());

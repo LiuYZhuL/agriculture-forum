@@ -127,7 +127,46 @@
             <if test="title != null">
                 and p.title LIKE CONCAT('%', #{title}, '%')
             </if>
-              <if test="status != null">
+            <if test="status == null">
+                and p.status &lt; 3
+            </if>
+            <if test="status != null">
+                and p.status = #{status}
+            </if>
+            <if test="isTop != null">
+                and p.is_top = #{isTop}
+            </if>
+            <if test="isEssence != null">
+                and p.is_essence = #{isEssence}
+            </if>
+        </where>
+    </select>
+    <select id="selectKnowledgeByCondition" parameterType="com.agriculture.model.po.Post" resultMap="BaseResultMap">
+        SELECT p.*, u.username, c.name as category
+        FROM post p
+        LEFT JOIN user u ON p.user_id = u.id
+        LEFT JOIN category c ON p.category_id = c.id
+        <where>
+            1 = 1
+            <if test="id!= null">
+                and p.id = #{id}
+            </if>
+            <if test="username != null">
+                and u.username LIKE CONCAT('%', #{username}, '%')
+            </if>
+            <if test="userId != null">
+                and p.user_id = #{userId}
+            </if>
+            <if test="categoryId != null">
+                and p.category_id = #{categoryId}
+            </if>
+            <if test="title != null">
+                and p.title LIKE CONCAT('%', #{title}, '%')
+            </if>
+            <if test="status == null">
+                and p.status >= 3
+            </if>
+            <if test="status != null">
                 and p.status = #{status}
             </if>
             <if test="isTop != null">

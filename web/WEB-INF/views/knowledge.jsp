@@ -1,9 +1,8 @@
-
 <%--
   Created by IntelliJ IDEA.
   User: Liu
-  Date: 2025/5/28
-  Time: 19:10
+  Date: 2025/6/1
+  Time: 23:16
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
@@ -283,7 +282,7 @@
 </head>
 <body>
 <div class="header">
-    <div class="logo">帖子详情</div>
+    <div class="logo">知识详情</div>
     <div class="user-info">
         <c:if test="${sessionScope.user == null}">
             <span>还未登录,来登录吧！</span>
@@ -346,8 +345,6 @@
             </c:choose>
         </c:forEach>
     </div>
-    <!-- 附件下载 -->
-    <h2>附件下载:</h2>
     <div class="attachments">
         <c:forEach items="${attachments}" var="attach">
             <c:choose>
@@ -381,7 +378,7 @@
         </button>
 
         <button id="favoriteBtn" onclick="toggleFavorite()" class="action-btn favorite ${isCollected ? 'collected' : ''}">
-             <c:if test="${isCollected}">
+            <c:if test="${isCollected}">
                 ⭐ 已收藏 <span id="favoriteCount">${collectionCount}</span>
             </c:if>
             <c:if test="${!isCollected}">
@@ -507,7 +504,7 @@
             container.style.display = 'block'; // 显示容器
             container.style.background = '#f5f5f5';
             container.style.padding = '10px';
-             container.style.marginTop = '10px';
+            container.style.marginTop = '10px';
             parentEl.appendChild(container);
         }
 
