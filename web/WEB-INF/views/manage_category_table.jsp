@@ -1,0 +1,90 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<div id="categoryMgt" class="content-section">
+    <c:if test="${not empty categoryMsg}">
+        <div style="color: ${categorySuccess ? 'green' : 'red'}; margin-bottom: 15px;">
+                ${categoryMsg}
+        </div>
+    </c:if>
+    <form id="categorySearchForm">
+        <div class="form-group">
+            <label for="searchCategory">搜索分类：</label>
+            <input type="text" id="searchCategory" name="searchCategory" class="form-control" placeholder="请输入分类名称" value="${searchCategory}">
+            <button type="button" class="btn btn-primary" onclick="loadCategoryPage(1)">搜索</button>
+        </div>
+    </form>
+    <form action="${pageContext.request.contextPath}/api/admin/category/add" method="post">
+        <div class="form-group">
+            <label for="categoryName">分类名称：</label>
+            <input type="text" id="categoryName" name="categoryName" class="form-control" placeholder="请输入分类名称">
+            <label  for="categoryDesc">分类描述：</label>
+            <input type="text" id="categoryDesc" name="categoryDesc" class="form-control" placeholder="请输入分类描述">
+            <button type="submit" class="btn btn-primary">添加</button>
+        </div>
+    </form>
+    <h2>分类列表</h2>
+    <table class="category-table">
+        <thead>
+        <tr>
+            <th>分类ID</th>
+            <th>分类名称</th>
+            <th>分类描述</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <c:forEach items="${pageCategory.list}" var="category">
+            <tr>
+                <td>${category.id}</td>
+                <td>${category.name}</td>
+                <td>${category.description}</td>
+                <td>
+                    <a href="${pageContext.request.contextPath}/api/admin/category/update?categoryId=${category.id}">修改</a>
+                    <a href="${pageContext.request.contextPath}/api/admin/category/delete?categoryId=${category.id}">删除</a>
+                </td>
+            </tr>
+        </c:forEach>
+        </tbody>
+    </table>
+    <div class="table-container">
+        <div style="line-height: 30px;">
+            当前第<span class="pageStyle">${pageCategory.pageNum}</span>页
+            共<span class="pageStyle">${pageCategory.pages}</span>页
+            总计<span class="pageStyle">${pageCategory.total}</span>条
+        </div>
+        <div>
+            <nav aria-label="Page navigation" class="pull-right">
+                <ul class="pagination pagination-sm">
+                    <li>
+                        <button onclick="loadCategoryPage(1)">首页</button>
+                    </li>
+                    <c:if test="${pageCategory.pageNum != 1}">
+                        <li>
+                            <button onclick="loadCategoryPage(${pageCategory.pageNum-1})">上一页</button>
+                        </li>
+                    </c:if>
+                    <c:forEach items="${pageCategory.navigatepageNums}" step="1" var="itemPage">
+                        <c:if test="${pageCategory.pageNum == itemPage}">
+                            <li class="active">
+                                <button onclick="loadCategoryPage(${itemPage})" style="background: #666666">${itemPage}</button>
+                            </li>
+                        </c:if>
+                        <c:if test="${pageCategory.pageNum != itemPage}">
+                            <li>
+                                <button onclick="loadCategoryPage(${itemPage})">${itemPage}</button>
+                            </li>
+                        </c:if>
+                    </c:forEach>
+                    <c:if test="${pageCategory.pageNum != pageCategory.pages}">
+                        <li>
+                            <button onclick="loadCategoryPage(${pageCategory.pageNum+1})">下一页</button>
+                        </li>
+                    </c:if>
+                    <li>
+                        <button onclick="loadCategoryPage(${pageCategory.pages})">尾页</button>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
