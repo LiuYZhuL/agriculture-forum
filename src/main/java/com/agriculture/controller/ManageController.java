@@ -160,4 +160,100 @@ public class ManageController {
             return mv;
         }
     }
+    // ====================== AJAX 局部更新接口 ======================
+    @GetMapping("/ajax/user")
+    public ModelAndView ajaxListUsers(
+            @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
+            @RequestParam(value = "pageSize", defaultValue = "5") Integer pageSize,
+            @Valid SelectUser selectUser) {
+        ModelAndView mv = new ModelAndView("manage_user_table");
+        // 复制原有逻辑
+        User user = new User();
+        user.setId(selectUser.getId());
+        user.setUsername(selectUser.getUsername());
+        user.setEmail(selectUser.getEmail());
+        if (selectUser.getStatus() != null){
+            if (selectUser.getStatus().equals(User.STATUS_LOCKED)){
+                user.setStatus(User.STATUS_LOCKED);
+            }else if (selectUser.getStatus().equals(User.STATUS_NORMAL)){
+                user.setStatus(User.STATUS_NORMAL);
+            }
+        }
+        if (selectUser.getRoleId() != null){
+            if (selectUser.getRoleId().equals(Role.ROLE_ADMIN)){
+                user.setRoleId(Role.ROLE_ADMIN);
+            }else if (selectUser.getRoleId().equals(Role.ROLE_USER)){
+                user.setRoleId(Role.ROLE_USER);
+            }
+        }
+        mv.addObject("selectUser", selectUser);
+
+        try{
+            PageInfo<User> pageInfo = userService.listUsers(pageNum, pageSize, user);
+            mv.addObject("pageInfo", pageInfo);
+            mv.addObject("userSuccess", true);
+            mv.addObject("userMsg", "用户列表获取成功");
+            return mv;
+        }catch (RuntimeException e) {
+            mv.addObject("userSuccess", false);
+            mv.addObject("userMsg", e.getMessage());
+            return mv;
+        }
+    }
+
+    @GetMapping("/ajax/category")
+    public ModelAndView ajaxListCategories(
+            @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
+            @RequestParam(value = "pageSize", defaultValue = "5") Integer pageSize,
+            @RequestParam(value = "searchCategory", required = false) String searchCategory) {
+        ModelAndView mv = new ModelAndView("manage_category_table");
+        mv.addObject("searchCategory", searchCategory);
+        try {
+            PageInfo<Category> pageCategory;
+            if (searchCategory != null && !searchCategory.isEmpty()){
+                pageCategory = categoryService.searchCategories(searchCategory, pageNum, pageSize);
+            }else{
+                pageCategory = categoryService.listCategories(pageNum, pageSize);
+            }
+            mv.addObject("pageCategory", pageCategory);
+            mv.addObject("categorySuccess", true);
+            mv.addObject("categoryMsg", "分类列表获取成功");
+            return mv;
+        }catch (RuntimeException e) {
+            mv.addObject("categorySuccess", false);
+            mv.addObject("categoryMsg", e.getMessage());
+            return mv;
+        }
+    }
+
+    @GetMapping("/ajax/post")
+    public ModelAndView ajaxListPosts(
+            @RequestParam(value = "pageNum", defaultValue = "1")Integer pageNum,
+            @RequestParam(value = "pageSize", defaultValue = "5") Integer pageSize,
+            @Valid SelectPost selectPost) {
+        ModelAndView mv = new ModelAndView("manage_post_table");
+        Post post = new Post();
+        post.setId(selectPost.getPostId());
+        post.setTitle(selectPost.getTitle());
+        post.setUsername(selectPost.getUser());
+        post.setCategoryId(selectPost.getCategoryId());
+        post.setStatus(selectPost.getSts());
+        post.setIsTop(selectPost.getIsTop());
+        post.setIsEssence(selectPost.getIsEssence());
+        try {
+            PageInfo<Post> pagePost = postService.searchPosts(pageNum, pageSize, post);
+            List<Category> categories = categoryService.listCategories();
+            mv.addObject("categories", categories);
+            mv.addObject("pagePost", pagePost);
+            mv.addObject("selectPost", selectPost);
+            mv.addObject("postSuccess", true);
+            mv.addObject("postMsg", "帖子列表获取成功");
+            return mv;
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            mv.addObject("postSuccess", false);
+            mv.addObject("postMsg", e.getMessage());
+            return mv;
+        }
+    }
 }
