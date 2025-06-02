@@ -220,4 +220,12 @@ public class PostServiceImpl implements PostService {
         }
     }
 
+    @Override
+    public List<Post> getCollectKnowledgeByUser(Integer userId) {
+        try {
+            return postMapper.selectCollectionKnowledge(userId);
+        }catch (Exception e){
+            throw new RuntimeException("获取用户收藏知识失败");
+        }
+    }
 }

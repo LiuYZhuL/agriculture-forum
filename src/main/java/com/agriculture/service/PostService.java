@@ -33,4 +33,5 @@ public interface PostService {
     int getPostLikeCount(Integer postId);
     int getPostCollectionCount(Integer postId);
     List<Post> getCollectPostsByUser(Integer userId);
+    List<Post> getCollectKnowledgeByUser(Integer userId);
 }

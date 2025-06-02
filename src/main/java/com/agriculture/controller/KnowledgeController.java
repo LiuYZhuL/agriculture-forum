@@ -39,10 +39,6 @@ public class KnowledgeController {
             HttpSession session) {
         ModelAndView mv = new ModelAndView();
         User user = (User) session.getAttribute("user");
-        if (user == null){
-            mv.setViewName("login");
-            return mv;
-        }
         try {
             Post post = postService.getbyId(postId);
             User postUser = userService.getUserById(post.getUserId());

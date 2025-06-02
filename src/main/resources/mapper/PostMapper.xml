@@ -197,4 +197,12 @@
         LEFT JOIN interaction i ON p.id = i.post_id
         WHERE i.user_id = #{userId} AND i.type = 2 AND p. status = 1
     </select>
+    <select id="selectCollectionKnowledge" parameterType="int" resultMap="BaseResultMap">
+        SELECT p.*, u.username, c.name as category
+        FROM post p
+                 LEFT JOIN user u ON p.user_id = u.id
+                 LEFT JOIN category c ON p.category_id = c.id
+                 LEFT JOIN interaction i ON p.id = i.post_id
+        WHERE i.user_id = #{userId} AND i.type = 2 AND p. status = 4
+    </select>
 </mapper>

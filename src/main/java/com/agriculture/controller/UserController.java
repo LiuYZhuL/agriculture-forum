@@ -8,11 +8,9 @@ import com.agriculture.model.po.Attachment;
 import com.agriculture.model.po.Category;
 import com.agriculture.model.po.Post;
 import com.agriculture.model.po.User;
+import com.agriculture.model.vo.KnowledgeVO;
 import com.agriculture.model.vo.PostVO;
-import com.agriculture.service.AttachmentService;
-import com.agriculture.service.CategoryService;
-import com.agriculture.service.PostService;
-import com.agriculture.service.UserService;
+import com.agriculture.service.*;
 import com.github.pagehelper.PageInfo;
 import com.mysql.cj.Session;
 import jakarta.servlet.http.HttpSession;
@@ -49,6 +47,10 @@ public class UserController {
     private CategoryService categoryService;
     @Autowired
     private AttachmentService attachmentService;
+    @Autowired
+    private CommentService commentService;
+
+
 
     /**
      * 登录页面
@@ -155,24 +157,33 @@ public class UserController {
     public ModelAndView home(HttpSession session) {
         ModelAndView modelAndView = new ModelAndView();
         User user = (User) session.getAttribute("user");
-        if(user==null){
-            modelAndView.setViewName("login");
-            return modelAndView;
-        }
         List<PostVO> postVOs = new ArrayList<>();
         List<Post> postList = postService.getCollectPostsByUser(user.getId());
         for (Post p : postList) {
             PostVO postVO = new PostVO(p,
                     userService.getUserById(p.getUserId()).getUsername(),
                     categoryService.getCategoryById(p.getCategoryId()).getName(),
-                    attachmentService.getAttachmentByPostId(p.getId()).get(0),
-                    0,
-                    0,
-                    0,
-                    0);
+                    attachmentService.getAttachmentByPostId(p.getId()).isEmpty() ? null : attachmentService.getAttachmentByPostId(p.getId()).get(0),
+                    commentService.getCommentCountByPostId(p.getId()),
+                    p.getViewCount(),
+                    postService.getPostLikeCount(p.getId()),
+                    postService.getPostCollectionCount(p.getId()));
             postVOs.add(postVO);
         }
+        List<KnowledgeVO>  knowledgeVOs = new ArrayList<>();
+        List<Post> knowledgeList = postService.getCollectKnowledgeByUser(user.getId());
+        for (Post k : knowledgeList) {
+            KnowledgeVO knowledgeVO = new KnowledgeVO(k,
+                    userService.getUserById(k.getUserId()).getUsername(),
+                    categoryService.getCategoryById(k.getCategoryId()).getName(),
+                    attachmentService.getAttachmentByPostId(k.getId()).isEmpty() ? null : attachmentService.getAttachmentByPostId(k.getId()).get(0),
+                    k.getViewCount(),
+                    postService.getPostLikeCount(k.getId()),
+                    postService.getPostCollectionCount(k.getId()));
+            knowledgeVOs.add(knowledgeVO);
+        }
         modelAndView.addObject("postVOs", postVOs);
+        modelAndView.addObject("knowledgeVOs", knowledgeVOs);
         modelAndView.addObject("user", user);
         modelAndView.setViewName("home");
         return modelAndView;
@@ -225,10 +236,6 @@ public class UserController {
                                HttpSession session) {
         ModelAndView modelAndView = new ModelAndView();
         User user = (User) session.getAttribute("user");
-        if (user == null){
-            modelAndView.setViewName("login");
-            return modelAndView;
-        }
         modelAndView.addObject("activeSection", "avatar");
         modelAndView.setViewName("home");
         try {
@@ -299,10 +306,6 @@ public class UserController {
              HttpSession session){
          ModelAndView modelAndView = new ModelAndView();
          User user = (User) session.getAttribute("user");
-         if (user == null){
-             modelAndView.setViewName("login");
-             return modelAndView;
-         }
          modelAndView.addObject("activeSection", "info");
          modelAndView.setViewName("home");
          UpdateUser updateUser = new UpdateUser();
@@ -335,10 +338,6 @@ public class UserController {
             HttpSession session){
         ModelAndView modelAndView = new ModelAndView();
         User user = (User) session.getAttribute("user");
-        if (user == null){
-            modelAndView.setViewName("login");
-            return modelAndView;
-        }
         modelAndView.addObject("activeSection", "change");
         modelAndView.setViewName("home");
             try {

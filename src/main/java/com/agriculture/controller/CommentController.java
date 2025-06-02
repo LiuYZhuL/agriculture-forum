@@ -30,10 +30,6 @@ public class CommentController {
                             HttpSession session) {
          ModelAndView mv = new ModelAndView();
          mv.setViewName("redirect:/api/post/detail?postId=" + postId);
-         User user = (User) session.getAttribute("user");
-         if (user == null) {
-             mv.setViewName("redirect:api/user/login");
-         }
          try {
              Comment comment = new Comment();
              comment.setPostId(postId);

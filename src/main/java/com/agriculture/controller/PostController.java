@@ -49,11 +49,6 @@ public class PostController {
             HttpSession session) {
         ModelAndView mv = new ModelAndView();
         User user = (User) session.getAttribute("user");
-        if (user == null) {
-            mv.setViewName("login");
-            mv.addObject("error", "请先登录");
-            return mv;
-        }
         addPost.setUserId(user.getId());
         try {
             Post post = postService.add(addPost);
@@ -199,10 +194,6 @@ public class PostController {
             HttpSession session) {
         ModelAndView mv = new ModelAndView();
         User user = (User) session.getAttribute("user");
-        if (user == null){
-            mv.setViewName("login");
-            return mv;
-        }
         try {
             Post post = postService.getbyId(postId);
             User postUser = userService.getUserById(post.getUserId());
@@ -328,11 +319,6 @@ public class PostController {
              HttpSession session) {
         ModelAndView mv = new ModelAndView();
         User user = (User) session.getAttribute("user");
-        if (user == null) {
-            mv.setViewName("login");
-            mv.addObject("error", "请先登录");
-            return mv;
-        }
         addPost.setUserId(user.getId());
         try {
             Post post = new Post();
@@ -417,9 +403,6 @@ public class PostController {
             @RequestParam("postId") Integer postId,
             HttpSession session) {
         User user = (User) session.getAttribute("user");
-        if (user == null) {
-            return;
-        }
         try {
             if (interactionService.isLiked(postId, user.getId())){
                 interactionService.deleteLike(postId, user.getId());
@@ -437,11 +420,6 @@ public class PostController {
         ModelAndView mv = new ModelAndView();
         mv.setViewName("redirect:detail?postId=" + postId);
         User user = (User) session.getAttribute("user");
-        if (user == null) {
-            mv.setViewName("login");
-            mv.addObject("error", "请先登录");
-            return mv;
-        }
         try {
             if (interactionService.isCollected(postId, user.getId())){
                 interactionService.deleteCollection(postId, user.getId());

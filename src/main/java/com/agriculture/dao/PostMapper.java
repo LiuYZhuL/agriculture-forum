@@ -26,5 +26,6 @@ public interface PostMapper {
     int selectPostLikeCount(int id);
     int selectPostCollectionCount(int id);
     List<Post> selectCollectionPost(int userId);
+    List<Post> selectCollectionKnowledge(int userId);
 
 }

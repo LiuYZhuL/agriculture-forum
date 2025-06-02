@@ -24,24 +24,30 @@
     <mvc:resources mapping="/js/**" location="static/js/"/>
     <mvc:resources mapping="/img/**" location="static/uploads/img/"/>
 
+    <!-- 确保组件扫描包含异常处理器包 -->
+    <context:component-scan base-package="com.agriculture.exception"/>
 
-<!--    <mvc:interceptors>-->
-<!--        &lt;!&ndash; 登录校验 &ndash;&gt;-->
-<!--        <mvc:interceptor>-->
-<!--            <mvc:mapping path="/user/**"/>-->
-<!--            <mvc:mapping path="/home"/>-->
-<!--            <mvc:exclude-mapping path="/login"/>-->
-<!--            <mvc:exclude-mapping path="/register"/>-->
-<!--            <mvc:exclude-mapping path="/index"/>-->
-<!--            <bean class="com.agriculture.interceptor.AuthInterceptor"/>-->
-<!--        </mvc:interceptor>-->
+    <mvc:interceptors>
+        <!-- 登录校验 -->
+        <mvc:interceptor>
+            <mvc:mapping path="/api/**"/>
+
+            <mvc:exclude-mapping path="/api/user/login"/>
+            <mvc:exclude-mapping path="/api/user/register"/>
+            <mvc:exclude-mapping path="/api/user/reset"/>
+            <bean class="com.agriculture.interceptor.AuthInterceptor"/>
+        </mvc:interceptor>
+        <mvc:interceptor>
+            <mvc:mapping path="/api/admin/**"/>
+            <bean class="com.agriculture.interceptor.AdminInterceptor"/>
+        </mvc:interceptor>
 
 <!--        &lt;!&ndash; 性能监控 &ndash;&gt;-->
 <!--        <mvc:interceptor>-->
 <!--            <mvc:mapping path="/**"/>-->
 <!--            <bean class="com.agriculture.interceptor.PerformanceInterceptor"/>-->
 <!--        </mvc:interceptor>-->
-<!--    </mvc:interceptors>-->
+    </mvc:interceptors>
 
 
 

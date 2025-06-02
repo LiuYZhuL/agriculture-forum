@@ -526,38 +526,8 @@
         currentParentId = null;
     }
 
-    // 插入评论到 DOM（示例）
-    function insertCommentToDOM(content, replyTo, parentId) {
-        // 正确选择父评论容器
-        const parentEl = document.querySelector(`[data-comment-id=`+ parentId +`]`);
-        if (!parentEl) return;
 
-        // 获取 child-comments 容器，如果没有就创建一个
-        let container = parentEl.querySelector('.child-comments');
-        if (!container) {
-            container = document.createElement('div');
-            container.className = 'child-comments';
-            container.style.display = 'block'; // 显示容器
-            container.style.background = '#f5f5f5';
-            container.style.padding = '10px';
-            container.style.marginTop = '10px';
-            parentEl.appendChild(container);
-        }
 
-        // 创建子评论 DOM 元素
-        const div = document.createElement('div');
-        div.className = 'child-comment';
-
-        div.innerHTML = `
-        <div class="comment-header">
-            <img src="${sessionScope.user.avatar}" class="comment-avatar" />
-            <span class="comment-username">${sessionScope.user.username}</span>
-            <span class="comment-time">刚刚</span>
-        </div>
-        <div class="comment-content">@` +replyTo + content +`</div>`;
-        // 接口返回评论数据
-
-    }
 
 
     // 点击非输入框区域隐藏

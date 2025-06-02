@@ -127,6 +127,7 @@
             padding: 20px;
             margin-bottom: 20px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
             display: flex;
             gap: 20px;
         }
@@ -205,6 +206,94 @@
             background: #f0f0f0;
             border-radius: 12px;
             font-size: 12px;
+        }
+        .knowledge-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            padding: 15px;
+        }
+
+        /* 单个知识项样式 */
+        .knowledge-item {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+        .post-item:hover,
+        .knowledge-item:hover{
+            transform: translateY(-5px);
+        }
+
+        /* 媒体区域 */
+        .knowledge-media {
+            width: 100%;
+            height: 200px;
+            position: relative;
+        }
+
+        .knowledge-media img,
+        .knowledge-media video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 8px 8px 0 0;
+        }
+        /* 内容区域 */
+        .knowledge-content {
+            padding: 15px;
+        }
+
+        .knowledge-title {
+            font-size: 16px;
+            margin: 0 0 10px 0;
+            color: #2c3e50;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .knowledge-category {
+            font-size: 12px;
+            color: #666;
+            background: #f3f3f3;
+            padding: 4px 8px;
+            border-radius: 12px;
+            display: inline-block;
+            margin-bottom: 8px;
+        }
+
+        .knowledge-meta {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .knowledge-stats {
+            display: flex;
+            gap: 15px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .knowledge-stats span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .knowledge-container {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -300,6 +389,7 @@
         </c:if>
         <button onclick="location.href='${pageContext.request.contextPath}/api/user/home?activeSection=collect'">查看收藏</button>
         <h2>我的收藏</h2>
+        <h3>收藏的帖子</h3>
         <div class="post-content">
             <c:forEach items="${postVOs}" var="postvo">
                 <div class="post-item" onclick="location.href='${pageContext.request.contextPath}/api/post/detail?postId=${postvo.post.id}'">
@@ -340,6 +430,45 @@
                                 </c:when>
                             </c:choose>
                         </c:if>
+                    </div>
+                </div>
+            </c:forEach>
+        </div>
+        <h3>收藏的知识</h3>
+        <div class="knowledge-container">
+            <c:forEach items="${knowledgeVOs}" var="knowledge" varStatus="status">
+                <div class="knowledge-item"
+                     onclick="location.href='${pageContext.request.contextPath}/api/knowledge/detail?postId=${knowledge.post.id}'">
+
+                        <%-- 媒体内容 --%>
+                    <div class="knowledge-media">
+                        <c:choose>
+                            <c:when test="${fn:startsWith(knowledge.attachment.fileType, 'image/')}">
+                                <img src="${pageContext.request.contextPath}/static/uploads/attachments/img/${knowledge.attachment.filePath}"
+                                     alt="知识封面">
+                            </c:when>
+                            <c:when test="${fn:startsWith(knowledge.attachment.fileType, 'video/')}">
+                                <video controls>
+                                    <source src="${pageContext.request.contextPath}/static/uploads/attachments/video/${knowledge.attachment.filePath}"
+                                            type="${knowledge.attachment.fileType}">
+                                </video>
+                            </c:when>
+                        </c:choose>
+                    </div>
+
+                        <%-- 文字内容 --%>
+                    <div class="knowledge-content">
+                        <h3 class="knowledge-title">${knowledge.post.title}</h3>
+                        <div class="knowledge-category">${knowledge.category}</div>
+                        <div class="knowledge-meta">
+                            <span class="author">${knowledge.user}</span>
+                            <span class="date"><fmt:formatDate value="${knowledge.post.createTime}" pattern="yyyy-MM-dd"/></span>
+                        </div>
+                        <div class="knowledge-stats">
+                            <span>👍 ${knowledge.likeCount}</span>
+                            <span>⭐ ${knowledge.collectionCount}</span>
+                            <span>👁️ ${knowledge.viewCount}</span>
+                        </div>
                     </div>
                 </div>
             </c:forEach>
