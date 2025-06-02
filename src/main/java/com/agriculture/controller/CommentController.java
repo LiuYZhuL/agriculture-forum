@@ -82,5 +82,18 @@ public class CommentController {
         return model;
     }
 
+    @RequestMapping("/delete")
+     public ModelAndView delete(@RequestParam("commentId") Integer commentId) {
+        ModelAndView mv = new ModelAndView();
+        try {
+            Comment comment = commentService.selectCommentById(commentId);
+            mv.setViewName("redirect:/api/post/detail?postId=" + comment.getPostId());
+            commentService.deleteComment(commentId);
+        } catch (Exception e) {
+            mv.setViewName( "redirect:/");
+            e.printStackTrace();
+        }
+        return mv;
+    }
 
 }

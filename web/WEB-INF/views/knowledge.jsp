@@ -275,7 +275,16 @@
             background-color: #ffe9db;
             color: #fa8c16;
         }
-
+        .delete-btn {
+            color: #ff4d4f;
+            background: none;
+            border: none;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        .delete-btn:hover {
+            text-decoration: underline;
+        }
 
 
     </style>
@@ -579,6 +588,24 @@
                 console.error(err);
                 alert('网络错误');
             });
+    }
+    function deleteComment(commentId, btnElement) {
+        if (!confirm('确定要删除这条评论吗？')) return;
+
+        fetch('${pageContext.request.contextPath}/api/comment/delete', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'commentId=' + commentId
+        })
+            .then(() => {
+                alert('删除成功！');
+                window.location.reload();
+            }).catch(error => {
+            console.error('删除评论失败:', error);
+            alert('删除失败，请稍后再试。');
+        });
     }
 
 

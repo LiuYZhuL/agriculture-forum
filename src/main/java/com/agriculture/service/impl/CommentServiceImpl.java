@@ -28,6 +28,8 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public void deleteComment(Integer commentId) {
         try{
+            Comment comment = commentMapper.selectCommentById(commentId);
+            commentMapper.deleteCommentByParentId(commentId);
             commentMapper.deleteCommentById(commentId);
         }catch (Exception e){
             e.printStackTrace();
@@ -95,6 +97,16 @@ public class CommentServiceImpl implements CommentService {
             PageHelper.startPage(pageNum, pageSize);
             List<Comment> comments = commentMapper.selectTopLevelCommentByPostId(postId);
             return new PageInfo<>(comments, pageSize);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("获取评论失败");
+        }
+    }
+
+    @Override
+    public Comment selectCommentById(Integer commentId) {
+        try {
+             return commentMapper.selectCommentById(commentId);
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException("获取评论失败");

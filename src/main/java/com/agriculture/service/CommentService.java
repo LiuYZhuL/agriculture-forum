@@ -15,6 +15,7 @@ public interface CommentService {
     List<Comment> getCommentsByUserId(Integer userId);
     int getCommentCountByPostId(Integer postId);
     PageInfo<Comment> getCommentsByPage(Integer postId, Integer pageNum, Integer pageSize);
+    Comment selectCommentById(Integer commentId);
 
 
 }

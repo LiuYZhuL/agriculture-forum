@@ -969,9 +969,11 @@
                         <div class="comment-info">
                             <span class="comment-username">${sessionScope.user.username}</span>
                             <span class="comment-time">
-                            <fmt:formatDate value="${comment.createTime}" pattern="yyyy-MM-dd HH:mm"/>
-                        </span>
+                                <fmt:formatDate value="${comment.createTime}" pattern="yyyy-MM-dd HH:mm"/>
+                            </span>
                         </div>
+                        <a href="${pageContext.request.contextPath}/api/comment/delete?commentId=${comment.id}"
+                           class="comment-delete">删除</a>
                         <a href="${pageContext.request.contextPath}/api/post/detail?postId=${comment.postId}"
                            class="comment-link">
                             查看原帖 →

@@ -10,6 +10,7 @@ public interface CommentMapper {
     void batchInsertComment(List<Comment> comments);
     void deleteCommentById(int id);
     void deleteCommentByPostId(int postId);
+    void deleteCommentByParentId(int parentId);
     void updateComment(Comment comment);
     Comment selectCommentById(int id);
     List<Comment> selectAllComment();

@@ -19,6 +19,9 @@
         </div>
         <div class="comment-content">${comment.content}</div>
         <button class="reply-btn" onclick="showChildComments(this, '${comment.username}', ${comment.id})">回复</button>
+        <c:if test="${sessionScope.user.id == comment.userId || sessionScope.user.roleId == 2}">
+            <button class="delete-btn" onclick="deleteComment(${comment.id}, this)">删除</button>
+        </c:if>
 
         <c:if test="${not empty comment.children}">
             <div class="child-comments">
@@ -32,6 +35,9 @@
                         </div>
                         <div class="comment-content">${child.content}</div>
                         <button class="reply-btn" onclick="showChildComments(this, '${child.username}', ${comment.id})">回复</button>
+                        <c:if test="${sessionScope.user.id == comment.userId || sessionScope.user.roleId == 2}">
+                            <button class="delete-btn" onclick="deleteComment(${comment.id}, this)">删除</button>
+                        </c:if>
                     </div>
                 </c:forEach>
             </div>

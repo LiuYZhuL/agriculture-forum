@@ -47,6 +47,9 @@
         DELETE FROM comment WHERE post_id = #{postId}
     </delete>
 
+    <delete id="deleteCommentByParentId" parameterType="java.lang.Integer">
+        DELETE FROM comment WHERE parent_id = #{parentId}
+    </delete>
     <!-- 更新评论 -->
     <update id="updateComment" parameterType="com.agriculture.model.po.Comment">
         UPDATE comment
