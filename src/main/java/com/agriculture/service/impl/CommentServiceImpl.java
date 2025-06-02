@@ -36,6 +36,16 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    public void deleteCommentsByPostId(Integer postId) {
+        try{
+            commentMapper.deleteCommentByPostId(postId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("删除评论失败");
+        }
+    }
+
+    @Override
     public void updateComment(Comment comment) {
 
     }
