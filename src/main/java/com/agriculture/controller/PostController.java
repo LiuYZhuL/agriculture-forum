@@ -3,7 +3,10 @@ package com.agriculture.controller;
 import com.agriculture.model.dto.AddPost;
 import com.agriculture.model.po.*;
 import com.agriculture.model.vo.CommentVO;
+import com.agriculture.model.vo.KnowledgeVO;
+import com.agriculture.model.vo.PostVO;
 import com.agriculture.service.*;
+import com.github.pagehelper.PageInfo;
 import jakarta.servlet.http.HttpSession;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -453,4 +456,47 @@ public class PostController {
         return mv;
     }
 
+    @GetMapping("/more")
+     public ModelAndView more(
+            HttpSession session) {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("more_posts");
+        try {
+            List<Category> categories = categoryService.listCategories();
+            modelAndView.addObject("categories", categories);
+        }catch (RuntimeException e){
+            modelAndView.addObject("error", e.getMessage());
+            return modelAndView;
+        }
+        return modelAndView;
+    }
+    @GetMapping("/search")
+     public ModelAndView search(
+            @RequestParam(name = "page", defaultValue = "1") Integer page,
+            @RequestParam(name = "size", defaultValue = "5") Integer size,
+            @RequestParam(name = "keyword", required = false) String keyword,
+            @RequestParam(name = "categoryId", required = false) Integer categoryId) {
+        ModelAndView model = new ModelAndView("post_fragment");
+        Post searchPost = new Post();
+        searchPost.setTitle(keyword);
+        searchPost.setCategoryId(categoryId);
+        searchPost.setStatus(Post.STATUS_PUBLISHED);
+        PageInfo<Post> postList = postService.searchPosts(page, size, searchPost);
+         List<PostVO> postVOs = new ArrayList<>();
+        for (Post p : postList.getList()) {
+            PostVO postVO = new PostVO(p,
+                    userService.getUserById(p.getUserId()).getUsername(),
+                    categoryService.getCategoryById(p.getCategoryId()).getName(),
+                    attachmentService.getAttachmentByPostId(p.getId()).isEmpty() ? null : attachmentService.getAttachmentByPostId(p.getId()).get(0),
+                    commentService.getCommentCountByPostId(p.getId()),
+                    p.getViewCount(),
+                    postService.getPostLikeCount(p.getId()),
+                    postService.getPostCollectionCount(p.getId()));
+            postVOs.add(postVO);
+        }
+        model.addObject("postVOs", postVOs);
+        model.addObject("hasMore", postList.isHasNextPage());
+        return model;
+
+    }
 }

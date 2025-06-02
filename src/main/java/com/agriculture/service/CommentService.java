@@ -1,6 +1,7 @@
 package com.agriculture.service;
 
 import com.agriculture.model.po.Comment;
+import com.github.pagehelper.PageInfo;
 
 import java.util.List;
 
@@ -12,6 +13,7 @@ public interface CommentService {
     List<Comment> getCCommentsByPostId(Integer commentId);
     List<Comment> getCommentsByUserId(Integer userId);
     int getCommentCountByPostId(Integer postId);
+    PageInfo<Comment> getCommentsByPage(Integer postId, Integer pageNum, Integer pageSize);
 
 
 }

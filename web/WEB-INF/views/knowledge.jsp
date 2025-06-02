@@ -395,29 +395,10 @@
 <div class="post-container">
     <h2>评论区:</h2>
     <!-- 评论区 -->
-    <div class="comment-item" data-comment-id="123">
-        <c:forEach items="${comments}" var="comment">
-            <div class="comment-item" data-comment-id="${comment.id}">
-                <div class="comment-header">
-                    <img src="${pageContext.request.contextPath}/static/uploads/img/${comment.avatar}" class="comment-avatar">
-                    <span class="comment-username">${comment.username}</span>
-                    <span class="comment-time"><fmt:formatDate value="${comment.createTime}" pattern="yyyy-MM-dd HH:mm"/></span>
-                </div>
-                <div class="comment-content">${comment.content}</div>
-                <button class="reply-btn" onclick="showChildComments(this, '${comment.username}', ${comment.id})">回复</button>
-                <c:forEach items="${comment.children}" var="child">
-                    <div class="child-comments" style="background: #f5f5f5; padding: 10px; margin-top: 10px;">
-                        <div class="child-comment">
-                            <img src="${pageContext.request.contextPath}/static/uploads/img/${child.avatar}" class="comment-avatar">
-                            <span class="comment-username">${child.username}</span>
-                            <span class="comment-time"><fmt:formatDate value="${child.createTime}" pattern="yyyy-MM-dd HH:mm"/></span>
-                        </div>
-                        <div class="comment-content">${child.content}</div>
-                        <button class="reply-btn" onclick="showChildComments(this, '${child.username}', ${comment.id})">回复</button>
-                    </div>
-                </c:forEach>
-            </div>
-        </c:forEach>
+    <!-- 替换原有评论区 -->
+    <div class="comments-section" id="commentsContainer"></div>
+    <div id="loading" style="display:none;padding:20px;text-align:center;">
+        <img src="${pageContext.request.contextPath}/static/images/loading.gif" width="30">
     </div>
     <!-- 评论输入框，默认隐藏 -->
     <div id="commentInputBox" style="display: none;">
@@ -429,6 +410,61 @@
 </body>
 </html>
 <script>
+    let currentPage = 1;
+    let isLoading = false;
+
+    // 滚动监听
+    const scrollHandler = () => {
+        const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+        const threshold = 100;
+        if (scrollTop + clientHeight >= scrollHeight - threshold && !isLoading) {
+            loadMoreComments();
+        }
+    };
+    window.addEventListener('scroll', scrollHandler);
+    function removeScrollListener() {
+        window.removeEventListener('scroll', scrollHandler); // 使用同一函数引用
+    }
+
+
+    async function loadMoreComments() {
+        isLoading = true;
+        showLoading(true);
+
+        try {
+            const response = await fetch(`${pageContext.request.contextPath}/api/comment/page?postId=${post.id}&page=`+currentPage);
+            const html = await response.text();
+
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = html;
+
+            // 追加评论内容
+            document.getElementById('commentsContainer').insertAdjacentHTML('beforeend',
+                tempDiv.innerHTML);
+
+            // 修复分页状态判断
+            const hasMoreElement = tempDiv.querySelector('#hasMore');
+            const hasMore = hasMoreElement ? hasMoreElement.value === 'true' : false;
+            if (!hasMore) {
+                removeScrollListener();
+            }
+            currentPage++;
+
+        } catch (error) {
+            console.error('加载失败:', error);
+        } finally {
+            isLoading = false;
+            showLoading(false);
+        }
+    }
+
+    function showLoading(show) {
+        document.getElementById('loading').style.display = show ? 'block' : 'none';
+    }
+
+    // 初始化加载
+    loadMoreComments();
+
     const commentInputBox = document.getElementById('commentInputBox');
     const commentContent = document.getElementById('commentContent');
 

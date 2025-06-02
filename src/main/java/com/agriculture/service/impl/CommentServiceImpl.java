@@ -3,6 +3,8 @@ package com.agriculture.service.impl;
 import com.agriculture.dao.CommentMapper;
 import com.agriculture.model.po.Comment;
 import com.agriculture.service.CommentService;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -72,6 +74,17 @@ public class CommentServiceImpl implements CommentService {
     public int getCommentCountByPostId(Integer postId) {
         try {
             return commentMapper.countCommentByPostId(postId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("获取评论失败");
+        }
+    }
+    @Override
+    public PageInfo<Comment> getCommentsByPage(Integer postId, Integer pageNum, Integer pageSize) {
+        try {
+            PageHelper.startPage(pageNum, pageSize);
+            List<Comment> comments = commentMapper.selectTopLevelCommentByPostId(postId);
+            return new PageInfo<>(comments, pageSize);
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException("获取评论失败");

@@ -468,13 +468,13 @@
         <div class="knowledge-header">
             <div class="knowledge-header-title"><h2>推荐知识</h2></div>
             <div>
-                <a href="${pageContext.request.contextPath}/api/">查看更多</a>
+                <a href="${pageContext.request.contextPath}/api/knowledge/more">查看更多</a>
             </div>
         </div>
         <div class="knowledge-container">
-            <c:forEach items="${postVOs}" var="knowledge" varStatus="status">
+            <c:forEach items="${knowledgeVOs}" var="knowledge" varStatus="status">
                 <div class="knowledge-item"
-                     onclick="location.href='${pageContext.request.contextPath}/api/knowledge/detail?id=${knowledge.post.id}'">
+                     onclick="location.href='${pageContext.request.contextPath}/api/knowledge/detail?postId=${knowledge.post.id}'">
 
                         <%-- 媒体内容 --%>
                     <div class="knowledge-media">
@@ -515,7 +515,7 @@
         <div class="post-header">
             <div class="post-header-title"><h2>推荐帖子</h2></div>
             <div>
-                <a href="${pageContext.request.contextPath}/api/">查看更多</a>
+                <a href="${pageContext.request.contextPath}/api/post/more">查看更多</a>
             </div>
         </div>
         <div class="post-content">
