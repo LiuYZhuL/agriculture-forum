@@ -855,13 +855,11 @@
                     <ul class="pagination pagination-sm" style="margin: 0; display: inline-block;">
                         <li>
                             <form action="${pageContext.request.contextPath}/api/user/knowledge" method="get">
-                                <input type="hidden" name="postId" value="${selectK.postId}">
-                                <input type="hidden" name="user" value="${selectK.user}">
-                                <input type="hidden" name="title" value="${selectK.title}">
-                                <input type="hidden" name="status" value="${selectK.sts}">
-                                <input type="hidden" name="categoryId" value="${selectK.categoryId}">
-                                <input type="hidden" name="isTop" value="${selectK.isTop}">
-                                <input type="hidden" name="isEssence" value="${selectK.isEssence}">
+                                <input type="hidden" name="ktitle" value="${selectK.title}">
+                                <input type="hidden" name="kstatus" value="${selectK.sts}">
+                                <input type="hidden" name="kcategoryId" value="${selectK.categoryId}">
+                                <input type="hidden" name="kisTop" value="${selectK.isTop}">
+                                <input type="hidden" name="kisEssence" value="${selectK.isEssence}">
                                 <input type="hidden" name="pageNum" value="1">
                                 <input type="submit" value="首页" style="border: none; background: none;">
                             </form>
@@ -869,14 +867,12 @@
                         <c:if test="${pageK.pageNum != 1}">
                             <li>
                                 <form action="${pageContext.request.contextPath}/api/user/knowledge" method="get">
-                                    <input type="hidden" name="postId" value="${selectK.postId}">
-                                    <input type="hidden" name="user" value="${selectK.user}">
-                                    <input type="hidden" name="title" value="${selectK.title}">
-                                    <input type="hidden" name="status" value="${selectK.sts}">
-                                    <input type="hidden" name="categoryId" value="${selectK.categoryId}">
-                                    <input type="hidden" name="isTop" value="${selectK.isTop}">
-                                    <input type="hidden" name="isEssence" value="${selectK.isEssence}">
-                                    <input type="hidden" name="pageNum" value="${selectK.pageNum - 1}">
+                                    <input type="hidden" name="ktitle" value="${selectK.title}">
+                                    <input type="hidden" name="kstatus" value="${selectK.sts}">
+                                    <input type="hidden" name="kcategoryId" value="${selectK.categoryId}">
+                                    <input type="hidden" name="kisTop" value="${selectK.isTop}">
+                                    <input type="hidden" name="kisEssence" value="${selectK.isEssence}">
+                                    <input type="hidden" name="pageNum" value="${pageK.pageNum - 1}">
                                     <input type="submit" value="上一页" style="border: none; background: none;">
                                 </form>
                             </li>
@@ -886,13 +882,11 @@
                                 <c:when test="${pageK.pageNum == itemPage}">
                                     <li class="active">
                                         <form action="${pageContext.request.contextPath}/api/user/knowledge" method="get" style="background: whitesmoke">
-                                            <input type="hidden" name="postId" value="${selectK.postId}">
-                                            <input type="hidden" name="user" value="${selectK.user}">
-                                            <input type="hidden" name="title" value="${selectK.title}">
-                                            <input type="hidden" name="status" value="${selectK.sts}">
-                                            <input type="hidden" name="categoryId" value="${selectK.categoryId}">
-                                            <input type="hidden" name="isTop" value="${selectK.isTop}">
-                                            <input type="hidden" name="isEssence" value="${selectK.isEssence}">
+                                            <input type="hidden" name="ktitle" value="${selectK.title}">
+                                            <input type="hidden" name="kstatus" value="${selectK.sts}">
+                                            <input type="hidden" name="kcategoryId" value="${selectK.categoryId}">
+                                            <input type="hidden" name="kisTop" value="${selectK.isTop}">
+                                            <input type="hidden" name="kisEssence" value="${selectK.isEssence}">
                                             <input type="hidden" name="pageNum" value="${itemPage}">
                                             <input type="submit" value="${itemPage}" style="border: none; background: none;">
                                         </form>
@@ -901,13 +895,11 @@
                                 <c:otherwise>
                                     <li>
                                         <form action="${pageContext.request.contextPath}/api/user/knowledge" method="get">
-                                            <input type="hidden" name="postId" value="${selectK.postId}">
-                                            <input type="hidden" name="user" value="${selectK.user}">
-                                            <input type="hidden" name="title" value="${selectK.title}">
-                                            <input type="hidden" name="status" value="${selectK.sts}">
-                                            <input type="hidden" name="categoryId" value="${selectK.categoryId}">
-                                            <input type="hidden" name="isTop" value="${selectK.isTop}">
-                                            <input type="hidden" name="isEssence" value="${selectK.isEssence}">
+                                            <input type="hidden" name="ktitle" value="${selectK.title}">
+                                            <input type="hidden" name="kstatus" value="${selectK.sts}">
+                                            <input type="hidden" name="kcategoryId" value="${selectK.categoryId}">
+                                            <input type="hidden" name="kisTop" value="${selectK.isTop}">
+                                            <input type="hidden" name="kisEssence" value="${selectK.isEssence}">
                                             <input type="hidden" name="pageNum" value="${itemPage}">
                                             <input type="submit" value="${itemPage}" style="border: none; background: none;">
                                         </form>
@@ -918,28 +910,24 @@
                         <c:if test="${pageK.pageNum != pageK.pages}">
                             <li>
                                 <form action="${pageContext.request.contextPath}/api/user/knowledge" method="get">
-                                    <input type="hidden" name="postId" value="${selectK.postId}">
-                                    <input type="hidden" name="user" value="${selectK.user}">
-                                    <input type="hidden" name="title" value="${selectK.title}">
-                                    <input type="hidden" name="status" value="${selectK.sts}">
-                                    <input type="hidden" name="categoryId" value="${selectK.categoryId}">
-                                    <input type="hidden" name="isTop" value="${selectK.isTop}">
-                                    <input type="hidden" name="isEssence" value="${selectK.isEssence}">
-                                    <input type="hidden" name="pageNum" value="${pagePost.pageNum + 1}">
+                                    <input type="hidden" name="ktitle" value="${selectK.title}">
+                                    <input type="hidden" name="kstatus" value="${selectK.sts}">
+                                    <input type="hidden" name="kcategoryId" value="${selectK.categoryId}">
+                                    <input type="hidden" name="kisTop" value="${selectK.isTop}">
+                                    <input type="hidden" name="kisEssence" value="${selectK.isEssence}">
+                                    <input type="hidden" name="pageNum" value="${pageK.pageNum + 1}">
                                     <input type="submit" value="下一页" style="border: none; background: none;">
                                 </form>
                             </li>
                         </c:if>
                         <li>
                             <form action="${pageContext.request.contextPath}/api/user/knowledge" method="get">
-                                <input type="hidden" name="postId" value="${selectK.postId}">
-                                <input type="hidden" name="user" value="${selectK.user}">
-                                <input type="hidden" name="title" value="${selectK.title}">
-                                <input type="hidden" name="status" value="${selectK.sts}">
-                                <input type="hidden" name="categoryId" value="${selectK.categoryId}">
-                                <input type="hidden" name="isTop" value="${selectK.isTop}">
-                                <input type="hidden" name="isEssence" value="${selectK.isEssence}">
-                                <input type="hidden" name="pageNum" value="${pagePost.pages}">
+                                <input type="hidden" name="ktitle" value="${selectK.title}">
+                                <input type="hidden" name="kstatus" value="${selectK.sts}">
+                                <input type="hidden" name="kcategoryId" value="${selectK.categoryId}">
+                                <input type="hidden" name="kisTop" value="${selectK.isTop}">
+                                <input type="hidden" name="kisEssence" value="${selectK.isEssence}">
+                                <input type="hidden" name="pageNum" value="${pageK.pages}">
                                 <input type="submit" value="尾页" style="border: none; background: none;">
                             </form>
                         </li>

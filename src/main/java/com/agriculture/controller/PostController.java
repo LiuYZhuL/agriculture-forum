@@ -112,7 +112,9 @@ public class PostController {
                 Files.createDirectories(uploadDir);
                 file.transferTo(uploadDir.resolve(file.getOriginalFilename()));
             }
-            attachmentService.postAttachment(attachments);
+            if (!attachments.isEmpty()){
+                attachmentService.postAttachment(attachments);
+            }
             mv.setViewName("redirect:/api/post/more");
             return mv;
         }catch (RuntimeException e) {

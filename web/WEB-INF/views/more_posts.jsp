@@ -669,12 +669,15 @@
     });
 
     // 滚动监听
+    // 修改滚动处理函数
     const scrollHandler = throttle(() => {
         const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
-        if (scrollTop + clientHeight >= scrollHeight - 100 && !isLoading) {
+        const threshold = 500; // 增大触发距离
+
+        if (scrollTop + clientHeight >= scrollHeight - threshold) {
             loadMorePosts();
         }
-    }, 300);
+    }, 500); // 增加节流时间
 
     function performSearch() {
         currentPage = 1;
@@ -687,34 +690,55 @@
         loadMorePosts();
     }
 
+    let  hasMore = true;
+    // 修改后的loadMorePosts函数
     async function loadMorePosts() {
+        if (isLoading || !hasMore) return;
+
         isLoading = true;
         showLoading(true);
 
         try {
-            searchParams.set('page', currentPage);
+            // 构造最新查询参数
+            const params = new URLSearchParams(searchParams);
+            params.set('page', currentPage);
 
-            const response = await fetch(`${pageContext.request.contextPath}/api/post/search?`+searchParams);
+            const response = await fetch(
+                `${pageContext.request.contextPath}/api/post/search?`+params);
             const html = await response.text();
 
             const tempDiv = document.createElement('div');
             tempDiv.innerHTML = html;
 
-            document.getElementById('postsContainer').insertAdjacentHTML('beforeend', tempDiv.innerHTML);
+            // 获取实际加载的帖子数量
+            const loadedItems = tempDiv.querySelectorAll('.post-item').length;
 
-            const hasMore = tempDiv.querySelector('#hasMore')?.value === 'true';
-            currentPage++;
-            if (!hasMore) {
-                window.removeEventListener('scroll', scrollHandler); // 使用同一引用
+            // 只有当有数据时才追加内容并更新页码
+            if (loadedItems > 0) {
+                document.getElementById('postsContainer').insertAdjacentHTML('beforeend', tempDiv.innerHTML);
+                currentPage++; // 仅在成功获取数据后递增页码
             }
 
+            // 准确获取分页状态
+            const hasMoreElement = tempDiv.querySelector('#hasMore');
+            hasMore = hasMoreElement ? hasMoreElement.value === 'true' : false;
+
+            // 更新滚动监听状态
+            if (!hasMore) {
+                window.removeEventListener('scroll', scrollHandler);
+                if (loadedItems === 0 && currentPage > 1) {
+                    console.log('已加载所有可用内容');
+                }
+            }
         } catch (error) {
             console.error('加载失败:', error);
+            hasMore = false; // 出错时停止加载
         } finally {
             isLoading = false;
             showLoading(false);
         }
     }
+
 
 
 

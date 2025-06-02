@@ -116,7 +116,9 @@ public class KnowledgeController {
                 Files.createDirectories(uploadDir);
                 file.transferTo(uploadDir.resolve(file.getOriginalFilename()));
             }
-            attachmentService.postAttachment(attachments);
+            if (!attachments.isEmpty()){
+                attachmentService.postAttachment(attachments);
+            }
             mv.setViewName("redirect:/api/knowledge/more");
             return mv;
         }catch (RuntimeException e) {
