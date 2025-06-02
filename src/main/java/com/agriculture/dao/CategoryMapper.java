@@ -2,6 +2,7 @@ package com.agriculture.dao;
 
 import com.agriculture.model.po.Category;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -18,5 +19,6 @@ public interface CategoryMapper {
 
     List<Category> selectCategoryByCondition(Category category);
     int countCategory();
+    boolean existsCategory(@Param(value = "name") String name,@Param(value = "id") int id);
     boolean existsCategoryByName(String name);
 }

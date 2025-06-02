@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <html>
 <head>
     <title>管理员系统</title>
@@ -114,6 +115,18 @@
         }
         .table tr th,
         .table tr td{text-align: center; padding: 10px; background-color: #f2f2f2; border: 1px solid #ddd;}
+        /* 弹窗样式 */
+        #editModal {
+            min-width: 400px;
+            max-width: 80%;
+            animation: modalShow 0.3s ease-out;
+        }
+
+        @keyframes modalShow {
+            from { opacity: 0; transform: translate(-50%,-60%); }
+            to { opacity: 1; transform: translate(-50%,-50%); }
+        }
+
     </style>
 </head>
 <body>
@@ -369,7 +382,10 @@
                     <td>${category.name}</td>
                     <td>${category.description}</td>
                     <td>
-                        <a href="${pageContext.request.contextPath}/api/admin/category/update?categoryId=${category.id}">修改</a>
+                        <a href="javascript:void(0)"
+                           onclick="showEditModal(${category.id}, '${fn:escapeXml(category.name)}', '${fn:escapeXml(category.description)}')">
+                            修改
+                        </a>
                         <a href="${pageContext.request.contextPath}/api/admin/category/delete?categoryId=${category.id}">删除</a>
                     </td>
                 </tr>
@@ -866,6 +882,37 @@
 </div>
 
 
+<!-- 修改弹窗 -->
+<div id="editModal" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;padding:20px;z-index:1000;box-shadow:0 2px 8px rgba(0,0,0,0.3);border-radius:5px;">
+    <div style="margin-bottom:15px;border-bottom:1px solid #eee;padding-bottom:10px;">
+        <h3 style="margin:0;">修改分类</h3>
+        <span style="position:absolute;top:10px;right:15px;cursor:pointer;" onclick="closeEditModal()">×</span>
+    </div>
+    <form id="categoryForm" method="post" action="${pageContext.request.contextPath}/api/admin/category/update">
+        <input type="hidden" name="id" id="editId">
+        <div style="margin-bottom:15px;">
+            <label>分类名称：</label>
+            <input type="text" name="name" id="editName" required
+                   style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;">
+        </div>
+        <div style="margin-bottom:20px;">
+            <label>分类描述：</label>
+            <input type="text" name="description" id="editDesc"
+                   style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;">
+        </div>
+        <div style="text-align:right;">
+            <button type="button" onclick="closeEditModal()"
+                    style="padding:6px 12px;background:#95a5a6;color:#fff;border:none;border-radius:3px;margin-right:10px;">
+                取消
+            </button>
+            <button type="submit"
+                    style="padding:6px 12px;background:#3498db;color:#fff;border:none;border-radius:3px;">
+                保存
+            </button>
+        </div>
+    </form>
+</div>
+<div id="modalOverlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:999;"></div>
 
 </body>
 <footer>
@@ -910,5 +957,24 @@
         window.location.href =
             '${pageContext.request.contextPath}/api/admin/manage/post?' + params;
     }
+    // 显示弹窗
+    function showEditModal(id, name, desc) {
+        document.getElementById('editId').value = id;
+        document.getElementById('editName').value = name || '';
+        document.getElementById('editDesc').value = desc || '';
+        document.getElementById('modalOverlay').style.display = 'block';
+        document.getElementById('editModal').style.display = 'block';
+    }
+
+    // 关闭弹窗
+    function closeEditModal() {
+        document.getElementById('modalOverlay').style.display = 'none';
+        document.getElementById('editModal').style.display = 'none';
+    }
+
+    // 点击遮罩层关闭
+    document.getElementById('modalOverlay').addEventListener('click', closeEditModal);
+
+
 </script>
 </html>

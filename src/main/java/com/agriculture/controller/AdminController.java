@@ -14,13 +14,16 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @Controller
@@ -196,6 +199,32 @@ public class AdminController {
         mv.setViewName("manage");
         return mv;
     }
+
+    @PostMapping("/category/update")
+    public ModelAndView updateCategory(
+            @RequestParam("id") Integer id,
+            @RequestParam("name") String name,
+            @RequestParam(name = "description", required = false) String description) {
+
+        ModelAndView mv = new ModelAndView("manage");
+        mv.addObject("activeSection","categoryMgt");
+        try {
+            Category category = new Category();
+            category.setId(id);
+            category.setName(name);
+            category.setDescription(description);
+            categoryService.updateCategory(category);
+
+            mv.addObject("categorySuccess", true);
+            mv.addObject("categoryMsg", "分类修改成功");
+        } catch (RuntimeException e) {
+            mv.addObject("categorySuccess", false);
+            mv.addObject("categoryMsg", e.getMessage());
+        }
+        return mv;
+    }
+
+
 
 
 }

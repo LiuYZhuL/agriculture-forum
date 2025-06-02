@@ -83,7 +83,11 @@
     </select>
 
     <!-- 检查分类名称是否存在 -->
-    <select id="existsCategoryByName" parameterType="java.lang.String" resultType="java.lang.Boolean">
+    <select id="existsCategory" resultType="java.lang.Boolean">
+        SELECT COUNT(*) > 0 FROM category WHERE name = #{name} AND id != #{id}
+    </select>
+    <!-- 检查分类名称是否存在 -->
+    <select id="existsCategoryByName" resultType="java.lang.Boolean">
         SELECT COUNT(*) > 0 FROM category WHERE name = #{name}
     </select>
 </mapper>

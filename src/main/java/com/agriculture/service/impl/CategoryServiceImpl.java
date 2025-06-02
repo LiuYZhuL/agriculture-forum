@@ -45,7 +45,7 @@ public class CategoryServiceImpl implements CategoryService {
         if (category.getName() == null || category.getName().isEmpty()) {
             throw new RuntimeException("分类名称不能为空");
         }
-        if (categoryMapper.existsCategoryByName(category.getName())) {
+        if (categoryMapper.existsCategory(category.getName(), category.getId())) {
             throw new RuntimeException("该分类已存在");
         }
         try {
