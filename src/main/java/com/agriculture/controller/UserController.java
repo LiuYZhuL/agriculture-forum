@@ -394,5 +394,43 @@ public class UserController {
             return mv;
         }
     }
+    @GetMapping("/knowledge")
+    public ModelAndView ListKnowledge(
+            @RequestParam(value = "pageNum", defaultValue = "1")Integer pageNum,
+            @RequestParam(value = "pageSize", defaultValue = "5") Integer pageSize,
+            @Valid SelectPost selectK,
+            HttpSession   session )
+    {
+        ModelAndView mv = new ModelAndView();
+        mv.addObject("activeSection","knowledge");
+        mv.addObject("selectK", selectK);
+        User user = (User) session.getAttribute("user");
+        Post post = new Post();
+        post.setUserId(user.getId());
+        post.setId(selectK.getPostId());
+        post.setTitle(selectK.getTitle());
+        post.setUsername(selectK.getUser());
+        post.setCategoryId(selectK.getCategoryId());
+        post.setStatus(selectK.getSts());
+        post.setIsTop(selectK.getIsTop());
+        post.setIsEssence(selectK.getIsEssence());
+        PageInfo<Post> pageK;
+        try {
+            pageK = postService.searchKnowledges(pageNum, pageSize, post);
+            List<Category> categories = categoryService.listCategories();
+            mv.addObject("categories", categories);
+            mv.addObject("knowledgeSuccess", true);
+            mv.addObject("knowledgeMsg", "帖子列表获取成功");
+            mv.addObject("pageK", pageK);
+            mv.setViewName("home");
+            return mv;
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            mv.addObject("knowledgeSuccess", false);
+            mv.addObject("knowledgeMsg", e.getMessage());
+            mv.setViewName("home");
+            return mv;
+        }
+    }
 
 }

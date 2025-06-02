@@ -454,7 +454,7 @@ public class PostController {
             @RequestParam(name = "size", defaultValue = "5") Integer size,
             @RequestParam(name = "keyword", required = false) String keyword,
             @RequestParam(name = "categoryId", required = false) Integer categoryId) {
-        ModelAndView model = new ModelAndView("post_fragment");
+        ModelAndView model = new ModelAndView("/element/post_fragment");
         Post searchPost = new Post();
         searchPost.setTitle(keyword);
         searchPost.setCategoryId(categoryId);

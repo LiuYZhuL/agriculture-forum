@@ -50,7 +50,7 @@ public class CommentController {
             @RequestParam(name = "page", defaultValue = "1") Integer page,
             @RequestParam(name = "size", defaultValue = "5") Integer size
             ) {
-        ModelAndView model = new ModelAndView("comment_fragment");
+        ModelAndView model = new ModelAndView("/element/comment_fragment");
         try {
             PageInfo<Comment> pcs = commentService.getCommentsByPage(postId, page, size);
             List<CommentVO> rootComments = new ArrayList<>(); // 存放顶级评论
