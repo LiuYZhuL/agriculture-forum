@@ -1,20 +1,30 @@
 package com.agriculture.controller;
 
+import com.agriculture.model.dto.AddPost;
 import com.agriculture.model.po.*;
 import com.agriculture.model.vo.CommentVO;
 import com.agriculture.model.vo.PostVO;
 import com.agriculture.service.*;
 import com.github.pagehelper.PageInfo;
 import jakarta.servlet.http.HttpSession;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.validation.Valid;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Controller
 @RequestMapping("/api/knowledge")
@@ -33,6 +43,94 @@ public class KnowledgeController {
     private InteractionService interactionService;
 
 
+    @PostMapping("/add")
+    public ModelAndView add(
+            @Valid AddPost addPost,
+            @RequestParam(name = "images", required = false) MultipartFile[] images,
+            @RequestParam(name = "videos", required = false) MultipartFile videos,
+            @RequestParam(name = "files", required = false) MultipartFile[] files,
+            HttpSession session) {
+        ModelAndView mv = new ModelAndView();
+        User user = (User) session.getAttribute("user");
+        addPost.setUserId(user.getId());
+        try {
+            Post post = postService.add(addPost);
+            postService.updatePostStatus(post.getId(), Post.STATUS_KNOWLEDGE_WAITING_AUDIT);
+            List<Attachment> attachments = new ArrayList<>();
+            for (MultipartFile image : images){
+                if (image.isEmpty()) {
+                    continue;
+                }
+                Attachment attachment = new Attachment();
+                attachment.setPostId(post.getId());
+                Set<String> allowedExtensions = Set.of("jpg", "jpeg", "png", "gif");
+                String extension = FilenameUtils.getExtension(image.getOriginalFilename()).toLowerCase();
+                if (!allowedExtensions.contains(extension)) {
+                    throw new RuntimeException("仅支持JPG/PNG/GIF格式");
+                }
+                attachment.setFileType("image/" + extension);
+                String newFileName = post.getId() + "_" + System.currentTimeMillis() + "." + extension;
+                attachment.setFilePath(newFileName);
+                Path uploadDir = Paths.get(
+                        session.getServletContext().getRealPath("/static/uploads/attachments/img/")
+                );
+                attachments.add(attachment);
+                Files.createDirectories(uploadDir);
+                image.transferTo(uploadDir.resolve(newFileName));
+            }
+            if (videos!= null &&!videos.isEmpty()){
+                Attachment attachment = new Attachment();
+                attachment.setPostId(post.getId());
+                Set<String> allowedExtensions = Set.of("mp4", "mkv");
+                String extension = FilenameUtils.getExtension(videos.getOriginalFilename()).toLowerCase();
+                if (!allowedExtensions.contains(extension)) {
+                    throw new RuntimeException("仅支持MP4/MKV格式");
+                }
+                attachment.setFileType("video/" + extension);
+                String newFileName = post.getId() + "_" + System.currentTimeMillis() + "." + extension;
+                attachment.setFilePath(newFileName);
+                Path uploadDir = Paths.get(
+                        session.getServletContext().getRealPath("/static/uploads/attachments/video/")
+                );
+                attachments.add(attachment);
+                Files.createDirectories(uploadDir);
+                videos.transferTo(uploadDir.resolve(newFileName));
+            }
+            for (MultipartFile file : files){
+                if (file.isEmpty()) {
+                    continue;
+                }
+                Attachment attachment = new Attachment();
+                attachment.setPostId(post.getId());
+                Set<String> allowedExtensions = Set.of("pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx", "zip", "7z");
+                String extension = FilenameUtils.getExtension(file.getOriginalFilename()).toLowerCase();
+                if (!allowedExtensions.contains(extension)) {
+                    throw new RuntimeException("仅支持PDF/DOC/DOCX/XLS/XLSX/PPT/PPTX/ZIP/7Z格式");
+                }
+                attachment.setFileType("application/" + extension);
+                attachment.setFilePath(file.getOriginalFilename());
+                Path uploadDir = Paths.get(
+                        session.getServletContext().getRealPath("/static/uploads/attachments/file/")
+                );
+                attachments.add(attachment);
+                Files.createDirectories(uploadDir);
+                file.transferTo(uploadDir.resolve(file.getOriginalFilename()));
+            }
+            attachmentService.postAttachment(attachments);
+            mv.setViewName("redirect:/api/knowledge/more");
+            return mv;
+        }catch (RuntimeException e) {
+            mv.setViewName("dashboard");
+            mv.addObject("errorMsg", "发布失败，请检查输入内容");
+            mv.addObject("error", e.getMessage());
+            mv.setViewName("redirect:/api/knowledge/more");
+            return mv;
+        } catch (IOException e) {
+            mv.addObject("errorMsg", "上传文件失败");
+            mv.setViewName("redirect:/api/knowledge/more");
+            return mv;
+        }
+    }
     @GetMapping("/detail")
     public ModelAndView detail(
             @RequestParam("postId") Integer postId,
@@ -127,5 +225,109 @@ public class KnowledgeController {
         model.addObject("hasMore", postList.isHasNextPage());
         return model;
 
+    }
+
+    @GetMapping("/delete")
+    public ModelAndView delete(
+            @RequestParam("postId") Integer postId,
+            HttpSession session) {
+        ModelAndView mv = new ModelAndView();
+        mv.addObject("activeSection", "knowledge");
+        mv.setViewName("home");
+        Post post = null;
+        try {
+            post = postService.getbyId(postId);
+            List<Attachment> attachments = attachmentService.getAttachmentByPostId(postId);
+            if (attachments != null && !attachments.isEmpty()) {
+                attachmentService.deleteAttachmentByPostId(postId);
+                for (Attachment attachment : attachments) {
+                    if (attachment.getFileType().startsWith("image")) {
+                        Path filePath = Paths.get(
+                                session.getServletContext().getRealPath("/static/uploads/attachments/img/" + attachment.getFilePath())
+                        );
+                        Files.delete(filePath);
+                    } else if (attachment.getFileType().startsWith("video")) {
+                        Path filePath = Paths.get(
+                                session.getServletContext().getRealPath("/static/uploads/attachments/video/" + attachment.getFilePath())
+                        );
+                        Files.delete(filePath);
+                    } else if (attachment.getFileType().startsWith("application")){
+                        Path filePath = Paths.get(
+                                session.getServletContext().getRealPath("/static/uploads/attachments/file/" + attachment.getFilePath())
+                        );
+                        Files.delete(filePath);
+                    }
+                }
+            }
+            if (commentService.getCommentCountByPostId(postId) > 0) {
+                commentService.deleteCommentsByPostId(postId);
+            }
+            if (interactionService.getLikeCount(postId) > 0 || interactionService.getCollectionCount(postId) > 0){
+                interactionService.deletePostInteraction(postId);
+            }
+            postService.deletePost(postId);
+            mv.addObject("knowledgeSuccess", true);
+            mv.addObject("knowledgeMsg", "删除[" + post.getTitle() + "]成功");
+            return mv;
+        }catch (RuntimeException e){
+            mv.addObject("knowledgeSuccess", false);
+
+            mv.addObject("knowledgeMsg", e.getMessage());
+
+            return mv;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    @GetMapping("/status")
+    public ModelAndView status(
+            @RequestParam("postId") Integer postId,
+            @RequestParam("status") Integer status) {
+        ModelAndView mv = new ModelAndView();
+        mv.setViewName("manage");
+        mv.addObject("activeSection", "knowledgeMgt");
+        try {
+            postService.updatePostStatus(postId, status);
+            mv.addObject("knowledgeSuccess", true);
+            mv.addObject("knowledgeMsg", "更新知识[" + postId + "]状态成功");
+        } catch (RuntimeException e) {
+            mv.addObject("knowledgeSuccess", false);
+            mv.addObject("knowledgeMsg", e.getMessage());
+        }
+        return mv;
+    }
+    @GetMapping("/top")
+    public ModelAndView top(
+            @RequestParam("postId") Integer postId,
+            @RequestParam("isTop") Integer top) {
+        ModelAndView mv = new ModelAndView();
+        mv.setViewName("manage");
+        mv.addObject("activeSection", "knowledgeMgt");
+        try {
+            postService.updatePostTop(postId, top);
+            mv.addObject("knowledgeSuccess", true);
+            mv.addObject("knowledgeMsg", "更新知识[" + postId + "]置顶成功");
+        } catch (RuntimeException e) {
+            mv.addObject("knowledgeSuccess", false);
+            mv.addObject("knowledgeMsg", e.getMessage());
+        }
+        return mv;
+    }
+    @GetMapping("/essence")
+    public ModelAndView essence(
+            @RequestParam("postId") Integer postId,
+            @RequestParam("isEssence") Integer essence) {
+        ModelAndView mv = new ModelAndView();
+        mv.setViewName("manage");
+        mv.addObject("activeSection", "knowledgeMgt");
+        try {
+            postService.updatePostEssence(postId, essence);
+            mv.addObject("knowledgeSuccess", true);
+            mv.addObject("knowledgeMsg", "更新知识[" + postId + "]精华成功");
+        } catch (RuntimeException e) {
+            mv.addObject("knowledgeSuccess", false);
+            mv.addObject("knowledgeMsg", e.getMessage());
+        }
+        return mv;
     }
 }

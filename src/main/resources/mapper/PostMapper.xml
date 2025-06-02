@@ -18,6 +18,7 @@
         <result column="view_count" property="viewCount" jdbcType="INTEGER" />
         <result column="username" property="username" jdbcType="VARCHAR" />
         <result column="category" property="category" jdbcType="VARCHAR"/>
+        <result column="is_settlement" property="isSettlement" jdbcType="TINYINT" />
     </resultMap>
 
     <!-- 根据ID查询单个帖子 -->
@@ -205,4 +206,16 @@
                  LEFT JOIN interaction i ON p.id = i.post_id
         WHERE i.user_id = #{userId} AND i.type = 2 AND p. status = 4
     </select>
+    <select id="select24HPost" resultMap="BaseResultMap">
+         SELECT p.*, u.username, c.name as category
+        FROM post p
+        LEFT JOIN user u ON p.user_id = u.id
+        LEFT JOIN category c ON p.category_id = c.id
+        WHERE p.create_time &lt; (CURRENT_TIMESTAMP - INTERVAL 24 HOUR) AND p.is_settlement = 0
+    </select>
+     <update id="updatePostSettlement">
+        UPDATE post
+        SET is_settlement = 1
+        WHERE id = #{id}
+    </update>
 </mapper>

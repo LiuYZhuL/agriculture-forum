@@ -160,4 +160,50 @@ public class ManageController {
             return mv;
         }
     }
+    @GetMapping("/knowledge")
+    public ModelAndView ListKnowledge(
+            @RequestParam(value = "pageNum", defaultValue = "1")Integer pageNum,
+            @RequestParam(value = "pageSize", defaultValue = "5") Integer pageSize,
+            @RequestParam(value = "ktitle", required = false) String ktitle,
+            @RequestParam(value = "ksts"  , required = false) Integer ksts,
+            @RequestParam(value = "kcategory", required = false) Integer kcategory,
+            @RequestParam(value = "kisTop", required = false) Integer kisTop,
+            @RequestParam(value = "kisEssence", required = false) Integer kisEssence)
+    {
+        ModelAndView mv = new ModelAndView();
+        SelectPost selectK = new SelectPost();
+        selectK.setTitle(ktitle);
+        selectK.setSts(ksts);
+        selectK.setCategoryId(kcategory);
+        selectK.setIsTop(kisTop);
+        selectK.setIsEssence(kisEssence);
+        mv.addObject("activeSection","knowledgeMgt");
+        mv.addObject("selectK", selectK);
+        Post post = new Post();
+        post.setId(selectK.getPostId());
+        post.setTitle(selectK.getTitle());
+        post.setUsername(selectK.getUser());
+        post.setCategoryId(selectK.getCategoryId());
+        post.setStatus(selectK.getSts());
+        post.setIsTop(selectK.getIsTop());
+        post.setIsEssence(selectK.getIsEssence());
+        PageInfo<Post> pageK;
+        try {
+            pageK = postService.searchKnowledges(pageNum, pageSize, post);
+
+            List<Category> categories = categoryService.listCategories();
+            mv.addObject("categories", categories);
+            mv.addObject("knowledgeSuccess", true);
+            mv.addObject("knowledgeMsg", "知识列表获取成功");
+            mv.addObject("pageK", pageK);
+            mv.setViewName("manage");
+            return mv;
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            mv.addObject("knowledgeSuccess", false);
+            mv.addObject("knowledgeMsg", e.getMessage());
+            mv.setViewName("manage");
+            return mv;
+        }
+    }
 }

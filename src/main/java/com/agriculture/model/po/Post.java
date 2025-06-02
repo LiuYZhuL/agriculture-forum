@@ -66,6 +66,12 @@ public class Post {
      * 浏览量
      */
     private Integer viewCount;
+
+    /**
+     * 结算状态: 0-未结算 1-已结算
+     */
+    private Integer isSettlement;
+
     public static final Integer STATUS_WAITING_AUDIT = 0;
     public static final Integer STATUS_PUBLISHED = 1;
     public static final Integer STATUS_REJECTED = 2;
@@ -76,8 +82,12 @@ public class Post {
 
     public static final Integer IS_NOT_TOP = 0;
     public static final Integer IS_TOP = 1;
+
     public static final Integer IS_NOT_ESSENCE = 0;
     public static final Integer IS_ESSENCE = 1;
+
+    public static final Integer SETTLEMENT_NOT = 0;
+    public static final Integer SETTLEMENT_YES = 1;
     /**
      * 非数据库字段，用于存放发送该帖子的用户名称
      */

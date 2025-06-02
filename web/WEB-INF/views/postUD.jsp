@@ -12,6 +12,33 @@
 <head>
     <title>修改帖子信息</title>
     <style>
+        /* 新增文件预览样式 */
+        .file-preview {
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            width: 180px;
+        }
+        .file-icon {
+            font-size: 24px;
+            margin-right: 8px;
+        }
+        .file-info {
+            flex: 1;
+            overflow: hidden;
+        }
+        .file-name {
+            font-size: 12px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .file-type {
+            font-size: 10px;
+            color: #666;
+        }
+
+        /* 原有样式保留 */
         .preview { width: 150px; height: 150px; border-radius: 50%; overflow: hidden; }
         #avatarPreview { width: 100%; height: 100%; object-fit: cover; }
         .header {
@@ -23,7 +50,6 @@
             align-items: center;
             box-shadow: 0 2px 5px rgba(0,0,0,0.4);
         }
-
         .user-info {
             font-size: 16px;
             display: flex;
@@ -31,13 +57,12 @@
             position: relative;
             cursor: pointer;
         }
-        /* 在home.css中添加样式 */
         .user-info img {
-            width: 40px;  /* 直径=2*半径 */
+            width: 40px;
             height: 40px;
             border-radius: 50%;
-            object-fit: cover; /* 保持比例裁剪 */
-            display: block; /* 消除图片底部间隙 */
+            object-fit: cover;
+            display: block;
             margin-right: 10px;
         }
         .dropdown-menu {
@@ -51,34 +76,27 @@
             border-radius: 4px;
             z-index: 1;
         }
-
         .user-info:hover .dropdown-menu {
             display: block;
         }
-
         .dropdown-menu a {
             display: block;
             padding: 10px 15px;
             color: #333;
             text-decoration: none;
         }
-
         .dropdown-menu a:hover {
             background: #f5f5f5;
         }
-        /* 添加以下样式 */
         .post-action {
             width: 90%;
             margin: 20px auto;
             padding: 5%;
             padding-bottom: 0;
-
         }
-
         .form-group {
             margin-bottom: 15px;
         }
-
         .form-input {
             width: 100%;
             padding: 10px;
@@ -88,30 +106,25 @@
             resize: none;
             transition: border-color 0.3s;
         }
-
         .form-input:focus {
             outline: none;
             border-color: #2c3e50;
         }
-
         .auto-resize {
             min-height: 100px;
-            height: auto; /* 移除固定高度 */
-            overflow-y: hidden; /* 隐藏垂直滚动条 */
-            resize: none; /* 禁用手动调整大小 */
+            height: auto;
+            overflow-y: hidden;
+            resize: none;
             line-height: 1.5;
             white-space: pre-wrap;
             word-wrap: break-word;
-            transition: height 0.2s ease-out; /* 添加平滑过渡效果 */
+            transition: height 0.2s ease-out;
         }
-
-
         .media-upload {
             display: flex;
             gap: 10px;
             margin: 15px 0;
         }
-
         .upload-btn {
             cursor: pointer;
             padding: 8px 15px;
@@ -119,11 +132,9 @@
             border-radius: 20px;
             transition: all 0.3s;
         }
-
         .upload-btn:hover {
             background: #f0f0f0;
         }
-
         .submit-btn {
             width: 100%;
             padding: 12px;
@@ -134,35 +145,30 @@
             cursor: pointer;
             transition: background 0.3s;
         }
-
         .submit-btn:hover {
             background: #34495e;
         }
-
         .upload-progress {
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
             margin-top: 15px;
         }
-
         .preview-item {
             position: relative;
             height: 100px;
             border-radius: 4px;
             overflow: hidden;
             margin: 5px;
-            display: inline-flex; /* 改为行内弹性布局 */
-            align-items: center; /* 垂直居中 */
+            display: inline-flex;
+            align-items: center;
             background: #f8f8f8;
         }
-
         .preview-media {
             width: auto;
             height: 100%;
-            object-fit: contain; /* 保持原始比例 */
+            object-fit: contain;
         }
-
         .remove-btn {
             position: absolute;
             top: 2px;
@@ -182,7 +188,7 @@
 </head>
 <body>
 <div class="header">
-    <div class="logo">首页</div>
+    <div class="logo">修改</div>
     <div class="user-info">
         <c:if test="${sessionScope.user == null}">
             <span>还未登录,来登录吧！</span>
@@ -212,43 +218,51 @@
        style="color: black; text-decoration: none;">
         &lt; 返回
     </a>
-    <H2>修改帖子</H2>
+    <H2>修改</H2>
     <form action="${pageContext.request.contextPath}/api/post/update" method="post" enctype="multipart/form-data" id="postForm">
         <input type="hidden" name="postId" value="${post.id}">
-        <!-- 表单项容器 -->
+
         <div class="form-group">
-            <input type="text" name="title" class="form-input" placeholder="标题"
-                   value="${post.title}">
+            <input type="text" name="title" class="form-input" placeholder="标题" value="${post.title}">
         </div>
 
         <div class="form-group">
-            <textarea name="content" class="form-input auto-resize" placeholder="内容"
-                      >${post.content}</textarea>
+            <textarea name="content" class="form-input auto-resize" placeholder="内容">${post.content}</textarea>
         </div>
 
         <!-- 原有附件展示 -->
         <div class="form-group">
             <label>已有附件：</label>
             <div class="upload-progress" id="existingAttachments">
-                <!-- JSTL 渲染已有附件 -->
                 <c:forEach items="${attachments}" var="attach">
                     <div class="preview-item">
-                        <c:if test="${fn:startsWith(attach.fileType, 'image/')}">
-                            <img src="${pageContext.request.contextPath}/static/uploads/attachments/img/${attach.filePath}"
-                                 alt="图片预览"
-                                 class="preview-media">
-                        </c:if>
-                        <c:if test="${fn:startsWith(attach.fileType, 'video/')}">
-                            <video class="preview-media" controls>
-                                <source src="${pageContext.request.contextPath}/static/uploads/attachments/video/${attach.filePath}"
-                                        type="${attach.fileType}">
-                            </video>
-                        </c:if>
+                        <c:choose>
+                            <c:when test="${fn:startsWith(attach.fileType, 'image/')}">
+                                <img src="${pageContext.request.contextPath}/static/uploads/attachments/img/${attach.filePath}"
+                                     alt="图片预览" class="preview-media">
+                            </c:when>
+                            <c:when test="${fn:startsWith(attach.fileType, 'video/')}">
+                                <video class="preview-media" controls>
+                                    <source src="${pageContext.request.contextPath}/static/uploads/attachments/video/${attach.filePath}"
+                                            type="${attach.fileType}">
+                                </video>
+                            </c:when>
+                            <c:otherwise>
+                                <div class="file-preview">
+                                    <i class="file-icon">📁</i>
+                                    <div class="file-info">
+                                        <div class="file-name">${attach.filePath}</div>
+                                        <div class="file-type">${fn:toLowerCase(attach.fileType)}</div>
+                                    </div>
+                                </div>
+                            </c:otherwise>
+                        </c:choose>
                         <button type="button" class="remove-btn" onclick="removeAttachment(this, ${attach.id})">X</button>
                     </div>
                 </c:forEach>
             </div>
         </div>
+
         <!-- 多媒体上传 -->
         <div class="media-upload">
             <label class="upload-btn">
@@ -259,11 +273,18 @@
                 <input type="file" id="videoInput" accept="video/*" multiple hidden>
                 <span>添加视频</span>
             </label>
+            <label class="upload-btn">
+                <input type="file" id="fileInput"
+                       accept=".doc,.docx,.ppt,.pptx,.xls,.xlsx,.pdf,.zip,.7z"
+                       multiple hidden>
+                <span>添加附件</span>
+            </label>
         </div>
 
         <!-- 隐藏的存储容器 -->
         <input type="file" id="hiddenImages" name="images" multiple hidden>
         <input type="file" id="hiddenVideos" name="videos" multiple hidden>
+        <input type="file" id="hiddenFiles" name="files" multiple hidden>
 
         <div class="form-group">
             <select name="categoryId" class="form-input">
@@ -283,153 +304,144 @@
 <script>
     let deletedAttachments = [];
     document.addEventListener('DOMContentLoaded', function() {
-        // 存储所有选择的文件
-        let allImageFiles = [];
-        let allVideoFiles = [];
+        // 统一文件存储结构
+        const fileGroups = {
+            image: {
+                input: document.getElementById('imageInput'),
+                hidden: document.getElementById('hiddenImages'),
+                files: []
+            },
+            video: {
+                input: document.getElementById('videoInput'),
+                hidden: document.getElementById('hiddenVideos'),
+                files: []
+            },
+            file: {
+                input: document.getElementById('fileInput'),
+                hidden: document.getElementById('hiddenFiles'),
+                files: []
+            }
+        };
 
-
-        // 图片输入框
-        const imageInput = document.getElementById('imageInput');
-        // 视频输入框
-        const videoInput = document.getElementById('videoInput');
-        // 隐藏的表单元素
-        const hiddenImages = document.getElementById('hiddenImages');
-        const hiddenVideos = document.getElementById('hiddenVideos');
         // 预览容器
         const previewContainer = document.querySelector('.upload-progress');
 
-        // 处理文件预览
-        function handleFilePreview(files, isImage) {
-            Array.from(files).forEach(file => {
+        // 通用文件处理函数
+        const handleFileUpload = (type, files) => {
+            fileGroups[type].files = [...fileGroups[type].files, ...files];
+            updateHiddenInputs(type);
+            generatePreviews(type, files);
+            fileGroups[type].input.value = '';
+        };
+
+        // 生成预览
+        const generatePreviews = (type, files) => {
+            files.forEach(file => {
+                const previewItem = createPreviewElement(type, file);
+                previewContainer.appendChild(previewItem);
+            });
+        };
+
+        // 创建预览元素
+        const createPreviewElement = (type, file) => {
+            const previewItem = document.createElement('div');
+            previewItem.className = 'preview-item';
+
+            if (type === 'image' || type === 'video') {
                 const reader = new FileReader();
-
-                reader.onload = function(e) {
-                    const previewItem = document.createElement('div');
-                    previewItem.className = 'preview-item';
-
-                    // 创建媒体元素
-                    const media = document.createElement(isImage ? 'img' : 'video');
+                reader.onload = (e) => {
+                    const media = type === 'image'
+                        ? document.createElement('img')
+                        : document.createElement('video');
                     media.className = 'preview-media';
                     media.src = e.target.result;
-
-                    if(!isImage) {
+                    if(type === 'video') {
                         media.controls = true;
                         media.style.objectFit = 'contain';
                     }
 
-                    // 创建删除按钮
-                    const removeBtn = document.createElement('button');
-                    removeBtn.className = 'remove-btn';
-                    removeBtn.innerHTML = '×';
-                    removeBtn.onclick = () => {
-                        // 从数组中移除文件
-                        const fileList = isImage ? allImageFiles : allVideoFiles;
-                        const index = Array.from(fileList).findIndex(f =>
-                            f.name === file.name && f.size === file.size
-                        );
+                    const fileInfo = document.createElement('div');
+                    fileInfo.className = 'file-info';
+                    fileInfo.innerHTML = `
+                        <div>`+file.name+`</div>
+                        <div>`+(file.size/1024).toFixed(2)+`KB</div>
+                    `;
 
-                        if (index !== -1) {
-                            fileList.splice(index, 1);
-                            updateHiddenInputs();
-                        }
-
-                        // 移除预览
-                        previewItem.remove();
-                    };
-
-                    // 文件信息
-                    const info = document.createElement('div');
-                    info.style.cssText = 'padding: 4px; font-size: 12px;';
-                    info.textContent = file.name + ' (' + (file.size/1024).toFixed(2) + 'KB)';
+                    const removeBtn = createRemoveButton(type, file, previewItem);
 
                     previewItem.appendChild(media);
+                    previewItem.appendChild(fileInfo);
                     previewItem.appendChild(removeBtn);
-                    previewItem.appendChild(info);
-                    previewContainer.appendChild(previewItem);
                 };
-
                 reader.readAsDataURL(file);
-            });
-        }
-
-        // 更新隐藏的输入框
-        function updateHiddenInputs() {
-            // 创建新的DataTransfer对象
-            const imageDataTransfer = new DataTransfer();
-            const videoDataTransfer = new DataTransfer();
-
-            // 添加所有图片文件
-            allImageFiles.forEach(file => {
-                imageDataTransfer.items.add(file);
-            });
-
-            // 添加所有视频文件
-            allVideoFiles.forEach(file => {
-                videoDataTransfer.items.add(file);
-            });
-
-            // 更新隐藏input的files
-            hiddenImages.files = imageDataTransfer.files;
-            hiddenVideos.files = videoDataTransfer.files;
-        }
-
-        // 图片选择事件
-        imageInput.addEventListener('change', function() {
-            if (this.files.length > 0) {
-                // 将新文件添加到数组
-                allImageFiles = [...allImageFiles, ...this.files];
-
-                // 处理预览
-                handleFilePreview(this.files, true);
-
-                // 更新隐藏input
-                updateHiddenInputs();
-
-                // 重置输入框允许再次选择
-                this.value = '';
+            } else {
+                previewItem.innerHTML = `
+                    <div class="file-preview">
+                        <i class="file-icon">📁</i>
+                        <div class="file-info">
+                            <div class="file-name">`+file.name+`</div>
+                            <div class="file-size">`+(file.size/1024).toFixed(2)+`KB</div>
+                        </div>
+                    </div>
+                `;
+                const removeBtn = createRemoveButton(type, file, previewItem);
+                previewItem.appendChild(removeBtn);
             }
-        });
+            return previewItem;
+        };
 
-        // 视频选择事件
-        videoInput.addEventListener('change', function() {
-            if (this.files.length > 0) {
-                // 将新文件添加到数组
-                allVideoFiles = [...allVideoFiles, ...this.files];
+        // 创建删除按钮
+        const createRemoveButton = (type, file, previewItem) => {
+            const button = document.createElement('button');
+            button.className = 'remove-btn';
+            button.innerHTML = '×';
+            button.onclick = () => {
+                fileGroups[type].files = fileGroups[type].files.filter(f =>
+                    f.name !== file.name || f.size !== file.size
+                );
+                previewItem.remove();
+                updateHiddenInputs(type);
+            };
+            return button;
+        };
 
-                // 处理预览
-                handleFilePreview(this.files, false);
+        // 更新隐藏input
+        const updateHiddenInputs = (type) => {
+            const dataTransfer = new DataTransfer();
+            fileGroups[type].files.forEach(file => dataTransfer.items.add(file));
+            fileGroups[type].hidden.files = dataTransfer.files;
+        };
 
-                // 更新隐藏input
-                updateHiddenInputs();
-
-                // 重置输入框允许再次选择
-                this.value = '';
-            }
+        // 事件监听
+        Object.entries(fileGroups).forEach(([type, group]) => {
+            group.input.addEventListener('change', function() {
+                if (this.files.length > 0) {
+                    handleFileUpload(type, Array.from(this.files));
+                }
+            });
         });
 
         // 表单提交事件
         document.getElementById('postForm').addEventListener('submit', function() {
-            // 确保隐藏input包含所有文件
-            updateHiddenInputs();
+            Object.keys(fileGroups).forEach(type => updateHiddenInputs(type));
         });
     });
+
+    // 自动调整文本框高度
     function autoResize(textarea) {
         textarea.style.height = 'auto';
         textarea.style.height = textarea.scrollHeight + 'px';
     }
 
+    // 删除原有附件
     function removeAttachment(element, attachId) {
         if (confirm("确定要删除这个附件吗？")) {
-            deletedAttachments = [...deletedAttachments, attachId]; // 记录删除的ID
-
-            // 可选：添加一个隐藏字段来提交删除列表
+            deletedAttachments = [...deletedAttachments, attachId];
             const deleteInput = document.createElement('input');
             deleteInput.type = 'hidden';
             deleteInput.name = 'deletedAttachments';
             deleteInput.value = deletedAttachments.join(',');
             document.getElementById('postForm').appendChild(deleteInput);
-
-            // 移除DOM元素
             element.parentNode.remove();
         }
     }

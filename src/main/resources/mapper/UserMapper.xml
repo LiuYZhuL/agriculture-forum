@@ -13,6 +13,7 @@
         <result column="status" property="status" jdbcType="INTEGER" />
         <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
         <result column="last_login_time" property="lastLoginTime" jdbcType="TIMESTAMP" />
+        <result column="score" property="score" jdbcType="FLOAT" />
     </resultMap>
     <select id="getUserById" resultMap="BaseResultMap">
         SELECT * FROM user WHERE id = #{id}
@@ -88,5 +89,7 @@
             </if>
         </where>
     </select>
-
+    <update id="addScore">
+         UPDATE user SET score = score + #{score} WHERE id = #{id}
+    </update>
 </mapper>

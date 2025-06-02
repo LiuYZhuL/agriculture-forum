@@ -1,5 +1,6 @@
 package com.agriculture.service.impl;
 
+import com.agriculture.dao.CommentMapper;
 import com.agriculture.dao.InteractionMapper;
 import com.agriculture.dao.PostMapper;
 import com.agriculture.dao.UserMapper;
@@ -11,9 +12,11 @@ import com.agriculture.service.PostService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -23,7 +26,7 @@ public class PostServiceImpl implements PostService {
     @Autowired
     private UserMapper userMapper;
     @Autowired
-    private InteractionMapper  interactionMapper;
+    private CommentMapper commentMapper;
     @Override
     public Post add(AddPost addPost) {
         if(addPost==null){
@@ -227,5 +230,25 @@ public class PostServiceImpl implements PostService {
         }catch (Exception e){
             throw new RuntimeException("获取用户收藏知识失败");
         }
+    }
+    @Override
+    @Scheduled(cron = "0 0 * * * ?") // 每小时执行一次
+    @Transactional
+    public void calculatePostScores() {
+        try {
+            List<Post> posts = postMapper.select24HPost();
+            for (Post post : posts) {
+                int likeCount = postMapper.selectPostLikeCount(post.getId());
+                int collectionCount = postMapper.selectPostCollectionCount(post.getId());
+                int commentCount = commentMapper.countCommentByPostId(post.getId());
+                float score = (float) (0.01 * likeCount + 0.1 * collectionCount + 0.1 * commentCount);
+                postMapper.updatePostSettlement(post.getId());
+                userMapper.addScore(post.getUserId(), score);
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+            throw new RuntimeException("计算帖子积分失败");
+        }
+
     }
 }

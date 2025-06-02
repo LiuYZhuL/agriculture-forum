@@ -295,6 +295,62 @@
                 grid-template-columns: 1fr;
             }
         }
+        /* 评论项样式 */
+        .comment-item {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: transform 0.3s;
+        }
+
+        .comment-item:hover {
+            transform: translateY(-2px);
+        }
+
+        .comment-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .comment-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 12px;
+            object-fit: cover;
+        }
+
+        .comment-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .comment-username {
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        .comment-time {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .comment-link {
+            color: #3498db;
+            text-decoration: none;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+
+        .comment-content {
+            color: #555;
+            line-height: 1.6;
+            padding-left: 52px; /* 头像宽度 + margin */
+        }
     </style>
 </head>
 <body>
@@ -331,7 +387,8 @@
         <li class="nav-item" onclick="loadContent('change')">修改密码</li>
         <li class="nav-item" onclick="loadContent('collect')">我的收藏</li>
         <li class="nav-item" onclick="loadContent('post')">我的发帖</li>
-        <li class="nav-item" onclick="loadContent('comment')">我的评论（待开发）</li>
+        <li class="nav-item" onclick="loadContent('knowledge')">我的知识</li>
+        <li class="nav-item" onclick="loadContent('comment')">我的评论</li>
     </ul>
 </div>
 <div class="content-area">
@@ -366,6 +423,15 @@
             <input type="text" id="email" name="email" value="${sessionScope.user.email}">
             <input type="submit" value="修改个人信息">
         </form>
+        <div class="score">
+            <a href="${pageContext.request.contextPath}/api/user/score">更新积分</a>
+             <div class="score-value">
+                当前积分: ${sessionScope.user.score}
+            </div>
+            <div>
+                积分获取方式：发表知识/帖子24h后, 每赞加0.01分, 收藏/评论加0.1分
+            </div>
+        </div>
     </div>
     <div id="change" class="content-section" style="display: none;">
         <c:if test="${not empty msgChange}">
@@ -679,6 +745,310 @@
             </div>
         </div>
     </div>
+    <div id="knowledge" class="content-section" style="display: none;">
+        <h2>知识列表</h2>
+        <c:if test="${not empty knowledgeMsg}">
+            <div style="color: ${knowledgeSuccess ? 'green' : 'red'}; margin-bottom: 15px;">${knowledgeMsg}</div>
+        </c:if>
+        <!-- 搜索表单 -->
+        <form action="${pageContext.request.contextPath}/api/user/knowledge" method="get">
+            <div class="form-group">
+                <label for="ktitle">标题:</label>
+                <input type="text" id="ktitle" name="ktitle" value="${selectK.title}">
+                <label for="ksts">状态:</label>
+                <select id="ksts" name="ksts">
+                    <option value="">全部</option>
+                    <option value="3" <c:if test="${selectK.sts == 3}">selected</c:if>>未审核</option>
+                    <option value="4" <c:if test="${selectK.sts == 4}">selected</c:if>>已审核</option>
+                    <option value="5" <c:if test="${selectK.sts == 5}">selected</c:if>>已删除</option>
+                </select>
+                <label for="kcategory">分类:</label>
+                <select id="kcategory" name="kcategoryId">
+                    <option value="">全部</option>
+                    <c:forEach items="${categories}" var="category">
+                        <option value="${category.id}" <c:if test="${selectPost.categoryId == category.id}">selected</c:if>>${category.name}</option>
+                    </c:forEach>
+                </select>
+                <label for="kisTop">置顶:</label>
+                <select id="kisTop" name="kisTop">
+                    <option value="">全部</option>
+                    <option value="0" <c:if test="${selectK.isTop == 0}">selected</c:if>>否</option>
+                    <option value="1" <c:if test="${selectK.isTop == 1}">selected</c:if>>是</option>
+                </select>
+                <label for="kisEssence">精华:</label>
+                <select id="kisEssence" name="kisEssence">
+                    <option value="">全部</option>
+                    <option value="0" <c:if test="${selectK.isEssence == 0}">selected</c:if>>否</option>
+                    <option value="1" <c:if test="${selectK.isEssence == 1}">selected</c:if>>是</option>
+                </select>
+                <button type="submit" class="btn btn-primary">搜索</button>
+            </div>
+        </form>
+
+        <!-- 帖子表格 -->
+        <table class="table">
+            <thead>
+            <tr>
+                <th>帖子标题</th>
+                <th>分类</th>
+                <th>状态</th>
+                <th>置顶</th>
+                <th>精华</th>
+                <th>发布时间</th>
+                <th>浏览量</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <c:forEach items="${pageK.list}" var="k">
+                <tr>
+                    <td>${k.title}</td>
+                    <td>${k.category}</td>
+                    <td>
+                        <c:if test="${k.status == 3}">
+                            <span style="color: red;">未审核</span>
+                        </c:if>
+                        <c:if test="${k.status == 4}">
+                            <span style="color: green;">已审核</span>
+                        </c:if>
+                        <c:if test="${k.status == 5}">
+                            <span style="color: gray;">待修改</span>
+                        </c:if>
+                    </td>
+                    <td>
+                        <c:if test="${k.isTop == 0}">
+                            <span style="color: red;">否</span>
+                        </c:if>
+                        <c:if test="${k.isTop == 1}">
+                            <span style="color: green;">是</span>
+                        </c:if>
+                    </td>
+                    <td>
+                        <c:if test="${k.isEssence == 0}">
+                            <span style="color: red;">否</span>
+                        </c:if>
+                        <c:if test="${k.isEssence == 1}">
+                            <span style="color: green;">是</span>
+                        </c:if>
+                    </td>
+                    <td><fmt:formatDate value="${k.createTime}" pattern="yyyy-MM-dd HH:mm"/></td>
+                    <td>${k.viewCount}</td>
+                    <td>
+                        <a href="${pageContext.request.contextPath}/api/post/show?postId=${k.id}">详情</a>
+                        <a href="${pageContext.request.contextPath}/api/post/update?postId=${k.id}">修改</a>
+                        <a href="${pageContext.request.contextPath}/api/knowledge/delete?postId=${k.id}">删除</a>
+                    </td>
+                </tr>
+            </c:forEach>
+            </tbody>
+        </table>
+
+        <!-- 分页导航 -->
+        <div class="table-container">
+            <div style="line-height: 30px;">
+                当前第<span class="pageStyle">${pageK.pageNum}</span>页
+                共<span class="pageStyle">${pageK.pages}</span>页
+                总计<span class="pageStyle">${pageK.total}</span>条
+            </div>
+            <div>
+                <nav aria-label="Page navigation" class="pull-right">
+                    <ul class="pagination pagination-sm" style="margin: 0; display: inline-block;">
+                        <li>
+                            <form action="${pageContext.request.contextPath}/api/user/knowledge" method="get">
+                                <input type="hidden" name="postId" value="${selectK.postId}">
+                                <input type="hidden" name="user" value="${selectK.user}">
+                                <input type="hidden" name="title" value="${selectK.title}">
+                                <input type="hidden" name="status" value="${selectK.sts}">
+                                <input type="hidden" name="categoryId" value="${selectK.categoryId}">
+                                <input type="hidden" name="isTop" value="${selectK.isTop}">
+                                <input type="hidden" name="isEssence" value="${selectK.isEssence}">
+                                <input type="hidden" name="pageNum" value="1">
+                                <input type="submit" value="首页" style="border: none; background: none;">
+                            </form>
+                        </li>
+                        <c:if test="${pageK.pageNum != 1}">
+                            <li>
+                                <form action="${pageContext.request.contextPath}/api/user/knowledge" method="get">
+                                    <input type="hidden" name="postId" value="${selectK.postId}">
+                                    <input type="hidden" name="user" value="${selectK.user}">
+                                    <input type="hidden" name="title" value="${selectK.title}">
+                                    <input type="hidden" name="status" value="${selectK.sts}">
+                                    <input type="hidden" name="categoryId" value="${selectK.categoryId}">
+                                    <input type="hidden" name="isTop" value="${selectK.isTop}">
+                                    <input type="hidden" name="isEssence" value="${selectK.isEssence}">
+                                    <input type="hidden" name="pageNum" value="${selectK.pageNum - 1}">
+                                    <input type="submit" value="上一页" style="border: none; background: none;">
+                                </form>
+                            </li>
+                        </c:if>
+                        <c:forEach items="${pageK.navigatepageNums}" var="itemPage">
+                            <c:choose>
+                                <c:when test="${pageK.pageNum == itemPage}">
+                                    <li class="active">
+                                        <form action="${pageContext.request.contextPath}/api/user/knowledge" method="get" style="background: whitesmoke">
+                                            <input type="hidden" name="postId" value="${selectK.postId}">
+                                            <input type="hidden" name="user" value="${selectK.user}">
+                                            <input type="hidden" name="title" value="${selectK.title}">
+                                            <input type="hidden" name="status" value="${selectK.sts}">
+                                            <input type="hidden" name="categoryId" value="${selectK.categoryId}">
+                                            <input type="hidden" name="isTop" value="${selectK.isTop}">
+                                            <input type="hidden" name="isEssence" value="${selectK.isEssence}">
+                                            <input type="hidden" name="pageNum" value="${itemPage}">
+                                            <input type="submit" value="${itemPage}" style="border: none; background: none;">
+                                        </form>
+                                    </li>
+                                </c:when>
+                                <c:otherwise>
+                                    <li>
+                                        <form action="${pageContext.request.contextPath}/api/user/knowledge" method="get">
+                                            <input type="hidden" name="postId" value="${selectK.postId}">
+                                            <input type="hidden" name="user" value="${selectK.user}">
+                                            <input type="hidden" name="title" value="${selectK.title}">
+                                            <input type="hidden" name="status" value="${selectK.sts}">
+                                            <input type="hidden" name="categoryId" value="${selectK.categoryId}">
+                                            <input type="hidden" name="isTop" value="${selectK.isTop}">
+                                            <input type="hidden" name="isEssence" value="${selectK.isEssence}">
+                                            <input type="hidden" name="pageNum" value="${itemPage}">
+                                            <input type="submit" value="${itemPage}" style="border: none; background: none;">
+                                        </form>
+                                    </li>
+                                </c:otherwise>
+                            </c:choose>
+                        </c:forEach>
+                        <c:if test="${pageK.pageNum != pageK.pages}">
+                            <li>
+                                <form action="${pageContext.request.contextPath}/api/user/knowledge" method="get">
+                                    <input type="hidden" name="postId" value="${selectK.postId}">
+                                    <input type="hidden" name="user" value="${selectK.user}">
+                                    <input type="hidden" name="title" value="${selectK.title}">
+                                    <input type="hidden" name="status" value="${selectK.sts}">
+                                    <input type="hidden" name="categoryId" value="${selectK.categoryId}">
+                                    <input type="hidden" name="isTop" value="${selectK.isTop}">
+                                    <input type="hidden" name="isEssence" value="${selectK.isEssence}">
+                                    <input type="hidden" name="pageNum" value="${pagePost.pageNum + 1}">
+                                    <input type="submit" value="下一页" style="border: none; background: none;">
+                                </form>
+                            </li>
+                        </c:if>
+                        <li>
+                            <form action="${pageContext.request.contextPath}/api/user/knowledge" method="get">
+                                <input type="hidden" name="postId" value="${selectK.postId}">
+                                <input type="hidden" name="user" value="${selectK.user}">
+                                <input type="hidden" name="title" value="${selectK.title}">
+                                <input type="hidden" name="status" value="${selectK.sts}">
+                                <input type="hidden" name="categoryId" value="${selectK.categoryId}">
+                                <input type="hidden" name="isTop" value="${selectK.isTop}">
+                                <input type="hidden" name="isEssence" value="${selectK.isEssence}">
+                                <input type="hidden" name="pageNum" value="${pagePost.pages}">
+                                <input type="submit" value="尾页" style="border: none; background: none;">
+                            </form>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+    <%-- 在home.jsp的comment区块添加 --%>
+    <div id="comment" class="content-section" style="display: none;">
+        <h2>我的评论</h2>
+        <c:if test="${not empty commentMsg}">
+            <div style="color: ${commentSuccess ? 'green' : 'red'}; margin-bottom: 15px;">
+                    ${commentMsg}
+            </div>
+        </c:if>
+
+        <!-- 评论列表 -->
+        <div class="comment-list">
+            <c:forEach items="${pageComment.list}" var="comment">
+                <div class="comment-item">
+                    <div class="comment-header">
+                        <img src="${pageContext.request.contextPath}/static/uploads/img/${sessionScope.user.avatar}"
+                             class="comment-avatar"
+                             alt="用户头像"
+                             onerror="this.src='${pageContext.request.contextPath}/static/images/default_avatar.png'">
+                        <div class="comment-info">
+                            <span class="comment-username">${sessionScope.user.username}</span>
+                            <span class="comment-time">
+                            <fmt:formatDate value="${comment.createTime}" pattern="yyyy-MM-dd HH:mm"/>
+                        </span>
+                        </div>
+                        <a href="${pageContext.request.contextPath}/api/post/detail?postId=${comment.postId}"
+                           class="comment-link">
+                            查看原帖 →
+                        </a>
+                    </div>
+                    <div class="comment-content">
+                            ${fn:escapeXml(comment.content)}
+                    </div>
+                </div>
+            </c:forEach>
+        </div>
+
+        <!-- 分页导航 -->
+        <div class="table-container">
+            <div style="line-height: 30px;">
+                当前第<span class="pageStyle">${pageComment.pageNum}</span>页
+                共<span class="pageStyle">${pageComment.pages}</span>页
+                总计<span class="pageStyle">${pageComment.total}</span>条
+            </div>
+            <div>
+                <nav aria-label="Page navigation" class="pull-right">
+                    <ul class="pagination pagination-sm" style="margin: 0; display: inline-block;">
+                        <li>
+                            <form action="${pageContext.request.contextPath}/api/user/comment" method="get">
+                                <input type="hidden" name="pageNum" value="1">
+                                <input type="submit" value="首页" style="border: none; background: none;">
+                            </form>
+                        </li>
+                        <c:if test="${pageComment.pageNum != 1}">
+                            <li>
+                                <form action="${pageContext.request.contextPath}/api/user/comment" method="get">
+                                    <input type="hidden" name="pageNum" value="${pageComment.pageNum - 1}">
+                                    <input type="submit" value="上一页" style="border: none; background: none;">
+                                </form>
+                            </li>
+                        </c:if>
+                        <c:forEach items="${pageComment.navigatepageNums}" var="itemPage">
+                            <c:choose>
+                                <c:when test="${pageComment.pageNum == itemPage}">
+                                    <li class="active">
+                                        <form action="${pageContext.request.contextPath}/api/user/comment" method="get" style="background: whitesmoke">
+                                            <input type="hidden" name="pageNum" value="${itemPage}">
+                                            <input type="submit" value="${itemPage}" style="border: none; background: none;">
+                                        </form>
+                                    </li>
+                                </c:when>
+                                <c:otherwise>
+                                    <li>
+                                        <form action="${pageContext.request.contextPath}/api/user/comment" method="get">
+                                            <input type="hidden" name="pageNum" value="${itemPage}">
+                                            <input type="submit" value="${itemPage}" style="border: none; background: none;">
+                                        </form>
+                                    </li>
+                                </c:otherwise>
+                            </c:choose>
+                        </c:forEach>
+                        <c:if test="${pageComment.pageNum != pageComment.pages}">
+                            <li>
+                                <form action="${pageContext.request.contextPath}/api/user/comment" method="get">
+                                    <input type="hidden" name="pageNum" value="${pageComment.pageNum + 1}">
+                                    <input type="submit" value="下一页" style="border: none; background: none;">
+                                </form>
+                            </li>
+                        </c:if>
+                        <li>
+                            <form action="${pageContext.request.contextPath}/api/user/comment" method="get">
+                                <input type="hidden" name="pageNum" value="${pageComment.pages}">
+                                <input type="submit" value="尾页" style="border: none; background: none;">
+                            </form>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+
 </div>
 </body>
 </html>

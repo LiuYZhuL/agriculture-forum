@@ -27,5 +27,7 @@ public interface PostMapper {
     int selectPostCollectionCount(int id);
     List<Post> selectCollectionPost(int userId);
     List<Post> selectCollectionKnowledge(int userId);
+    List<Post> select24HPost();
+    void updatePostSettlement(int id);
 
 }

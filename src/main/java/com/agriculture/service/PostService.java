@@ -34,4 +34,5 @@ public interface PostService {
     int getPostCollectionCount(Integer postId);
     List<Post> getCollectPostsByUser(Integer userId);
     List<Post> getCollectKnowledgeByUser(Integer userId);
+    void calculatePostScores();
 }

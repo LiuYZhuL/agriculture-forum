@@ -2,6 +2,7 @@ package com.agriculture.dao;
 
 import com.agriculture.model.po.User;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
 import java.util.List;
@@ -17,4 +18,5 @@ public interface UserMapper {
     User getUserByUsername(String username);
     void updateLastLoginTime(int id);
     List<User> selectUserByCondition(User user);
+    void addScore(@Param("id")int id, @Param("score") float score);
 }

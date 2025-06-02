@@ -113,17 +113,17 @@ public class PostController {
                 file.transferTo(uploadDir.resolve(file.getOriginalFilename()));
             }
             attachmentService.postAttachment(attachments);
-            mv.setViewName("redirect:/");
+            mv.setViewName("redirect:/api/post/more");
             return mv;
         }catch (RuntimeException e) {
             mv.setViewName("dashboard");
             mv.addObject("errorMsg", "发布失败，请检查输入内容");
             mv.addObject("error", e.getMessage());
-            mv.setViewName("redirect:/");
+            mv.setViewName("redirect:/api/post/more");
             return mv;
         } catch (IOException e) {
             mv.addObject("errorMsg", "上传文件失败");
-            mv.setViewName("redirect:/");
+            mv.setViewName("redirect:/api/post/more");
             return mv;
         }
     }
@@ -138,24 +138,36 @@ public class PostController {
         try {
             post = postService.getbyId(postId);
             List<Attachment> attachments = attachmentService.getAttachmentByPostId(postId);
-            attachmentService.deleteAttachmentByPostId(postId);
-            postService.deletePost(postId);
-            for (Attachment attachment : attachments) {
-                if (attachment.getFileType().startsWith("image")) {
-                    Path filePath = Paths.get(
-                            session.getServletContext().getRealPath("/static/uploads/attachments/img/" + attachment.getFilePath())
-                    );
-                    Files.delete(filePath);
-                } else if (attachment.getFileType().startsWith("video")) {
-                    Path filePath = Paths.get(
-                            session.getServletContext().getRealPath("/static/uploads/attachments/video/" + attachment.getFilePath())
-                    );
-                    Files.delete(filePath);
+            if (attachments != null && !attachments.isEmpty()) {
+                attachmentService.deleteAttachmentByPostId(postId);
+                for (Attachment attachment : attachments) {
+                    if (attachment.getFileType().startsWith("image")) {
+                        Path filePath = Paths.get(
+                                session.getServletContext().getRealPath("/static/uploads/attachments/img/" + attachment.getFilePath())
+                        );
+                        Files.delete(filePath);
+                    } else if (attachment.getFileType().startsWith("video")) {
+                        Path filePath = Paths.get(
+                                session.getServletContext().getRealPath("/static/uploads/attachments/video/" + attachment.getFilePath())
+                        );
+                        Files.delete(filePath);
+                    } else if (attachment.getFileType().startsWith("application")){
+                        Path filePath = Paths.get(
+                                session.getServletContext().getRealPath("/static/uploads/attachments/file/" + attachment.getFilePath())
+                        );
+                        Files.delete(filePath);
+                    }
                 }
             }
-            interactionService.deletePostInteraction(postId);
+            if (commentService.getCommentCountByPostId(postId) > 0) {
+                commentService.deleteCommentsByPostId(postId);
+            }
+            if (interactionService.getLikeCount(postId) > 0 || interactionService.getCollectionCount(postId) > 0){
+                interactionService.deletePostInteraction(postId);
+            }
+            postService.deletePost(postId);
             mv.addObject("postSuccess", true);
-            mv.addObject("postMsg", "删除帖子[" + post.getTitle() + "]成功");
+            mv.addObject("postMsg", "删除[" + post.getTitle() + "]成功");
             return mv;
         }catch (RuntimeException e){
             mv.addObject("postSuccess", false);
@@ -314,19 +326,25 @@ public class PostController {
             @RequestParam("postId") Integer postId,
             @Valid AddPost addPost,
             @RequestParam(name = "images", required = false) MultipartFile[] images,
-             @RequestParam(name = "videos", required = false) MultipartFile videos,
-             @RequestParam(name = "deletedAttachments", required = false) String deletedAttachments,
-             HttpSession session) {
+            @RequestParam(name = "videos", required = false) MultipartFile videos,
+            @RequestParam(name = "files", required = false) MultipartFile[] files,
+            @RequestParam(name = "deletedAttachments", required = false) String deletedAttachments,
+            HttpSession session) {
         ModelAndView mv = new ModelAndView();
         User user = (User) session.getAttribute("user");
         addPost.setUserId(user.getId());
         try {
+
             Post post = new Post();
             post.setId(postId);
             post.setTitle(addPost.getTitle());
             post.setContent(addPost.getContent());
             post.setCategoryId(addPost.getCategoryId());
-            post.setStatus(Post.STATUS_WAITING_AUDIT);
+            if(postService.getbyId(postId).getStatus() >= Post.STATUS_KNOWLEDGE_WAITING_AUDIT){
+                post.setStatus(Post.STATUS_KNOWLEDGE_WAITING_AUDIT);
+            }else{
+                post.setStatus(Post.STATUS_WAITING_AUDIT);
+            }
             postService.updatePost(post);
             List<Attachment> attachments = new ArrayList<>();
             if (images != null && images.length > 0){
@@ -370,14 +388,48 @@ public class PostController {
                 Files.createDirectories(uploadDir);
                 videos.transferTo(uploadDir.resolve(newFileName));
             }
+            for (MultipartFile file : files){
+                if (file.isEmpty()) {
+                    continue;
+                }
+                Attachment attachment = new Attachment();
+                attachment.setPostId(post.getId());
+                Set<String> allowedExtensions = Set.of("pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx", "zip", "7z");
+                String extension = FilenameUtils.getExtension(file.getOriginalFilename()).toLowerCase();
+                if (!allowedExtensions.contains(extension)) {
+                    throw new RuntimeException("仅支持PDF/DOC/DOCX/XLS/XLSX/PPT/PPTX/ZIP/7Z格式");
+                }
+                attachment.setFileType("application/" + extension);
+                attachment.setFilePath(file.getOriginalFilename());
+                Path uploadDir = Paths.get(
+                        session.getServletContext().getRealPath("/static/uploads/attachments/file/")
+                );
+                attachments.add(attachment);
+                Files.createDirectories(uploadDir);
+                file.transferTo(uploadDir.resolve(file.getOriginalFilename()));
+            }
             if (!attachments.isEmpty()){
                 attachmentService.postAttachment(attachments);
-                for (String attachmentId : deletedAttachments.split(",")){
-                    if (attachmentId != null && !attachmentId.isEmpty()){
-                        Attachment attachment = attachmentService.getAttachmentById(Integer.parseInt(attachmentId));
-                        attachmentService.deleteAttachmentById(Integer.parseInt(attachmentId));
+            }
+            for (String attachmentId : deletedAttachments.split(",")){
+                if (attachmentId != null && !attachmentId.isEmpty()){
+                    Attachment attachment = attachmentService.getAttachmentById(Integer.parseInt(attachmentId));
+                    attachmentService.deleteAttachmentById(Integer.parseInt(attachmentId));
+                    if (attachment.getFileType().startsWith("image")) {
+                        Path filePath = Paths.get(
+                                session.getServletContext().getRealPath("/static/uploads/attachments/img/" + attachment.getFilePath())
+                        );
+                        Files.delete(filePath);
+                    }
+                    if ( attachment.getFileType().startsWith("video")){
                         Path filePath = Paths.get(
                                 session.getServletContext().getRealPath("/static/uploads/attachments/video/" + attachment.getFilePath())
+                        );
+                        Files.delete(filePath);
+                    }
+                    if (attachment.getFileType().startsWith("application")){
+                        Path filePath = Paths.get(
+                                session.getServletContext().getRealPath("/static/uploads/attachments/file/" + attachment.getFilePath())
                         );
                         Files.delete(filePath);
                     }

@@ -120,7 +120,7 @@
 </head>
 <body>
 <div class="header">
-    <div class="logo">帖子详情</div>
+    <div class="logo">详情</div>
     <div class="user-info">
         <c:if test="${sessionScope.user == null}">
             <span>还未登录,来登录吧！</span>
@@ -180,6 +180,29 @@
                         <source src="${pageContext.request.contextPath}/static/uploads/attachments/video/${attach.filePath}" type="${attach.fileType}">
                     </video>
                 </c:when>
+            </c:choose>
+        </c:forEach>
+    </div>
+    <!-- 附件下载 -->
+    <h2>附件下载:</h2>
+    <div class="attachments">
+        <c:forEach items="${attachments}" var="attach">
+            <c:choose>
+                <c:when test="${fn:startsWith(attach.fileType, 'image/')}">
+                    <a href="${pageContext.request.contextPath}/static/uploads/attachments/img/${attach.filePath}" download>
+                        <span class="attachment-name">${attach.filePath}</span>
+                    </a>
+                </c:when>
+                <c:when test="${fn:startsWith(attach.fileType, 'video/')}">
+                    <a href="${pageContext.request.contextPath}/static/uploads/attachments/video/${attach.filePath}" download>
+                        <span class="attachment-name">${attach.filePath}</span>
+                    </a>
+                </c:when>
+                <c:otherwise>
+                    <a href="${pageContext.request.contextPath}/static/uploads/attachments/file/${attach.filePath}" download>
+                        <span class="attachment-name">${attach.filePath}</span>
+                    </a>
+                </c:otherwise>
             </c:choose>
         </c:forEach>
     </div>

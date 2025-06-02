@@ -19,6 +19,7 @@ public class User {
     private Integer status;
     private Date createTime;
     private Date lastLoginTime;
+    private Float score;
 
     public static final Integer STATUS_LOCKED = 0;
     public static final Integer STATUS_NORMAL = 1;

@@ -4,13 +4,12 @@ import com.agriculture.model.dto.LoginUser;
 import com.agriculture.model.dto.RegisterUser;
 import com.agriculture.model.dto.SelectPost;
 import com.agriculture.model.dto.UpdateUser;
-import com.agriculture.model.po.Attachment;
-import com.agriculture.model.po.Category;
-import com.agriculture.model.po.Post;
-import com.agriculture.model.po.User;
+import com.agriculture.model.po.*;
+import com.agriculture.model.vo.CommentVO;
 import com.agriculture.model.vo.KnowledgeVO;
 import com.agriculture.model.vo.PostVO;
 import com.agriculture.service.*;
+import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.mysql.cj.Session;
 import jakarta.servlet.http.HttpSession;
@@ -398,10 +397,20 @@ public class UserController {
     public ModelAndView ListKnowledge(
             @RequestParam(value = "pageNum", defaultValue = "1")Integer pageNum,
             @RequestParam(value = "pageSize", defaultValue = "5") Integer pageSize,
-            @Valid SelectPost selectK,
+            @RequestParam(value = "ktitle", required = false) String ktitle,
+            @RequestParam(value = "ksts"  , required = false) Integer ksts,
+            @RequestParam(value = "kcategory", required = false) Integer kcategory,
+            @RequestParam(value = "kisTop", required = false) Integer kisTop,
+            @RequestParam(value = "kisEssence", required = false) Integer kisEssence,
             HttpSession   session )
     {
         ModelAndView mv = new ModelAndView();
+        SelectPost selectK = new SelectPost();
+        selectK.setTitle(ktitle);
+        selectK.setSts(ksts);
+        selectK.setCategoryId(kcategory);
+        selectK.setIsTop(kisTop);
+        selectK.setIsEssence(kisEssence);
         mv.addObject("activeSection","knowledge");
         mv.addObject("selectK", selectK);
         User user = (User) session.getAttribute("user");
@@ -420,7 +429,7 @@ public class UserController {
             List<Category> categories = categoryService.listCategories();
             mv.addObject("categories", categories);
             mv.addObject("knowledgeSuccess", true);
-            mv.addObject("knowledgeMsg", "帖子列表获取成功");
+            mv.addObject("knowledgeMsg", "知识列表获取成功");
             mv.addObject("pageK", pageK);
             mv.setViewName("home");
             return mv;
@@ -432,5 +441,31 @@ public class UserController {
             return mv;
         }
     }
+
+    @GetMapping("/comment")
+    public ModelAndView ListComment(
+            @RequestParam(value = "pageNum", defaultValue = "1")Integer pageNum,
+            @RequestParam(value = "pageSize", defaultValue = "5") Integer pageSize,
+            HttpSession   session ){
+        ModelAndView mv = new ModelAndView();
+        mv.addObject("activeSection","comment");
+        User user = (User) session.getAttribute("user");
+        PageHelper.startPage(pageNum, pageSize);
+        List<Comment> comments = commentService.getCommentsByUserId(user.getId());
+        PageInfo<Comment> pageComment = new PageInfo<>(comments, pageSize);
+        mv.addObject("pageComment", pageComment);
+        mv.setViewName("home");
+        return mv;
+    }
+
+    @GetMapping("/score")
+    public ModelAndView score(HttpSession session){
+        ModelAndView mv = new ModelAndView();
+        mv.addObject("activeSection","info");
+        postService.calculatePostScores();
+        mv.setViewName("home");
+        return mv;
+    }
+
 
 }

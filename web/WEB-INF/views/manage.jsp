@@ -112,6 +112,8 @@
             padding: 0 8px;
             line-height: 30px; /* 与容器高度一致 */
         }
+        .table tr th,
+        .table tr td{text-align: center; padding: 10px; background-color: #f2f2f2; border: 1px solid #ddd;}
     </style>
 </head>
 <body>
@@ -147,7 +149,7 @@
         <li class="nav-item" onclick="loadContent('userMgt')">用户列表</li>
         <li class="nav-item" onclick="loadContent('categoryMgt')">分类列表</li>
         <li class="nav-item" onclick="loadContent('postMgt')">帖子列表</li>
-        <li class="nav-item" onclick="loadContent('contentMgt')">审核列表（待开发）</li>
+        <li class="nav-item" onclick="loadContent('knowledgeMgt')">知识列表（待开发）</li>
         <li class="nav-item">未定功能（待开发）</li>
     </ul>
 </div>
@@ -629,9 +631,236 @@
         </div>
     </div>
 
-    <div id="contentMgt" class="content-section" style="display: none;">
-        <h2>审核列表</h2>
-        <p>审核列表</p>
+    <div id="knowledgeMgt" class="content-section" style="display: none;">
+        <h2>知识列表</h2>
+        <c:if test="${not empty knowledgeMsg}">
+            <div style="color: ${knowledgeSuccess ? 'green' : 'red'}; margin-bottom: 15px;">${knowledgeMsg}</div>
+        </c:if>
+        <!-- 搜索表单 -->
+        <form action="${pageContext.request.contextPath}/api/admin/manage/knowledge" method="get">
+            <div class="form-group">
+                <label for="ktitle">标题:</label>
+                <input type="text" id="ktitle" name="ktitle" value="${selectK.title}">
+                <label for="ksts">状态:</label>
+                <select id="ksts" name="ksts">
+                    <option value="">全部</option>
+                    <option value="3" <c:if test="${selectK.sts == 3}">selected</c:if>>未审核</option>
+                    <option value="4" <c:if test="${selectK.sts == 4}">selected</c:if>>已审核</option>
+                    <option value="5" <c:if test="${selectK.sts == 5}">selected</c:if>>已删除</option>
+                </select>
+                <label for="kcategory">分类:</label>
+                <select id="kcategory" name="kcategoryId">
+                    <option value="">全部</option>
+                    <c:forEach items="${categories}" var="category">
+                        <option value="${category.id}" <c:if test="${selectPost.categoryId == category.id}">selected</c:if>>${category.name}</option>
+                    </c:forEach>
+                </select>
+                <label for="kisTop">置顶:</label>
+                <select id="kisTop" name="kisTop">
+                    <option value="">全部</option>
+                    <option value="0" <c:if test="${selectK.isTop == 0}">selected</c:if>>否</option>
+                    <option value="1" <c:if test="${selectK.isTop == 1}">selected</c:if>>是</option>
+                </select>
+                <label for="kisEssence">精华:</label>
+                <select id="kisEssence" name="kisEssence">
+                    <option value="">全部</option>
+                    <option value="0" <c:if test="${selectK.isEssence == 0}">selected</c:if>>否</option>
+                    <option value="1" <c:if test="${selectK.isEssence == 1}">selected</c:if>>是</option>
+                </select>
+                <button type="submit" class="btn btn-primary">搜索</button>
+            </div>
+        </form>
+
+        <!-- 帖子表格 -->
+        <table class="table">
+            <thead>
+            <tr>
+                <th>标题</th>
+                <th>作者</th>
+                <th>分类</th>
+                <th>状态</th>
+                <th>状态操作</th>
+                <th>置顶</th>
+                <th>置顶操作</th>
+                <th>精华</th>
+                <th>精华操作</th>
+                <th>发布时间</th>
+                <th>浏览量</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <c:forEach items="${pageK.list}" var="k">
+                <tr>
+                    <td>${k.title}</td>
+                    <td>${k.username}</td>
+                    <td>${k.category}</td>
+                    <td>
+                        <c:if test="${k.status == 3}">
+                            <span style="color: red;">未审核</span>
+                        </c:if>
+                        <c:if test="${k.status == 4}">
+                            <span style="color: green;">已审核</span>
+                        </c:if>
+                        <c:if test="${k.status == 5}">
+                            <span style="color: gray;">待修改</span>
+                        </c:if>
+                    </td>
+                    <td>
+                        <c:if test="${k.status != 4}">
+                            <a href="${pageContext.request.contextPath}/api/knowledge/status?postId=${k.id}&status=4">通过</a>
+                        </c:if>
+                        <c:if test="${k.status != 5}">
+                            <a href="${pageContext.request.contextPath}/api/knowledge/status?postId=${k.id}&status=5">不通过</a>
+                        </c:if>
+                    </td>
+                    <td>
+                        <c:if test="${k.isTop == 0}">
+                            <span style="color: red;">否</span>
+                        </c:if>
+                        <c:if test="${k.isTop == 1}">
+                            <span style="color: green;">是</span>
+                        </c:if>
+                    </td>
+                    <td>
+                        <c:if test="${k.isTop != 1}">
+                            <a href="${pageContext.request.contextPath}/api/knowledge/top?postId=${k.id}&isTop=1">置顶</a>
+                        </c:if>
+                        <c:if test="${k.isTop != 0}">
+                            <a href="${pageContext.request.contextPath}/api/knowledge/top?postId=${k.id}&isTop=0">取消置顶</a>
+                        </c:if>
+                    </td>
+                    <td>
+                        <c:if test="${k.isEssence == 0}">
+                            <span style="color: red;">否</span>
+                        </c:if>
+                        <c:if test="${k.isEssence == 1}">
+                            <span style="color: green;">是</span>
+                        </c:if>
+                    </td>
+                    <td>
+                        <c:if test="${k.isEssence != 1}">
+                            <a href="${pageContext.request.contextPath}/api/knowledge/essence?postId=${k.id}&isEssence=1">精华</a>
+                        </c:if>
+                        <c:if test="${k.isEssence != 0}">
+                            <a href="${pageContext.request.contextPath}/api/knowledge/essence?postId=${k.id}&isEssence=0">取消精华</a>
+                        </c:if>
+                    </td>
+                    <td><fmt:formatDate value="${k.createTime}" pattern="yyyy-MM-dd HH:mm"/></td>
+                    <td>${k.viewCount}</td>
+                    <td>
+                        <a href="${pageContext.request.contextPath}/api/post/show?postId=${k.id}">详情</a>
+                        <a href="${pageContext.request.contextPath}/api/knowledge/delete?postId=${k.id}">删除</a>
+                    </td>
+                </tr>
+            </c:forEach>
+            </tbody>
+        </table>
+
+        <!-- 分页导航 -->
+        <div class="table-container">
+            <div style="line-height: 30px;">
+                当前第<span class="pageStyle">${pageK.pageNum}</span>页
+                共<span class="pageStyle">${pageK.pages}</span>页
+                总计<span class="pageStyle">${pageK.total}</span>条
+            </div>
+            <div>
+                <nav aria-label="Page navigation" class="pull-right">
+                    <ul class="pagination pagination-sm" style="margin: 0; display: inline-block;">
+                        <li>
+                            <form action="${pageContext.request.contextPath}/api/admin/manage/knowledge" method="get">
+                                <input type="hidden" name="postId" value="${selectK.postId}">
+                                <input type="hidden" name="user" value="${selectK.user}">
+                                <input type="hidden" name="title" value="${selectK.title}">
+                                <input type="hidden" name="status" value="${selectK.sts}">
+                                <input type="hidden" name="categoryId" value="${selectK.categoryId}">
+                                <input type="hidden" name="isTop" value="${selectK.isTop}">
+                                <input type="hidden" name="isEssence" value="${selectK.isEssence}">
+                                <input type="hidden" name="pageNum" value="1">
+                                <input type="submit" value="首页" style="border: none; background: none;">
+                            </form>
+                        </li>
+                        <c:if test="${pageK.pageNum != 1}">
+                            <li>
+                                <form action="${pageContext.request.contextPath}/api/admin/manage/knowledge" method="get">
+                                    <input type="hidden" name="postId" value="${selectK.postId}">
+                                    <input type="hidden" name="user" value="${selectK.user}">
+                                    <input type="hidden" name="title" value="${selectK.title}">
+                                    <input type="hidden" name="status" value="${selectK.sts}">
+                                    <input type="hidden" name="categoryId" value="${selectK.categoryId}">
+                                    <input type="hidden" name="isTop" value="${selectK.isTop}">
+                                    <input type="hidden" name="isEssence" value="${selectK.isEssence}">
+                                    <input type="hidden" name="pageNum" value="${selectK.pageNum - 1}">
+                                    <input type="submit" value="上一页" style="border: none; background: none;">
+                                </form>
+                            </li>
+                        </c:if>
+                        <c:forEach items="${pageK.navigatepageNums}" var="itemPage">
+                            <c:choose>
+                                <c:when test="${pageK.pageNum == itemPage}">
+                                    <li class="active">
+                                        <form action="${pageContext.request.contextPath}/api/admin/manage/knowledge" method="get" style="background: whitesmoke">
+                                            <input type="hidden" name="postId" value="${selectK.postId}">
+                                            <input type="hidden" name="user" value="${selectK.user}">
+                                            <input type="hidden" name="title" value="${selectK.title}">
+                                            <input type="hidden" name="status" value="${selectK.sts}">
+                                            <input type="hidden" name="categoryId" value="${selectK.categoryId}">
+                                            <input type="hidden" name="isTop" value="${selectK.isTop}">
+                                            <input type="hidden" name="isEssence" value="${selectK.isEssence}">
+                                            <input type="hidden" name="pageNum" value="${itemPage}">
+                                            <input type="submit" value="${itemPage}" style="border: none; background: none;">
+                                        </form>
+                                    </li>
+                                </c:when>
+                                <c:otherwise>
+                                    <li>
+                                        <form action="${pageContext.request.contextPath}/api/admin/manage/knowledge" method="get">
+                                            <input type="hidden" name="postId" value="${selectK.postId}">
+                                            <input type="hidden" name="user" value="${selectK.user}">
+                                            <input type="hidden" name="title" value="${selectK.title}">
+                                            <input type="hidden" name="status" value="${selectK.sts}">
+                                            <input type="hidden" name="categoryId" value="${selectK.categoryId}">
+                                            <input type="hidden" name="isTop" value="${selectK.isTop}">
+                                            <input type="hidden" name="isEssence" value="${selectK.isEssence}">
+                                            <input type="hidden" name="pageNum" value="${itemPage}">
+                                            <input type="submit" value="${itemPage}" style="border: none; background: none;">
+                                        </form>
+                                    </li>
+                                </c:otherwise>
+                            </c:choose>
+                        </c:forEach>
+                        <c:if test="${pageK.pageNum != pageK.pages}">
+                            <li>
+                                <form action="${pageContext.request.contextPath}/api/admin/manage/knowledge" method="get">
+                                    <input type="hidden" name="postId" value="${selectK.postId}">
+                                    <input type="hidden" name="user" value="${selectK.user}">
+                                    <input type="hidden" name="title" value="${selectK.title}">
+                                    <input type="hidden" name="status" value="${selectK.sts}">
+                                    <input type="hidden" name="categoryId" value="${selectK.categoryId}">
+                                    <input type="hidden" name="isTop" value="${selectK.isTop}">
+                                    <input type="hidden" name="isEssence" value="${selectK.isEssence}">
+                                    <input type="hidden" name="pageNum" value="${pagePost.pageNum + 1}">
+                                    <input type="submit" value="下一页" style="border: none; background: none;">
+                                </form>
+                            </li>
+                        </c:if>
+                        <li>
+                            <form action="${pageContext.request.contextPath}/api/admin/manage/knowledge" method="get">
+                                <input type="hidden" name="postId" value="${selectK.postId}">
+                                <input type="hidden" name="user" value="${selectK.user}">
+                                <input type="hidden" name="title" value="${selectK.title}">
+                                <input type="hidden" name="status" value="${selectK.sts}">
+                                <input type="hidden" name="categoryId" value="${selectK.categoryId}">
+                                <input type="hidden" name="isTop" value="${selectK.isTop}">
+                                <input type="hidden" name="isEssence" value="${selectK.isEssence}">
+                                <input type="hidden" name="pageNum" value="${pagePost.pages}">
+                                <input type="submit" value="尾页" style="border: none; background: none;">
+                            </form>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
     </div>
 
 </div>
