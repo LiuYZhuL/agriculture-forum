@@ -372,7 +372,20 @@
                 grid-template-columns: 1fr;
             }
         }
+        .btn {
+            display: inline-block;
+            padding: 8px 16px;
+            background-color: #2c3e50; /* 按钮背景色 */
+            color: white; /* 文字颜色 */
+            text-decoration: none; /* 去除下划线 */
+            border-radius: 4px; /* 圆角 */
+            font-size: 14px;
+            transition: background-color 0.3s ease; /* 过渡效果 */
+        }
 
+        .btn:hover {
+            background-color: #34495e; /* 鼠标悬停时的背景色 */
+        }
 
     </style>
 </head>
@@ -413,7 +426,7 @@
         <div class="knowledge-header">
             <div class="knowledge-header-title"><h2>推荐知识</h2></div>
             <div>
-                <a href="${pageContext.request.contextPath}/api/knowledge/more">查看更多</a>
+                <a href="${pageContext.request.contextPath}/api/knowledge/more" class="btn">查看更多</a>
             </div>
         </div>
         <div class="knowledge-container">
@@ -460,7 +473,7 @@
         <div class="post-header">
             <div class="post-header-title"><h2>推荐帖子</h2></div>
             <div>
-                <a href="${pageContext.request.contextPath}/api/post/more">查看更多</a>
+                <a href="${pageContext.request.contextPath}/api/post/more" class="btn">查看更多</a>
             </div>
         </div>
         <div class="post-content">
