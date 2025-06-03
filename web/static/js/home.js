@@ -1,16 +1,16 @@
-// web/static/js/home.js
-
-document.addEventListener("DOMContentLoaded", function () {
-    // 页面加载时根据 URL 参数切换内容
+// 修改后的 window.onload
+window.onload = function() {
     const urlParams = new URLSearchParams(window.location.search);
     let activeSection = urlParams.get('activeSection');
-    if (!activeSection) activeSection = "${activeSection}";
-    if (activeSection) {
-        loadContent(activeSection); // 调用已有的切换函数
-    }
-});
 
-// 内容切换逻辑
+    if (!activeSection) activeSection = DEFAULT_ACTIVE_SECTION; // 使用全局变量
+
+    if (activeSection) {
+        loadContent(activeSection);
+    }
+};
+
+// 修改后的 loadContent 函数
 function loadContent(sectionId) {
     // 移除所有active状态
     document.querySelectorAll('.nav-item').forEach(item => {
@@ -23,6 +23,12 @@ function loadContent(sectionId) {
     });
 
     // 显示目标内容
-    document.getElementById(sectionId).style.display = 'block';
-    event.target.classList.add('active');
+    const targetSection = document.getElementById(sectionId);
+    if (targetSection) {
+        targetSection.style.display = 'block';
+
+        // 激活对应的导航项
+        const navItem = document.querySelector(`.nav-item[data-section="${sectionId}"]`);
+        if (navItem) navItem.classList.add('active');
+    }
 }

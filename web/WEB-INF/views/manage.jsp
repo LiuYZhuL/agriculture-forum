@@ -37,11 +37,11 @@
 </div>
 <div class="sidebar">
     <ul class="nav-menu">
-        <li class="nav-item active" onclick="loadContent('dashboard')">控制台</li>
-        <li class="nav-item" onclick="loadContent('userMgt')">用户列表</li>
-        <li class="nav-item" onclick="loadContent('categoryMgt')">分类列表</li>
-        <li class="nav-item" onclick="loadContent('postMgt')">帖子列表</li>
-        <li class="nav-item" onclick="loadContent('knowledgeMgt')">知识列表</li>
+        <li class="nav-item active" onclick="loadContent('dashboard')" data-section="dashboard">控制台</li>
+        <li class="nav-item" onclick="loadContent('userMgt')" data-section="userMgt">用户列表</li>
+        <li class="nav-item" onclick="loadContent('categoryMgt')" data-section="categoryMgt">分类列表</li>
+        <li class="nav-item" onclick="loadContent('postMgt')" data-section="postMgt">帖子列表</li>
+        <li class="nav-item" onclick="loadContent('knowledgeMgt')" data-section="knowledgeMgt">知识列表</li>
     </ul>
 </div>
 
@@ -783,7 +783,10 @@
 </body>
 <footer>
 </footer>
-
+<script>
+    // 将服务端的activeSection暴露给JS
+    var serverActiveSection = "${activeSection}";
+</script>
 <script src="${pageContext.request.contextPath}/static/js/manage.js"></script>
 
 </html>

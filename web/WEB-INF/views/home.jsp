@@ -44,13 +44,13 @@
 </div>
 <div class="sidebar">
     <ul class="nav-menu">
-        <li class="nav-item active" onclick="loadContent('avatar')">我的头像</li>
-        <li class="nav-item" onclick="loadContent('info')">我的信息</li>
-        <li class="nav-item" onclick="loadContent('change')">修改密码</li>
-        <li class="nav-item" onclick="loadContent('collect')">我的收藏</li>
-        <li class="nav-item" onclick="loadContent('post')">我的发帖</li>
-        <li class="nav-item" onclick="loadContent('knowledge')">我的知识</li>
-        <li class="nav-item" onclick="loadContent('comment')">我的评论</li>
+        <li class="nav-item active" data-section="avatar" onclick="loadContent('avatar')">我的头像</li>
+        <li class="nav-item" data-section="avatar" onclick="loadContent('info')">我的信息</li>
+        <li class="nav-item"  data-section="avatar" onclick="loadContent('change')">修改密码</li>
+        <li class="nav-item" data-section="avatar" onclick="loadContent('collect')">我的收藏</li>
+        <li class="nav-item"data-section="avatar"  onclick="loadContent('post')">我的发帖</li>
+        <li class="nav-item" data-section="avatar" onclick="loadContent('knowledge')">我的知识</li>
+        <li class="nav-item" data-section="avatar" onclick="loadContent('comment')">我的评论</li>
     </ul>
 </div>
 <div class="content-area">
@@ -699,10 +699,11 @@
             </div>
         </div>
     </div>
-
-
 </div>
-<script src="${pageContext.request.contextPath}/static/js/home.js"></script>
-
 </body>
+<script>
+    // 定义全局变量
+    const DEFAULT_ACTIVE_SECTION = "${not empty activeSection ? activeSection : 'avatar'}";
+</script>
+<script src="${pageContext.request.contextPath}/static/js/home.js"></script>
 </html>
