@@ -32,48 +32,53 @@
         </c:if>
     </div>
 </div>
-<c:if test="${not empty param.msg}">
-    <div style="color: ${param.success ? 'green' : 'red'};">${param.msg}</div>
-</c:if>
-<form action="${pageContext.request.contextPath}/api/admin/user/update" method="post"
-      enctype="multipart/form-data">
-    <input type="hidden" name="id" value="${updateUser.id}">
-    <div>
-        <div class="preview">
-            <img id="avatarPreview"
-                 src="${pageContext.request.contextPath}/static/uploads/img/${updateUser.avatar}"
-                 alt="当前头像">
+<div class="container">
+    <h1>修改用户信息</h1>
+    <c:if test="${not empty param.msg}">
+        <div style="color: ${param.success ? 'green' : 'red'};">${param.msg}</div>
+    </c:if>
+    <form action="${pageContext.request.contextPath}/api/admin/user/update" method="post"
+          enctype="multipart/form-data">
+        <input type="hidden" name="id" value="${updateUser.id}">
+        <div class="avatar-upload">
+            <div class="preview">
+                <img id="avatarPreview"
+                     src="${pageContext.request.contextPath}/static/uploads/img/${updateUser.avatar}"
+                     alt="当前头像">
+            </div>
+            <input type="file" name="avatar" accept="image/*"
+                   onchange="document.getElementById('avatarPreview').src = window.URL.createObjectURL(this.files[0])">
         </div>
-        <input type="file" name="avatar" accept="image/*"
-               onchange="document.getElementById('avatarPreview').src = window.URL.createObjectURL(this.files[0])">
-    </div>
-    <div>
-        <label for="username">用户名:</label>
-        <input type="text" id="username" name="username" value="${updateUser.username}">
-    </div>
-    <div>
-        <label for="email">邮箱:</label>
-        <input type="text" id="email" name="email" value="${updateUser.email}">
-    </div>
-    <div>
-        <label for="roleId">角色：</label>
-        <select name="roleId" id="roleId">
-            <option value="1" ${updateUser.roleId == 1 ? 'selected' : ''}>用户</option>
-            <option value="2" ${updateUser.roleId == 2 ? 'selected' : ''}>管理员</option>
-        </select>
-    </div>
-    <div>
-        <label for="status">状态：</label>
-        <select name="status" id="status">
-            <option value="1" ${updateUser.status == 1 ? 'selected' : ''}>启用</option>
-            <option value="0" ${updateUser.status == 0 ? 'selected' : ''}>禁用</option>
-        </select>
-    </div>
-    <input type="submit" value="修改">
-</form>
-<a href="${not empty header.referer ? header.referer : pageContext.request.contextPath + '/api/dashboard'}"
-   style="color: black; text-decoration: none;">
-    &lt; 返回
-</a>
+        <div class="form-group">
+            <label for="username">用户名:</label>
+            <input type="text" id="username" name="username" value="${updateUser.username}">
+        </div>
+        <div class="form-group">
+            <label for="email">邮箱:</label>
+            <input type="text" id="email" name="email" value="${updateUser.email}">
+        </div>
+        <div class="form-group">
+            <label for="roleId">角色：</label>
+            <select name="roleId" id="roleId">
+                <option value="1" ${updateUser.roleId == 1 ? 'selected' : ''}>用户</option>
+                <option value="2" ${updateUser.roleId == 2 ? 'selected' : ''}>管理员</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="status">状态：</label>
+            <select name="status" id="status">
+                <option value="1" ${updateUser.status == 1 ? 'selected' : ''}>启用</option>
+                <option value="0" ${updateUser.status == 0 ? 'selected' : ''}>禁用</option>
+            </select>
+        </div>
+        <input type="submit" value="修改" class="btn-submit">
+    </form>
+    <a href="${not empty header.referer ? header.referer : pageContext.request.contextPath + '/api/dashboard'}"
+       style="color: black; text-decoration: none;">
+        &lt; 返回
+    </a>
+</div>
+
+
 </body>
 </html>
