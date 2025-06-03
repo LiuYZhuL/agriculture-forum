@@ -1,71 +1,9 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: Liu
-  Date: 2025/5/26
-  Time: 23:06
-  To change this template use File | Settings | File Templates.
---%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <html>
 <head>
     <title>管理员修改用户信息</title>
-    <style>
-        .preview { width: 150px; height: 150px; border-radius: 50%; overflow: hidden; }
-        #avatarPreview { width: 100%; height: 100%; object-fit: cover; }
-        .header {
-            background: #2c3e50;
-            color: white;
-            padding: 15px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.4);
-        }
-
-        .user-info {
-            font-size: 16px;
-            display: flex;
-            align-items: center;
-            position: relative;
-            cursor: pointer;
-        }
-        /* 在home.css中添加样式 */
-        .user-info img {
-            width: 40px;  /* 直径=2*半径 */
-            height: 40px;
-            border-radius: 50%;
-            object-fit: cover; /* 保持比例裁剪 */
-            display: block; /* 消除图片底部间隙 */
-            margin-right: 10px;
-        }
-        .dropdown-menu {
-            display: none;
-            position: absolute;
-            top: 100%;
-            right: 0;
-            background: white;
-            min-width: 160px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            border-radius: 4px;
-            z-index: 1;
-        }
-
-        .user-info:hover .dropdown-menu {
-            display: block;
-        }
-
-        .dropdown-menu a {
-            display: block;
-            padding: 10px 15px;
-            color: #333;
-            text-decoration: none;
-        }
-
-        .dropdown-menu a:hover {
-            background: #f5f5f5;
-        }
-    </style>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/userUD.css">
 </head>
 <body>
 <div class="header">

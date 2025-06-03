@@ -1,10 +1,3 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: Liu
-  Date: 2025/5/25
-  Time: 16:06
-  To change this template use File | Settings | File Templates.
---%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -12,113 +5,10 @@
 <html>
 <head>
     <title>帖子内容</title>
-    <style>
-        .header {
-            background: #2c3e50;
-            color: white;
-            padding: 15px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.4);
-        }
-
-        .user-info {
-            font-size: 16px;
-            display: flex;
-            align-items: center;
-            position: relative;
-            cursor: pointer;
-        }
-        /* 在home.css中添加样式 */
-        .user-info img {
-            width: 40px;  /* 直径=2*半径 */
-            height: 40px;
-            border-radius: 50%;
-            object-fit: cover; /* 保持比例裁剪 */
-            display: block; /* 消除图片底部间隙 */
-            margin-right: 10px;
-        }
-        .dropdown-menu {
-            display: none;
-            position: absolute;
-            top: 100%;
-            right: 0;
-            background: white;
-            min-width: 160px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            border-radius: 4px;
-            z-index: 1;
-        }
-
-        .user-info:hover .dropdown-menu {
-            display: block;
-        }
-
-        .dropdown-menu a {
-            display: block;
-            padding: 10px 15px;
-            color: #333;
-            text-decoration: none;
-        }
-
-        .dropdown-menu a:hover {
-            background: #f5f5f5;
-        }
-
-        .post-container {
-            width: 80%;
-            max-width: 1200px;
-            margin: 20px auto;
-            padding: 20px;
-            background: #fff;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .author-info {
-            display: flex;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        .avatar {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            margin-right: 15px;
-        }
-        .meta-info span {
-            display: block;
-            color: #666;
-            margin: 2px 0;
-        }
-        .category-tag {
-            background: #e8f4ff;
-            color: #1890ff;
-            padding: 4px 8px;
-            border-radius: 4px;
-            display: inline-block;
-        }
-        .post-content {
-            margin: 20px 0;
-            line-height: 1.6;
-            font-size: 16px;
-        }
-        .attachments {
-            margin-top: 30px;
-            display: grid;
-            grid-gap: 15px;
-        }
-        .attachment-img {
-            max-width: 100%;
-            border-radius: 4px;
-        }
-        .attachment-video {
-            width: 100%;
-            max-width: 600px;
-            background: #000;
-        }
-    </style>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/show.css">
 </head>
 <body>
+
 <div class="header">
     <div class="logo">详情</div>
     <div class="user-info">
@@ -129,7 +19,7 @@
                 <a href="${pageContext.request.contextPath}/api/user/register">注册</a>
             </div>
         </c:if>
-        <c:if test="${sessionScope.user!= null}">
+        <c:if test="${sessionScope.user != null}">
             <img src="${pageContext.request.contextPath}/static/uploads/img/${sessionScope.user.avatar}"
                  alt="头像"
                  style="width: 40px; height: 40px; object-fit: cover;">
@@ -145,11 +35,13 @@
         </c:if>
     </div>
 </div>
+
 <div class="post-container">
     <a href="${not empty header.referer ? header.referer : pageContext.request.contextPath + '/api/dashboard'}"
        style="color: black; text-decoration: none;">
         &lt; 返回
     </a>
+
     <!-- 作者信息 -->
     <div class="author-info">
         <img src="${pageContext.request.contextPath}/static/uploads/img/${postUser.avatar}" class="avatar" alt="用户头像">
@@ -183,6 +75,7 @@
             </c:choose>
         </c:forEach>
     </div>
+
     <!-- 附件下载 -->
     <h2>附件下载:</h2>
     <div class="attachments">
