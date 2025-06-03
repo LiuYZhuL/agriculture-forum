@@ -160,11 +160,12 @@ const scrollHandler = throttle(() => {
 
 function performSearch() {
     currentPage = 1;
+    hasMore = true;
     const formData = new FormData(document.getElementById('searchForm'));
     const newParams = new URLSearchParams(formData);
     newParams.set('page', currentPage);
     searchParams = newParams;
-
+    window.addEventListener('scroll', scrollHandler);
     document.getElementById('postsContainer').innerHTML = '';
     loadMorePosts();
 }
