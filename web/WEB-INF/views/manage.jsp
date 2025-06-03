@@ -786,6 +786,7 @@
 <script>
     // 将服务端的activeSection暴露给JS
     var serverActiveSection = "${activeSection}";
+    var baseUrl = "${pageContext.request.contextPath}";
 </script>
 <script src="${pageContext.request.contextPath}/static/js/manage.js"></script>
 

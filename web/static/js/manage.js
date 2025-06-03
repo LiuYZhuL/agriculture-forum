@@ -59,17 +59,17 @@ function loadContent(sectionId) {
 }
 function navigateToPostPage(pageNum) {
     const params = new URLSearchParams({
-        postId: '${selectPost.postId}',
-        user: '${selectPost.user}',
-        title: '${selectPost.title}',
-        status: '${selectPost.sts}',
-        categoryId: '${selectPost.categoryId}',
-        isTop: '${selectPost.isTop}',
-        isEssence: '${selectPost.isEssence}',
+        postId: document.getElementById('postId').value,
+        user: document.getElementById('user').value,
+        title: document.getElementById('title').value,
+        sts: document.getElementById('sts').value, // 修正参数名为sts
+        categoryId: document.getElementById('category').value,
+        isTop: document.getElementById('isTop').value,
+        isEssence: document.getElementById('isEssence').value,
         pageNum: pageNum
     });
     window.location.href =
-        '${pageContext.request.contextPath}/api/admin/manage/post?' + params;
+        `${baseUrl}/api/admin/manage/post?` + params;
 }
 // 显示弹窗
 function showEditModal(id, name, desc) {
