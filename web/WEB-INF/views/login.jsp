@@ -12,115 +12,9 @@
 <head>
     <title>登录</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        /* 全局样式 */
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0f4f8;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
 
-        .container {
-            background-color: white;
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 400px;
-            text-align: center;
-        }
-
-        h1 {
-            color: #2c3e50;
-            margin-bottom: 20px;
-            font-size: 24px;
-        }
-
-        form {
-            text-align: left;
-        }
-
-        label {
-            display: block;
-            font-weight: bold;
-            margin-bottom: 6px;
-            color: #333;
-        }
-
-        input[type="text"],
-        input[type="password"] {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 20px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            box-sizing: border-box;
-            font-size: 14px;
-            transition: border-color 0.3s ease;
-        }
-
-        input[type="text"]:focus,
-        input[type="password"]:focus {
-            border-color: #2c3e50;
-            outline: none;
-        }
-
-        input[type="submit"] {
-            width: 100%;
-            padding: 12px;
-            background-color: #2c3e50;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        input[type="submit"]:hover {
-            background-color: #34495e;
-        }
-
-        .message {
-            margin-bottom: 15px;
-            font-size: 14px;
-        }
-
-        .error {
-            color: red;
-        }
-
-        .action-link {
-            display: inline-block;
-            margin-top: 15px;
-            padding: 8px 16px;
-            background-color: #ecf0f1;
-            color: #2c3e50;
-            text-decoration: none;
-            border-radius: 6px;
-            border: 1px solid #ccc;
-            transition: all 0.3s ease;
-        }
-
-        .action-link:hover {
-            background-color: #dce3e5;
-        }
-
-        @media (max-width: 500px) {
-            .container {
-                padding: 20px;
-            }
-
-            input[type="submit"] {
-                font-size: 14px;
-            }
-        }
-    </style>
+    <!-- 引入登录页专属样式 -->
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/login.css">
 </head>
 <body>
 
@@ -148,6 +42,9 @@
     <a href="${pageContext.request.contextPath}/api/user/register" class="action-link">前去注册</a>
     <a href="${pageContext.request.contextPath}/api/user/reset" class="action-link">忘记密码</a>
 </div>
+
+<!-- 引入登录页专属 JS（可选） -->
+<script src="${pageContext.request.contextPath}/static/js/login.js"></script>
 
 </body>
 </html>
