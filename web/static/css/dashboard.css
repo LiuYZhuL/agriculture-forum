@@ -1,0 +1,323 @@
+.header {
+    background: #2c3e50;
+    color: white;
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+}
+.user-info {
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    position: relative;
+    cursor: pointer;
+}
+.user-info img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+    margin-right: 10px;
+}
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: white;
+    min-width: 160px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    border-radius: 4px;
+    z-index: 1;
+}
+.user-info:hover .dropdown-menu {
+    display: block;
+}
+.dropdown-menu a {
+    display: block;
+    padding: 10px 15px;
+    color: #333;
+    text-decoration: none;
+}
+.dropdown-menu a:hover {
+    background: #f5f5f5;
+}
+.main{
+    margin: 0 auto;
+    width: 60%;
+    height: auto;
+    background: #f5f5f5;
+}
+.post-header,
+.knowledge-header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+}
+.post-header div:last-child {
+    margin-left: auto;
+}
+.post-action {
+    width: 90%;
+    margin: 20px auto;
+    padding: 5%;
+    padding-bottom: 0;
+}
+.form-group {
+    margin-bottom: 15px;
+}
+.form-input {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-bottom: 1px solid #ddd;
+    background: transparent;
+    resize: none;
+    transition: border-color 0.3s;
+}
+.form-input:focus {
+    outline: none;
+    border-color: #2c3e50;
+}
+.auto-resize {
+    min-height: 100px;
+    height: auto;
+    overflow-y: hidden;
+    resize: none;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    transition: height 0.2s ease-out;
+}
+.media-upload {
+    display: flex;
+    gap: 10px;
+    margin: 15px 0;
+}
+.upload-btn {
+    cursor: pointer;
+    padding: 8px 15px;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    transition: all 0.3s;
+}
+.upload-btn:hover {
+    background: #f0f0f0;
+}
+.submit-btn {
+    width: 100%;
+    padding: 12px;
+    background: #2c3e50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+.submit-btn:hover {
+    background: #34495e;
+}
+.upload-progress {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 15px;
+}
+.preview-item {
+    position: relative;
+    height: 100px;
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 5px;
+    display: inline-flex;
+    align-items: center;
+    background: #f8f8f8;
+}
+.preview-media {
+    width: auto;
+    height: 100%;
+    object-fit: contain;
+}
+.remove-btn {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    background: rgba(255,0,0,0.7);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.post-content {
+    margin: 20px;
+}
+.post-item {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: transform 0.3s;
+    display: flex;
+    gap: 20px;
+}
+.post-left {
+    flex: 3;
+    min-width: 0;
+}
+.post-title,
+.knowledge-title {
+    margin: 0 0 12px 0;
+    color: #2c3e50;
+    font-size: 18px;
+}
+.post-summary {
+    color: #666;
+    margin-bottom: 15px;
+    line-height: 1.6;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.post-stats {
+    display: flex;
+    gap: 15px;
+    font-size: 12px;
+    color: #999;
+}
+.post-stats span {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.post-right {
+    flex: 1;
+    max-width: 200px;
+    min-width: 120px;
+}
+.post-media {
+    width: 100%;
+    height: 120px;
+    border-radius: 4px;
+    object-fit: cover;
+    background: #f8f8f8;
+}
+video.post-media {
+    object-fit: contain;
+    background: #000;
+}
+.post-meta {
+    margin-bottom: 10px;
+    font-size: 13px;
+    color: #666;
+    display: flex;
+    gap: 15px;
+}
+.post-author {
+    color: #2c3e50;
+    font-weight: 500;
+}
+.post-category {
+    padding: 2px 8px;
+    background: #f0f0f0;
+    border-radius: 12px;
+    font-size: 12px;
+}
+.knowledge-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    padding: 15px;
+}
+.knowledge-item {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: transform 0.3s;
+    cursor: pointer;
+}
+.post-item:hover,
+.knowledge-item:hover {
+    transform: translateY(-5px);
+}
+.knowledge-media {
+    width: 100%;
+    height: 200px;
+    position: relative;
+}
+.knowledge-media img,
+.knowledge-media video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px 8px 0 0;
+}
+.knowledge-content {
+    padding: 15px;
+}
+.knowledge-title {
+    font-size: 16px;
+    margin: 0 0 10px 0;
+    color: #2c3e50;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.knowledge-category {
+    font-size: 12px;
+    color: #666;
+    background: #f3f3f3;
+    padding: 4px 8px;
+    border-radius: 12px;
+    display: inline-block;
+    margin-bottom: 8px;
+}
+.knowledge-meta {
+    font-size: 12px;
+    color: #999;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+}
+.knowledge-stats {
+    display: flex;
+    gap: 15px;
+    font-size: 12px;
+    color: #666;
+}
+.knowledge-stats span {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+@media (max-width: 768px) {
+    .knowledge-container {
+        grid-template-columns: 1fr;
+    }
+}
+.btn {
+    display: inline-block;
+    padding: 8px 16px;
+    background-color: #2c3e50;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+.btn:hover {
+    background-color: #34495e;
+}
