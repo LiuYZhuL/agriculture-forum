@@ -181,7 +181,7 @@ async function loadMorePosts() {
         const params = new URLSearchParams(searchParams);
         params.set('page', currentPage);
 
-        const response = await fetch(`${pageContext.request.contextPath}/api/post/search?` + params);
+        const response = await fetch(`${baseUrl}/api/post/search?` + params);
         const html = await response.text();
 
         const tempDiv = document.createElement('div');

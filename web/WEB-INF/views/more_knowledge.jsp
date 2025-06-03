@@ -117,5 +117,7 @@
 </body>
 </html>
 
-
+<script>
+    var baseUrl = "${pageContext.request.contextPath}";
+</script>
 

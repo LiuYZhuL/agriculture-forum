@@ -126,4 +126,7 @@
 
 </body>
 </html>
-
+<script>
+    // 将服务端的activeSection暴露给JS
+    var baseUrl = "${pageContext.request.contextPath}";
+</script>
