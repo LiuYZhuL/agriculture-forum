@@ -6,6 +6,7 @@
 <head>
     <title>管理员系统</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/manage.css">
+
 </head>
 <body>
 <div class="header">

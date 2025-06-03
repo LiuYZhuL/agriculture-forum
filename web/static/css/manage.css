@@ -1,36 +1,30 @@
 /* web/static/css/manage.css */
-
 .sidebar {
     background: #34495e;
     width: 200px;
     float: left;
     min-height: 500px;
 }
-
 .nav-menu {
     list-style: none;
     padding: 0;
     margin: 0;
 }
-
 .nav-item {
     padding: 12px 20px;
     color: #ecf0f1;
     cursor: pointer;
     transition: 0.3s;
 }
-
 .nav-item:hover,
 .nav-item.active {
     background: #3a5169;
     border-left: 4px solid #2c3e50;
 }
-
 .content-area {
     margin-left: 220px;
     padding: 20px;
 }
-
 .content-section {
     display: none;
     background: white;
@@ -38,28 +32,92 @@
     border-radius: 5px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
+ul,li{list-style: none;}
+li{float: left; display: block; margin-right: 10px;}
+.user-table tr th, .category-table tr th,
+.user-table tr td, .category-table tr td{text-align: center; padding: 10px; background-color: #f2f2f2; border: 1px solid #ddd;}
 
-ul, li {
-    list-style: none;
+.header {
+    background: #2c3e50;
+    color: white;
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.4);
 }
 
-li {
-    float: left;
+.user-info {
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    position: relative;
+    cursor: pointer;
+}
+
+.user-info img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
     display: block;
     margin-right: 10px;
 }
 
-.user-table tr th,
-.category-table tr th,
-.user-table tr td,
-.category-table tr td {
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: white;
+    min-width: 160px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    border-radius: 4px;
+    z-index: 1;
+}
+
+.user-info:hover .dropdown-menu {
+    display: block;
+}
+
+.dropdown-menu a {
+    display: block;
+    padding: 10px 15px;
+    color: #333;
+    text-decoration: none;
+}
+
+.dropdown-menu a:hover {
+    background: #f5f5f5;
+}
+
+.pagination.pagination-sm li {
+    float: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 30px;
+}
+
+.pagination.pagination-sm form {
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.pagination.pagination-sm input[type="submit"] {
+    padding: 0 8px;
+    line-height: 30px;
+}
+
+.table tr th,
+.table tr td {
     text-align: center;
     padding: 10px;
     background-color: #f2f2f2;
     border: 1px solid #ddd;
 }
 
-/* 弹窗样式 */
 #editModal {
     min-width: 400px;
     max-width: 80%;
