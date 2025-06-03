@@ -15,9 +15,10 @@
 │   │       │   └── impl/            # 服务层实现  
 │   │       ├── dao/                 # Mapper接口  
 │   │       ├── model/               # 实体类  
+│   │       │   ├── vo/              # 视图实体
 │   │       │   ├── po/              # 数据库实体
 │   │       │   └── dto/             # 数据传输实体  
-│   │       ├── config/              # 配置类（Spring、MyBatis）  
+│   │       ├── exception/           # 自定义异常  
 │   │       ├── interceptor/         # 权限拦截器  
 │   │       └── util/                # 工具类（文件上传、邮件发送等）  
 │   └── resources/   
@@ -32,6 +33,11 @@
     │   ├── css/  
     │   ├── js/  
     │   └── uploads/             # 上传文件存储目录  
+    │           ├── img/                  # MyBatis映射文件  
+    │           └── attachments/         # 附件存储目录 
+    │                    ├── img/             # 上传图片存储目录  
+    │                    ├── file/             # 上传文件存储目录  
+    │                    └── video/             # 上传视频存储目录  
     ├── WEB-INF/  
     │   └── views/               # JSP页面  
     │    
@@ -43,37 +49,83 @@
 ## 用户模块 (UserController)
 **基础路径**: `/api/user`
 
-| 功能描述        | 请求类型 | 路径          | 请求参数/说明                                                                 |
-|----------------|----------|---------------|-----------------------------------------------------------------------------|
-| 登录页面        | GET      | /login        | 渲染登录视图                                                                |
-| 用户登录        | POST     | /login        | `@Valid LoginUser`(表单数据，含username/password)、`HttpSession`            |
-| 注册页面        | GET      | /register     | 渲染注册视图                                                                |
-| 用户注册        | POST     | /register     | `@Valid RegisterUser`(表单数据，含username/password/email)、`HttpSession`   |
-| 用户注销        | GET      | /logout       | 需会话中存在用户信息                                                        |
-| 个人中心        | GET      | /home         | 需登录状态，返回用户信息视图                                                |
-| 忘记密码页面    | GET      | /reset        | 渲染密码重置视图                                                            |
-| 密码重置        | POST     | /reset        | 表单参数：`username`, `email` → 返回明文新密码                              |
-| 头像上传        | POST     | /avatar       | `MultipartFile avatar`(图片文件，≤10MB，支持jpg/png/gif)                    |
-| 更新个人信息    | POST     | /update       | 表单参数：`username`, `email`                                               |
-| 修改密码        | POST     | /change       | 表单参数：`password`(旧密码), `newPassword`                                 |
+| 接口名称         | 请求方式 | 路径                  | 参数                                                                 | 功能说明                     |
+|------------------|----------|-----------------------|----------------------------------------------------------------------|------------------------------|
+| 用户登录页面     | GET      | /api/user/login       | 无                                                                  | 跳转登录页面                 |
+| 用户登录         | POST     | /api/user/login       | loginUser(用户名密码)                                               | 执行登录操作                 |
+| 用户注册页面     | GET      | /api/user/register    | 无                                                                  | 跳转注册页面                 |
+| 用户注册         | POST     | /api/user/register    | registerUser(注册信息)                                              | 执行注册操作                 |
+| 用户注销         | GET      | /api/user/logout      | 无                                                                  | 退出登录状态                 |
+| 个人中心         | GET      | /api/user/home        | 无                                                                  | 查看收藏帖子和知识           |
+| 密码重置页面     | GET      | /api/user/reset       | 无                                                                  | 跳转密码重置页面             |
+| 密码重置         | POST     | /api/user/reset       | username, email                                                     | 通过邮箱重置密码             |
+| 头像修改         | POST     | /api/user/avatar      | avatar文件                                                          | 上传新头像                   |
+| 个人信息修改     | POST     | /api/user/update      | username, email                                                     | 更新用户基本信息             |
+| 密码修改         | POST     | /api/user/change      | password, newPassword                                               | 修改账户密码                 |
+| 用户帖子管理     | GET      | /api/user/post        | pageNum, pageSize, selectPost                                       | 分页查询用户发布的帖子       |
+| 用户知识管理     | GET      | /api/user/knowledge   | pageNum, pageSize, ktitle, ksts, kcategory, kisTop, kisEssence      | 分页查询用户发布的知识       |
+| 用户评论管理     | GET      | /api/user/comment     | pageNum, pageSize                                                   | 查看用户发表的评论           |
+| 积分计算         | GET      | /api/user/score       | 无                                                                  | 计算用户互动积分             |
 
 ## 管理员模块 (AdminController)
 **基础路径**: `/api/admin`
 
-| 功能描述            | 请求类型 | 路径                | 请求参数/说明                                                                 |
-|--------------------|----------|---------------------|-----------------------------------------------------------------------------|
-| 用户管理首页        | GET      | /manage            | 默认展示第1页，每页5条用户数据                                              |
-| 用户编辑页面        | GET      | /user/update       | Query参数：`userId`(目标用户ID)                                             |
-| 更新用户信息        | POST     | /user/update       | 表单参数：`id`, `avatar`, `username`, `email`, `roleId`, `status`           |
-| 重置用户密码        | GET（PUT）      | /user/reset        | Query参数：`userId` → 重置为a1234567                                        |
-| 分页查询用户        | GET      | /manage/user       | Query参数：`pageNum`(默认1), `pageSize`(默认5), `SelectUser`(复合查询条件)  |
+| 接口名称         | 请求方式 | 路径                      | 参数                          | 功能说明                     |
+|------------------|----------|---------------------------|-------------------------------|------------------------------|
+| 用户修改页面     | GET      | /api/admin/user/update    | userId                        | 跳转用户信息修改页           |
+| 用户信息更新     | POST     | /api/admin/user/update    | id, avatar, username等        | 更新用户详细信息             |
+| 密码重置         | GET      | /api/admin/user/reset     | userId                        | 管理员重置用户密码           |
+| 分类删除         | GET      | /api/admin/category/delete| categoryId                    | 删除指定分类                 |
+| 分类新增         | POST     | /api/admin/category/add   | categoryName, categoryDesc    | 创建新分类                   |
+| 分类修改         | POST     | /api/admin/category/update| id, name, description         | 更新分类信息                 |
 
 ## 根路径模块 (RootController)
 
-| 功能描述        | 请求类型 | 路径                | 说明                  |
-|----------------|----------|---------------------|-----------------------|
-| 系统主面板      | GET      | / 或 /api/dashboard | 渲染系统仪表盘视图    |
+| 接口名称         | 请求方式 | 路径              | 参数  | 功能说明                     |
+|------------------|----------|-------------------|-------|------------------------------|
+| 首页入口         | GET      | /                 | 无    | 展示精华帖子和知识           |
+| 仪表盘           | GET      | /api/dashboard    | 无    | 同首页入口                   |
 
+## 帖子模块 (PostController)
+**基础路径** `/api/post`
+
+| 接口名称         | 请求方式 | 路径                  | 参数                                      | 功能说明                     |
+|------------------|----------|-----------------------|-------------------------------------------|------------------------------|
+| 帖子创建         | POST     | /api/post/add         | AddPost, images, videos, files            | 创建新帖子                   |
+| 帖子删除         | GET      | /api/post/delete      | postId                                    | 删除指定帖子                 |
+| 帖子详情         | GET      | /api/post/detail      | postId                                    | 查看帖子详情                 |
+| 帖子状态修改     | GET      | /api/post/status      | postId, status                            | 更新帖子状态                 |
+| 帖子置顶         | GET      | /api/post/top         | postId, isTop                             | 设置帖子置顶                 |
+| 帖子精华         | GET      | /api/post/essence     | postId, isEssence                         | 设置精华帖子                 |
+| 帖子修改页面     | GET      | /api/post/update      | postId                                    | 跳转帖子修改页               |
+| 帖子更新         | POST     | /api/post/update      | postId, AddPost, 附件相关参数             | 更新帖子内容                 |
+| 点赞操作         | POST     | /api/post/like        | postId                                    | 点赞/取消点赞                |
+| 收藏操作         | POST     | /api/post/collect     | postId                                    | 收藏/取消收藏                |
+| 帖子列表页面     | GET      | /api/post/more        | 无                                        | 跳转帖子列表页               |
+| 帖子搜索         | GET      | /api/post/search      | page, size, keyword, categoryId           | 分页搜索帖子                 |
+
+## 知识模块 (KnowledgeController)
+**基础路径** `/api/knowledge`
+
+| 接口名称         | 请求方式 | 路径                      | 参数                                      | 功能说明                     |
+|------------------|----------|---------------------------|-------------------------------------------|------------------------------|
+| 知识创建         | POST     | /api/knowledge/add        | AddPost, images, videos, files            | 创建新知识条目               |
+| 知识详情         | GET      | /api/knowledge/detail     | postId                                    | 查看知识详情                 |
+| 知识列表页面     | GET      | /api/knowledge/more       | 无                                        | 跳转知识列表页               |
+| 知识搜索         | GET      | /api/knowledge/search     | page, size, keyword, categoryId           | 分页搜索知识                 |
+| 知识删除         | GET      | /api/knowledge/delete     | postId                                    | 删除指定知识                 |
+| 知识状态修改     | GET      | /api/knowledge/status     | postId, status                            | 更新审核状态                 |
+| 知识置顶         | GET      | /api/knowledge/top        | postId, isTop                             | 设置知识置顶                 |
+| 知识精华         | GET      | /api/knowledge/essence    | postId, isEssence                         | 设置精华知识                 |
+
+## 评论模块 (CommentController)
+**基础路径** `/api/comment`
+
+| 接口名称         | 请求方式 | 路径                  | 参数                                      | 功能说明                     |
+|------------------|----------|-----------------------|-------------------------------------------|------------------------------|
+| 评论添加         | POST     | /api/comment/add      | postId, userId, content, parentId(可选)  | 添加主评论/子评论            |
+| 评论分页查询     | GET      | /api/comment/page     | postId, page, size                        | 获取分页的树形结构评论       |
+| 评论删除         | GET*     | /api/comment/delete   | commentId                                 | 删除指定评论                 |
 
 
 
@@ -98,6 +150,7 @@
 | avatar          | VARCHAR(255) |         | 头像URL         |
 | role_id         | INT          | FOREIGN | 角色id          |
 | status          | TINYINT      |         | 状态：0-封禁, 1-正常 |
+|score            | DECIMAL(10, 2) |NOT NULL | 用户积分          |
 | create_time     | DATETIME     |         | 注册时间          |
 | last_login_time | DATETIME     |         | 最后登录时间        |
 
@@ -119,6 +172,7 @@
 | status      | TINYINT      | DEFAULT 0 | 状态：0-待审核, 1-已发布, 2-已拒绝 |
 | is_top      | TINYINT      | DEFAULT 0 | 是否置顶（0否, 1是）           |
 | is_essence  | TINYINT      | DEFAULT 0 | 是否精华帖（0否, 1是）          |
+| is_settlement | TINYINT      | DEFAULT 0 | 是否结算（0否, 1是）          |
 | create_time | DATETIME     |           | 创建时间                   |
 | update_time | DATETIME |           | 最后更新时间 |
 | view_count  | INT      | DEFAULT 0 | 浏览数    |
