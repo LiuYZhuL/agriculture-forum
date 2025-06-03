@@ -5,6 +5,7 @@
 <head>
     <title>重设密码</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/reset.css">
 </head>
 <body>
@@ -22,10 +23,10 @@
 
     <!-- 表单 -->
     <form action="${pageContext.request.contextPath}/api/user/reset" method="post">
-        <label for="username">用户名:</label>
+        <label for="username"><i class="fas fa-user"></i> 用户名:</label>
         <input type="text" id="username" name="username" required>
 
-        <label for="email">邮箱:</label>
+        <label for="email"><i class="fas fa-envelope"></i> 邮箱:</label>
         <input type="email" id="email" name="email" required>
 
     </form>

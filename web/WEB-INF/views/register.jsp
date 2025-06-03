@@ -5,6 +5,7 @@
 <head>
     <title>注册</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/register.css">
 </head>
 <body>
@@ -19,14 +20,14 @@
 
     <!-- 注册表单 -->
     <form action="${pageContext.request.contextPath}/api/user/register" method="post">
-        <label for="username">用户名:</label>
+        <label for="username"><i class="fas fa-user"></i> 用户名:</label>
         <input type="text" id="username" name="username" required value="${registerUser.username}">
 
-        <label for="password">密码:</label>
+        <label for="password"><i class="fas fa-lock"></i> 密码:</label>
         <input type="password" id="password" name="password" required value="${registerUser.password}"
                pattern="^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}" title="密码至少一位字母，一位数字，长度至少8位">
 
-        <label for="email">邮箱:</label>
+        <label for="email"><i class="fas fa-envelope"></i> 邮箱:</label>
         <input type="email" id="email" name="email" required value="${registerUser.email}">
 
         <input type="submit" value="注册">

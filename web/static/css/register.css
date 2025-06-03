@@ -83,6 +83,10 @@ input[type="submit"]:hover {
 .error {
     color: red;
 }
+label i {
+    margin-right: 8px;
+    color: #555;
+}
 
 .return-link {
     display: inline-block;

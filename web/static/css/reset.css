@@ -111,3 +111,7 @@ input[type="submit"]:hover {
         font-size: 14px;
     }
 }
+label i {
+    margin-right: 8px;
+    color: #555;
+}
