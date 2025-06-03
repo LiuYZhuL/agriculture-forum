@@ -28,11 +28,6 @@
         <label for="email">邮箱:</label>
         <input type="email" id="email" name="email" required>
 
-        <label for="password">新密码:</label>
-        <input type="password" id="password" name="password" required pattern="^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$"
-               title="密码至少一位字母，一位数字，长度至少8位">
-
-        <input type="submit" value="提交">
     </form>
 
     <!-- 返回登录链接 -->

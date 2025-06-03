@@ -42,7 +42,6 @@
         <li class="nav-item" onclick="loadContent('categoryMgt')">分类列表</li>
         <li class="nav-item" onclick="loadContent('postMgt')">帖子列表</li>
         <li class="nav-item" onclick="loadContent('knowledgeMgt')">知识列表</li>
-        <li class="nav-item">未定功能（待开发）</li>
     </ul>
 </div>
 
