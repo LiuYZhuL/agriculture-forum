@@ -25,7 +25,7 @@ CREATE TABLE `user` (
                         `status` TINYINT DEFAULT 1 COMMENT '状态：0-封禁, 1-正常',
                         `create_time` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '注册时间',
                         `last_login_time` DATETIME COMMENT '最后登录时间',
-                        `score` decimal(10, 2) default 0.00 not null comment '用户积分',
+
                         FOREIGN KEY (`role_id`) REFERENCES `role`(`id`)
 );
 
@@ -49,7 +49,7 @@ CREATE TABLE `post` (
                         `create_time` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
                         `update_time` DATETIME ON UPDATE CURRENT_TIMESTAMP COMMENT '最后更新时间',
                         `view_count` INT DEFAULT 0 COMMENT '浏览数',
-                        `is_settlement` TINYINT DEFAULT 0 COMMENT '是否结算（0否, 1是）',
+
                         FOREIGN KEY (`user_id`) REFERENCES `user`(`id`),
                         FOREIGN KEY (`category_id`) REFERENCES `category`(`id`)
 );
@@ -99,3 +99,6 @@ CREATE TABLE `audit_log` (
                              FOREIGN KEY (`post_id`) REFERENCES `post`(`id`),
                              FOREIGN KEY (`auditor_id`) REFERENCES `user`(`id`)
 );
+
+alter table `user` add column `score` decimal(10, 2) default 0.00 not null comment '用户积分';
+alter table `post` add column `is_settlement` TINYINT DEFAULT 0 COMMENT '是否结算（0否, 1是）';
