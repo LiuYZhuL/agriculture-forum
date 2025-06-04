@@ -507,11 +507,12 @@ public class PostController {
             @RequestParam(name = "page", defaultValue = "1") Integer page,
             @RequestParam(name = "size", defaultValue = "5") Integer size,
             @RequestParam(name = "keyword", required = false) String keyword,
-            @RequestParam(name = "categoryId", required = false) Integer categoryId) {
-        ModelAndView model = new ModelAndView("/element/post_fragment");
+            @RequestParam(name = "category", required = false) Integer category) {
+        ModelAndView model = new ModelAndView("more-post-frag");
         Post searchPost = new Post();
         searchPost.setTitle(keyword);
-        searchPost.setCategoryId(categoryId);
+        searchPost.setUsername(keyword);
+        searchPost.setCategoryId(category);
         searchPost.setStatus(Post.STATUS_PUBLISHED);
         PageInfo<Post> postList = postService.searchPosts(page, size, searchPost);
          List<PostVO> postVOs = new ArrayList<>();

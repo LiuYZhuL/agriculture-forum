@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:fmt="http://www.w3.org/1999/xhtml">
+<head>
+    <title>首页</title>
+    <link rel="stylesheet" th:href="@{/static/css/dashboard.css}">
+</head>
+<body>
+<div th:insert="~{header :: user-header(user=${session.user}, logo='首页')}">
+</div>
+
+<div th:if="${not #strings.isEmpty(error)}" style="color: red; margin-bottom: 15px;">
+    <span th:text="${error}"></span>
+</div>
+
+<div class="main">
+    <div class="knowledge">
+        <div class="knowledge-header">
+            <div class="knowledge-header-title"><h2>推荐知识</h2></div>
+            <div>
+                <a th:href="@{/api/knowledge/more}" class="btn">查看更多</a>
+            </div>
+        </div>
+        <div class="knowledge-container">
+            <div class="knowledge-item" th:each="knowledge, status : ${knowledgeVOs}"
+                 th:onclick="|location.href='@{/api/knowledge/detail(postId=${knowledge.post.id})}'|">
+
+                <div class="knowledge-media" th:if="${knowledge.attachment != null and !#strings.startsWith(knowledge?.attachment?.fileType, 'application/')}">
+                    <img th:if="${#strings.startsWith(knowledge?.attachment?.fileType, 'image/')}"
+                         th:src="@{/static/uploads/attachments/img/{filePath}(filePath=${knowledge.attachment?.filePath})}"
+                         alt="知识封面">
+                    <video th:if="${#strings.startsWith(knowledge.attachment?.fileType, 'video/')}" controls>
+                        <source th:src="@{/static/uploads/attachments/video/{filePath}(filePath=${knowledge.attachment?.filePath})}"
+                                th:type="${knowledge.attachment?.fileType}">
+                    </video>
+                </div>
+
+                <div class="knowledge-content">
+                    <h3 class="knowledge-title" th:text="${knowledge.post.title}"></h3>
+                    <div class="knowledge-category" th:text="${knowledge.category}"></div>
+                    <div class="knowledge-meta">
+                        <span class="author" th:text="${knowledge.user}"></span>
+                        <span class="date"><span th:text="${#dates.format(knowledge.post.createTime, 'yyyy-MM-dd')}"></span></span>
+                    </div>
+                    <div class="knowledge-stats">
+                        <span>👍 <span th:text="${knowledge.likeCount}"></span></span>
+                        <span>⭐ <span th:text="${knowledge.collectionCount}"></span></span>
+                        <span>👁️ <span th:text="${knowledge.viewCount}"></span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="post">
+        <div class="post-header">
+            <div class="post-header-title"><h2>推荐帖子</h2></div>
+            <div>
+                <a th:href="@{/api/post/more}" class="btn">查看更多</a>
+            </div>
+        </div>
+        <div class="post-content">
+            <div class="post-item" th:each="postvo : ${postVOs}"
+                 th:onclick="|location.href='@{/api/post/detail(postId=${postvo.post.id})}'|">
+                <div class="post-left">
+                    <h3 class="post-title" th:text="${postvo.post.title}"></h3>
+                    <div class="post-meta">
+                        <span class="post-author" th:text="${postvo.user}"></span>
+                        <span class="post-category" th:text="${postvo.category}"></span>
+                    </div>
+                    <div class="post-summary">
+                        <span th:text="${#strings.substring(postvo.post.content?.toString(), 0, 10)} + '...'"></span>
+                    </div>
+                    <div class="post-stats">
+                        <span>👁️ <span th:text="${postvo.viewCount}"></span></span>
+                        <span>👍 <span th:text="${postvo.likeCount}"></span></span>
+                        <span>💬 <span th:text="${postvo.commentCount}"></span></span>
+                        <span>⭐ <span th:text="${postvo.collectionCount}"></span></span>
+                    </div>
+                </div>
+                <div class="post-right">
+                    <div th:if="${postvo.attachment != null}">
+                        <img th:if="${#strings.startsWith(postvo.attachment.fileType, 'image/')}"
+                             th:src="@{/static/uploads/attachments/img/{filePath}(filePath=${postvo.attachment.filePath})}"
+                             class="post-media"
+                             alt="封面图"
+                             onerror="this.style.display='none';">
+                        <video th:if="${#strings.startsWith(postvo.attachment.fileType, 'video/')}" class="post-media" controls>
+                            <source th:src="@{/static/uploads/attachments/video/{filePath}(filePath=${postvo.attachment.filePath})}"
+                                    th:type="${postvo.attachment.fileType}">
+                        </video>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/static/js/dashboard.js}"></script>
+</body>
+</html>

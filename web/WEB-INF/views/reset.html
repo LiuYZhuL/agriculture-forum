@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>重置密码</title>
+    <link rel="stylesheet" th:href="@{/static/css/reset.css}">
+</head>
+<body>
+<div class="container">
+    <h1>重置密码</h1>
+    <form th:action="@{/api/user/reset}" method="post">
+        <label for="username"><i class="fa fa-user"></i>用户名</label>
+        <input type="text" id="username" name="username" required>
+        <label for="email"><i class="fa fa-envelope"></i>邮箱</label>
+        <input type="email" id="email" name="email" required>
+        <input type="submit" value="重置密码">
+    </form>
+    <div th:if="${error}" class="error"><span th:text="${error}"></span></div>
+    <div th:if="${newPassword}" class="success"><span th:text="${newPassword}">a123457</span></div>
+    <a th:href="@{/api/user/login}" class="return-link">返回首页</a>
+</div>
+</body>
+</html>

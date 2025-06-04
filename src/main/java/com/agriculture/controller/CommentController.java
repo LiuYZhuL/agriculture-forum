@@ -29,7 +29,7 @@ public class CommentController {
                             @RequestParam(name = "parentId", required = false)  Integer parentId,
                             HttpSession session) {
          ModelAndView mv = new ModelAndView();
-         mv.setViewName("redirect:/api/post/detail?postId=" + postId);
+         mv.setViewName("comment");
          try {
              Comment comment = new Comment();
              comment.setPostId(postId);
@@ -38,6 +38,8 @@ public class CommentController {
              comment.setParentId(parentId);
              commentService.addComment(comment);
 
+             mv.addObject("comment", comment);
+             mv.addObject("success", "评论成功");
          } catch (RuntimeException e) {
              mv.addObject("error", e.getMessage());
          }
@@ -50,7 +52,7 @@ public class CommentController {
             @RequestParam(name = "page", defaultValue = "1") Integer page,
             @RequestParam(name = "size", defaultValue = "5") Integer size
             ) {
-        ModelAndView model = new ModelAndView("/element/comment_fragment");
+        ModelAndView model = new ModelAndView("comment-frag");
         try {
             PageInfo<Comment> pcs = commentService.getCommentsByPage(postId, page, size);
             List<CommentVO> rootComments = new ArrayList<>(); // 存放顶级评论
@@ -82,8 +84,8 @@ public class CommentController {
         return model;
     }
 
-    @RequestMapping("/delete")
-     public ModelAndView delete(@RequestParam("commentId") Integer commentId) {
+    @PostMapping("/delete/{commentId}")
+     public ModelAndView delete(@PathVariable("commentId") Integer commentId) {
         ModelAndView mv = new ModelAndView();
         try {
             Comment comment = commentService.selectCommentById(commentId);

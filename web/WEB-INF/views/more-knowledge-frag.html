@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="more-knowledge-frag(knowledgeVOs)" class="knowledge-container">
+    <div class="knowledge-item" th:each="knowledge : ${knowledgeVOs}"
+         th:onclick="|location.href='@{/api/knowledge/detail(postId=${knowledge.post.id})}'|">
+        <div class="knowledge-media" th:if="${knowledge.attachment}">
+            <img th:if="${#strings.startsWith(knowledge.attachment.fileType, 'image/')}"
+                 th:src="@{/static/uploads/attachments/img/{file}(file=${knowledge.attachment.filePath})}"
+                 alt="知识封面">
+            <video th:if="${#strings.startsWith(knowledge.attachment.fileType, 'video/')}" controls>
+                <source th:src="@{/static/uploads/attachments/video/{file}(file=${knowledge.attachment.filePath})}"
+                        th:attr="type=${knowledge.attachment.fileType}">
+            </video>
+        </div>
+        <div class="knowledge-content">
+            <h3 class="knowledge-title" th:text="${knowledge.post.title}"></h3>
+            <div class="knowledge-category" th:text="${knowledge.category}"></div>
+            <div class="knowledge-meta">
+                <span class="author" th:text="${knowledge.user}"></span>
+                <span class="date" th:text="${#dates.format(knowledge.post.createTime, 'yyyy-MM-dd')}"></span>
+            </div>
+            <div class="knowledge-stats">
+                <span>👍 <span th:text="${knowledge.likeCount}"></span></span>
+                <span>⭐ <span th:text="${knowledge.collectionCount}"></span></span>
+                <span>👁️ <span th:text="${knowledge.viewCount}"></span></span>
+            </div>
+        </div>
+    </div>
+    <input type="hidden" id="hasMore" th:value="${hasMore}">
+</div>
+</body>
+</html>

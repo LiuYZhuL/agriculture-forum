@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>更多帖子</title>
+    <link rel="stylesheet" th:href="@{/static/css/more_knowledge.css}">
+    <!-- 定义基础 URL -->
+    <script>
+        const baseUrl = "[[@{/}]]";
+    </script>
+    <script th:src="@{/static/js/more_knowledge.js}" defer></script>
+</head>
+<body>
+<!-- 头部部分 -->
+<div th:insert="~{header :: user-header(user=${session.user}, logo='更多知识')}">
+</div>
+<div class="main">
+    <!-- 搜索容器 -->
+    <div class="search-container">
+        <form id="searchForm" class="search-form">
+            <input type="text" name="keyword" class="search-input" placeholder="搜索关键词">
+            <select name="category" class="search-input">
+                <option value="">所有分类</option>
+                <option th:each="category : ${categories}" th:value="${category.id}" th:text="${category.name}"/>
+            </select>
+            <button type="button" class="search-btn">搜索</button>
+        </form>
+    </div>
+
+    <div id="knowledgeContainer">
+        <!-- 引入更多帖子片段 -->
+        <div th:replace="~{more-knowledge-frag::more-knowledge-frag(knowledgeVOs=${knowledgeVOs})}"></div>
+    </div>
+
+    <!-- 加载提示 -->
+    <div id="loading" style="display: none; text-align: center; padding: 20px;">
+        <p>加载中...</p>
+    </div>
+</div>
+
+
+</body>
+</html>

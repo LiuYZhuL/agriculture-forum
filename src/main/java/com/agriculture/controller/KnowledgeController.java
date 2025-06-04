@@ -205,9 +205,10 @@ public class KnowledgeController {
             @RequestParam(name = "size", defaultValue = "5") Integer size,
             @RequestParam(name = "keyword", required = false) String keyword,
             @RequestParam(name = "categoryId", required = false) Integer categoryId) {
-        ModelAndView model = new ModelAndView("/element/knowledge_fragment");
+        ModelAndView model = new ModelAndView("more-knowledge-frag");
         Post searchPost = new Post();
         searchPost.setTitle(keyword);
+        searchPost.setUsername(keyword);
         searchPost.setCategoryId(categoryId);
         searchPost.setStatus(Post.STATUS_KNOWLEDGE_PUBLISHED);
         PageInfo<Post> postList = postService.searchKnowledges(page, size, searchPost);
@@ -273,9 +274,7 @@ public class KnowledgeController {
             return mv;
         }catch (RuntimeException e){
             mv.addObject("knowledgeSuccess", false);
-
             mv.addObject("knowledgeMsg", e.getMessage());
-
             return mv;
         } catch (IOException e) {
             throw new RuntimeException(e);

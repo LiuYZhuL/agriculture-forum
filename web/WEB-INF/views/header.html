@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div class="header" th:fragment="user-header(user, logo)">
+    <div class="logo" th:text="${logo}">首页</div>
+    <div th:if="${user == null}" class="user-info">
+        <span>还未登录,来登录吧！</span>
+        <div class="dropdown-menu">
+            <a th:href="@{/api/user/login}">登录</a>
+            <a th:href="@{/api/user/register}">注册</a>
+        </div>
+    </div>
+    <div th:if="${user != null}" class="user-info">
+        <img th:src="@{/static/uploads/img/{avatar}(avatar=${user.avatar})}"
+             alt="头像"
+             class="avatar">
+        <span>欢迎，<span th:text="${user.username}"></span></span>
+        <div class="dropdown-menu">
+            <a th:href="@{/api/dashboard}">首页</a>
+            <a th:href="@{/api/user/home}">用户中心</a>
+            <a th:if="${user.roleId == 2}" th:href="@{/api/admin/manage/}">管理员中心</a>
+            <a th:href="@{/api/user/logout}">登出</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

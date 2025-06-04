@@ -1,188 +1,148 @@
-// web/static/js/knowledge.js
+// web/static/js/post.js
 
-// knowledge.js
-
+// 初始化常量
 let currentPage = 1;
+let hasMore = true;
 let isLoading = false;
+let currentParentComment = null; // 当前回复的父级评论
 
-// 滚动监听
-const scrollHandler = () => {
+// 滚动加载控制
+const handleScroll = () => {
     const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
-    const threshold = 100;
-    if (scrollTop + clientHeight >= scrollHeight - threshold && !isLoading) {
+    if (scrollTop + clientHeight >= scrollHeight - 5 && !isLoading && hasMore) {
         loadMoreComments();
     }
 };
+window.addEventListener('scroll', handleScroll);
 
-window.addEventListener('scroll', scrollHandler);
-
-function removeScrollListener() {
-    window.removeEventListener('scroll', scrollHandler);
-}
-
+// 加载更多评论
 async function loadMoreComments() {
     isLoading = true;
     showLoading(true);
 
     try {
-        const response = await fetch(`${CONTEXT_PATH}/api/comment/page?postId=${POST_ID}&page=` + currentPage);
+        const response = await fetch(`${baseUrl}api/comment/page?postId=${postId}&page=${currentPage}`);
         const html = await response.text();
-
         const tempDiv = document.createElement('div');
         tempDiv.innerHTML = html;
 
-        // 追加评论内容
-        document.getElementById('commentsContainer').insertAdjacentHTML('beforeend', tempDiv.innerHTML);
+        // 追加新评论
+        const newComments = tempDiv.querySelector('#commentsContainer').innerHTML(html);
+        document.getElementById('commentsContainer').insertAdjacentHTML('beforeend', newComments);
 
-        // 判断是否还有更多评论
-        const hasMoreElement = tempDiv.querySelector('#hasMore');
-        const hasMore = hasMoreElement ? hasMoreElement.value === 'true' : false;
-        if (!hasMore) {
-            removeScrollListener();
-        }
+        // 检查是否还有更多
+        hasMore = tempDiv.querySelector('#hasMore')?.value === 'true';
+        if (!hasMore) window.removeEventListener('scroll', handleScroll);
         currentPage++;
     } catch (error) {
-        console.error('加载失败:', error);
+        console.error('Error loading more comments:', error)
     } finally {
         isLoading = false;
         showLoading(false);
     }
 }
 
+// 评论输入框控制
+document.getElementById('commentsContainer').addEventListener('click', function(e) {
+    // 回复按钮点击
+    if (e.target.classList.contains('reply-btn')) {
+        const commentItem = e.target.closest('.comment-item');
+        currentParentComment = {
+            id: commentItem.dataset.commentId,
+            username: commentItem.querySelector('.comment-username').textContent
+        };
+        showCommentInput(`@${currentParentComment.username} `);
+    }
+
+    // 删除按钮点击
+    if (e.target.classList.contains('delete-btn')) {
+        const commentId = e.target.dataset.id;
+        deleteComment(commentId);
+    }
+});
+
+// 显示输入框
+function showCommentInput(placeholder = '') {
+    const inputBox = document.getElementById('commentInputBox');
+    const textarea = document.getElementById('commentContent');
+    textarea.value = placeholder;
+    inputBox.style.display = 'block';
+    textarea.focus();
+}
+
+// 提交评论
+async function submitComment() {
+    const content = document.getElementById('commentContent').value.trim();
+    if (!content) return;
+
+    const formData = new URLSearchParams();
+    formData.append('postId', postId);
+    formData.append('userId', userId);
+    formData.append('content', content);
+    if (currentParentComment) formData.append('parentId', currentParentComment.id);
+
+
+    fetch(`${baseUrl}api/comment/add`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: formData
+    }).then(response => {
+        showAlert('评论成功');
+        resetInput();
+        //  刷新页面
+        window.location.reload();
+    });
+
+
+}
+
+// 删除评论
+async function deleteComment(commentId) {
+    if (!confirm('确定删除该评论？')) return;
+
+    fetch(`${baseUrl}api/comment/delete/` + commentId, {
+        method: 'POST',
+    }).then(() => {
+        document.querySelector(`[data-comment-id="${commentId}"]`).remove();
+        showAlert('删除成功');
+        window.location.reload();
+    }).catch(error => {
+        showAlert('删除失败: ' + error.message);
+    });
+
+}
+
+// 点赞/收藏切换
+async function toggleInteraction(type) {
+    const btn = document.getElementById(`${type}Btn`);
+    const isActive = btn.classList.contains(type === 'like' ? 'liked' : 'collected');
+
+    const response = await fetch(`${baseUrl}api/post/${type}?postId=${postId}`, {
+        method: 'POST'
+    }).then(() => {
+        btn.classList.toggle(type === 'like' ? 'liked' : 'collected');
+        const countSpan = btn.querySelector('span:last-child');
+        countSpan.textContent = isActive ?
+            parseInt(countSpan.textContent) - 1 :
+            parseInt(countSpan.textContent) + 1;
+        showAlert(`${type === 'like' ? '点赞' : '收藏'}操作成功`);
+        window.location.reload();
+    }).catch(error => {
+        showAlert('操作失败: ' + error.message);
+    });
+}
+
+// 辅助函数
 function showLoading(show) {
     document.getElementById('loading').style.display = show ? 'block' : 'none';
 }
 
-// 初始化加载
-loadMoreComments();
-
-const commentInputBox = document.getElementById('commentInputBox');
-const commentContent = document.getElementById('commentContent');
-
-let currentReplyTo = null; // 当前回复目标用户名
-let currentParentId = null; // 当前回复的目标评论 ID
-
-// 显示评论输入框并插入 @ 用户名
-function showChildComments(btn, username, parentId) {
-    currentReplyTo = username;
-    currentParentId = parentId;
-
-    // 设置输入框内容
-    commentContent.value = '@' + username;
-    commentContent.focus();
-
-    // 显示输入框
-    commentInputBox.style.display = 'block';
+function showAlert(message) {
+    alert(message); // 可替换为更优雅的弹窗组件
 }
 
-function showCommentInputBox() {
-    commentContent.focus();
-    commentInputBox.style.display = 'block';
-}
-
-// 提交评论
-function submitComment() {
-    const content = commentContent.value.trim();
-    if (!content) return;
-
-    const params = new URLSearchParams();
-    params.append('postId', POST_ID);
-    params.append('userId', USER_ID);
-    params.append('content', content);
-
-    // 如果是回复，添加 parentId
-    if (currentParentId !== null && currentParentId !== '') {
-        params.append('parentId', currentParentId);
-    }
-
-    fetch(`${CONTEXT_PATH}/api/comment/add`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: params
-    }).then(() => {
-        alert('评论成功！');
-        window.location.reload();
-    }).catch(error => {
-        console.error('提交评论失败:', error);
-        alert('评论失败，请稍后再试。');
-    });
-
-    // 清空并隐藏输入框
-    commentContent.value = '';
-    commentInputBox.style.display = 'none';
-
-    // 重置状态
-    currentReplyTo = null;
-    currentParentId = null;
-}
-
-// 点击非输入框区域隐藏
-document.addEventListener('click', function (event) {
-    const isClickInside = commentInputBox.contains(event.target);
-    const isReplyButton = event.target.classList.contains('reply-btn');
-    const isCommentButton = event.target.closest('#commentBtn') !== null;
-
-    if (!isClickInside && !isReplyButton && !isCommentButton && commentInputBox.style.display === 'block') {
-        commentInputBox.style.display = 'none';
-        commentContent.value = '';
-        currentReplyTo = null;
-        currentParentId = null;
-    }
-});
-
-function toggleLike() {
-    const btn = document.getElementById('likeBtn');
-    const isLiked = btn.classList.contains('liked');
-
-    fetch(`${CONTEXT_PATH}/api/post/like?postId=${POST_ID}`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-    })
-        .then(() => {
-            window.location.reload();
-        })
-        .catch(err => {
-            console.error(err);
-            alert('网络错误');
-        });
-}
-
-function toggleFavorite() {
-    const btn = document.getElementById('favoriteBtn');
-    const isCollected = btn.classList.contains('collected');
-
-    fetch(`${CONTEXT_PATH}/api/post/collect?postId=${POST_ID}`, {
-        method: 'POST'
-    })
-        .then(() => {
-            window.location.reload();
-        })
-        .catch(err => {
-            console.error(err);
-            alert('网络错误');
-        });
-}
-
-function deleteComment(commentId, btnElement) {
-    if (!confirm('确定要删除这条评论吗？')) return;
-
-    fetch(`${CONTEXT_PATH}/api/comment/delete`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: 'commentId=' + commentId
-    })
-        .then(() => {
-            alert('删除成功！');
-            window.location.reload();
-        })
-        .catch(error => {
-            console.error('删除评论失败:', error);
-            alert('删除失败，请稍后再试。');
-        });
+function resetInput() {
+    document.getElementById('commentContent').value = '';
+    document.getElementById('commentInputBox').style.display = 'none';
+    currentParentComment = null;
 }

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="more-post-frag(postVOs)">
+    <div class="post-item" th:each="postvo : ${postVOs}"
+         th:onclick="|location.href='@{/api/post/detail(postId=${postvo.post.id})}'|">
+        <div class="post-left">
+            <h3 class="post-title" th:text="${postvo.post.title}"></h3>
+            <div class="post-meta">
+                <span class="post-author" th:text="${postvo.user}"></span>
+                <span class="post-category" th:text="${postvo.category}"></span>
+            </div>
+            <div class="post-summary" th:text="${#strings.abbreviate(postvo.post.content, 10)}"></div>
+            <div class="post-stats">
+                <span>👁️ <span th:text="${postvo.viewCount}"></span></span>
+                <span>👍 <span th:text="${postvolikeCount}"></span></span>
+                <span>💬 <span th:text="${postvo.commentCount}"></span></span>
+                <span>⭐ <span th:text="${postvo.collectionCount}"></span></span>
+            </div>
+        </div>
+        <div class="post-right" th:if="${postvo.attachment}">
+            <img th:if="${#strings.startsWith(postvo.attachment.fileType, 'image/')}"
+                 th:src="@{/static/uploads/attachments/img/{file}(file=${postvo.attachment.filePath})}"
+                 class="post-media"
+                 alt="封面图"
+                 onerror="this.style.display='none'">
+            <video th:if="${#strings.startsWith(postvo.attachment.fileType, 'video/')}"
+                   class="post-media" controls>
+                <source th:src="@{/static/uploads/attachments/video/{file}(file=${postvo.attachment.filePath})}"
+                        th:attr="type=${postvo.attachment.fileType}">
+            </video>
+        </div>
+    </div>
+    <input type="hidden" id="hasMore" th:value="${hasMore}">
+</div>
+</body>
+</html>

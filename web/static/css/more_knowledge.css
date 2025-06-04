@@ -273,9 +273,9 @@ video.post-media {
 }
 
 .knowledge-container {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
     gap: 20px;
+    column-count: 2;      /* 列数 */
+    column-gap: 20px;     /* 列间距 */
     padding: 15px;
 }
 
@@ -286,6 +286,9 @@ video.post-media {
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     transition: transform 0.3s;
     cursor: pointer;
+    min-height: 0;  /* 允许内容压缩 */
+    break-inside: avoid;  /* 防止内容被分割 */
+    margin-bottom: 20px;  /* 条目间距 */
 }
 
 .post-item:hover,

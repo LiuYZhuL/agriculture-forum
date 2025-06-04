@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="comment(comment)">
+    <div class="comment-header">
+        <img class="comment-avatar"
+             th:src="@{/static/uploads/img/{avatar}(avatar=${session.user.avatar})}">
+        <span class="comment-username" th:text="${session.user.username}"></span>
+        <span class="comment-time"
+              th:text="刚刚..."></span>
+    </div>
+    <div class="comment-content" th:text="${comment.content}"></div>
+    <button class="reply-btn">回复</button>
+    <button class="delete-btn"
+            th:data-id="${comment.id}">删除</button>
+</div>
+</body>
+</html>

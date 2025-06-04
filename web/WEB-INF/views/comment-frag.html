@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="comment-frag(comments, self)">
+    <div class="comment-item" th:each="comment : ${comments}"
+         th:attr="data-comment-id=${comment.id}">
+        <div class="comment-header">
+            <img class="comment-avatar"
+                 th:src="@{/static/uploads/img/{avatar}(avatar=${comment.avatar})}">
+            <span class="comment-username" th:text="${comment.username}"></span>
+            <span class="comment-time"
+                  th:text="${#dates.format(comment.createTime, 'yyyy-MM-dd HH:mm')}"></span>
+        </div>
+        <div class="comment-content" th:text="${comment.content}"></div>
+        <button class="reply-btn">回复</button>
+        <button class="delete-btn"
+                th:if="${self?.id == comment.userId or self?.roleId == 2}"
+                th:data-id="${comment.id}">删除</button>
+
+        <div class="child-comments" th:if="${not #lists.isEmpty(comment.children)}">
+            <div class="child-comment" th:each="child : ${comment.children}">
+                <div class="comment-header">
+                    <img class="comment-avatar"
+                         th:src="@{/static/uploads/img/{avatar}(avatar=${child.avatar})}">
+                    <span class="comment-username" th:text="${child.username}"></span>
+                    <span class="comment-time"
+                          th:text="${#dates.format(child.createTime, 'yyyy-MM-dd HH:mm')}"></span>
+                </div>
+                <div class="comment-content" th:text="${child.content}"></div>
+                <button class="reply-btn">回复</button>
+                <button class="delete-btn"
+                        th:if="${self?.id == comment.userId or self?.roleId == 2}"
+                        th:data-id="${child.id}">删除</button>
+            </div>
+        </div>
+    </div>
+    <input type="hidden" id="hasMore" th:value="${hasMore}">
+</div>
+</body>
+</html>
