@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>用户信息修改</title>
+    <link rel="stylesheet" th:href="@{/static/css/userUD.css}">
+</head>
+<body>
+<div th:insert="~{header :: user-header(user=${session.user}, logo='用户信息修改')}">
+</div>
+<div class="container">
+    <h1>用户信息修改</h1>
+    <form th:action="@{/api/admin/user/update}" method="post" enctype="multipart/form-data">
+        <input type="hidden" th:value="${updateUser.id}" name="id">
+        <div class="avatar-upload">
+            <div class="preview">
+                <img id="avatarPreview" th:src="@{/static/uploads/img/__${updateUser.avatar}__}" alt="Avatar">
+            </div>
+            <input type="file" id="avatar" name="avatar">
+        </div>
+        <div class="form-group">
+            <label for="username">用户名</label>
+            <input type="text" id="username" name="username" th:value="${updateUser.username}" required>
+        </div>
+        <div class="form-group">
+            <label for="email">邮箱</label>
+            <input type="email" id="email" name="email" th:value="${updateUser.email}" required>
+        </div>
+        <div class="form-group">
+            <label for="roleId">用户角色</label>
+            <select id="roleId" name="roleId">
+                <option value="1" th:selected="${updateUser.roleId == 1}">管理员</option>
+                <option value="2" th:selected="${updateUser.roleId == 2}">普通用户</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="status">用户状态</label>
+            <select id="status" name="status">
+                <option value="0" th:selected="${updateUser.status == 0}">封禁</option>
+                <option value="1" th:selected="${updateUser.status == 1}">正常</option>
+            </select>
+        </div>
+        <input type="submit" class="btn-submit" value="提交修改">
+        <div th:if="${msg}" th:text="${msg}" class="error"></div>
+        <div th:if="${success}" th:text="'更新成功'" class="success"></div>
+    </form>
+</div>
+</body>
+</html>

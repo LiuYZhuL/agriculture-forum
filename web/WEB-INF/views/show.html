@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>预览</title>
+    <link rel="stylesheet" th:href="@{/static/css/show.css}">
+    <!-- 定义基础 URL -->
+    <script>
+        const baseUrl = "[[@{/}]]";
+        const postId = [[${post.id}]];
+        const userId = [[${session.user.id}]];
+    </script>
+    <script th:src="@{/static/js/show.js}" defer></script>
+</head>
+<body>
+<!-- 头部部分 -->
+<div th:insert="~{header :: user-header(user=${session.user}, logo='预览')}">
+</div>
+<!-- 帖子容器 -->
+<div class="post-container">
+    <!-- 作者信息 -->
+    <div class="author-info">
+        <img class="avatar" th:src="@{/static/uploads/img/{avatar}(avatar=${postUser.avatar})}">
+        <div class="meta-info">
+            <span th:text="${postUser.username}">作者</span>
+            <span th:text="${#dates.format(post.createTime, 'yyyy-MM-dd HH:mm')}">发布时间</span>
+            <span class="category-tag" th:text="${category.name}">分类</span>
+        </div>
+    </div>
+    <!-- 帖子标题 -->
+    <h2 class="post-title" th:text="${post.title}">帖子标题</h2>
+    <!-- 帖子内容 -->
+    <div class="post-content" th:utext="${post.content}">帖子内容</div>
+
+    <!-- 附件 -->
+    <div class="attachments" th:if="${attachments}" th:each="attachment : ${attachments}">
+        <img class="attachment-img" th:if="${#strings.startsWith(attachment.fileType, 'image/')}"
+             th:src="@{/static/uploads/attachments/img/{file}(file=${attachment.filePath})}"
+             alt="附件图片">
+        <video class="attachment-video" th:if="${#strings.startsWith(attachment.fileType, 'video/')}" controls>
+            <source th:src="@{/static/uploads/attachments/video/{file}(file=${attachment.filePath})}"
+                    th:attr="type=${attachment.fileType}">
+        </video>
+    </div>
+
+    <!-- 附件下载 -->
+    <div class="attachments" th:each="attachment : ${attachments}">
+        <div th:if="${#strings.startsWith(attachment.fileType, 'image/')}">
+            <a th:href="@{/static/uploads/attachments/img/{file}(file=${attachment.filePath})}"
+               th:text="${attachment.filePath}" download/>
+        </div>
+        <div th:if="${#strings.startsWith(attachment.fileType, 'video/')}">
+            <a th:href="@{/static/uploads/attachments/video/{file}(file=${attachment.filePath})}"
+               th:text="${attachment.filePath}" download/>
+        </div>
+        <div th:if="${#strings.startsWith(attachment.fileType, 'application/')}">
+            <a th:href="@{/static/uploads/attachments/file/{file}(file=${attachment.filePath})}"
+               th:text="${attachment.filePath}" download/>
+        </div>
+    </div>
+</div>
