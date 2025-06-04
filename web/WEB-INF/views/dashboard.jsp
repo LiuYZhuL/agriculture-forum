@@ -1,89 +1,74 @@
+<%--
+  Created by IntelliJ IDEA.
+  User: Liu
+  Date: 2025/5/25
+  Time: 16:13
+  To change this template use File | Settings | File Templates.
+--%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-
-<!DOCTYPE html>
-<html lang="zh-CN">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>农业知识论坛 - 首页</title>
+    <title>首页</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/dashboard.css">
 </head>
-
 <body>
-<!-- ########## 头部导航 ########## -->
-<header class="header">
-    <h1 class="logo">农业知识论坛</h1>
+<div class="header">
+    <div class="logo">首页</div>
+    <div class="user-info">
+        <c:if test="${sessionScope.user == null}">
+            <span>还未登录,来登录吧！</span>
+            <div class="dropdown-menu">
+                <a href="${pageContext.request.contextPath}/api/user/login">登录</a>
+                <a href="${pageContext.request.contextPath}/api/user/register">注册</a>
+            </div>
+        </c:if>
+        <c:if test="${sessionScope.user != null}">
+            <img src="${pageContext.request.contextPath}/static/uploads/img/${sessionScope.user.avatar}"
+                 alt="头像"
+                 style="width: 40px; height: 40px; object-fit: cover;">
+            <span>欢迎，${sessionScope.user.username}</span>
+            <div class="dropdown-menu">
+                <a href="${pageContext.request.contextPath}/api/dashboard">首页</a>
+                <a href="${pageContext.request.contextPath}/api/user/home">用户中心</a>
+                <c:if test="${sessionScope.user.roleId == 2}">
+                    <a href="${pageContext.request.contextPath}/api/admin/manage/">管理员中心</a>
+                </c:if>
+                <a href="${pageContext.request.contextPath}/api/user/logout">登出</a>
+            </div>
+        </c:if>
+    </div>
+</div>
 
-    <nav class="user-info" aria-label="用户导航">
-        <c:choose>
-            <c:when test="${empty sessionScope.user}">
-                <span class="login-tip">访问权限提示</span>
-                <div class="dropdown-menu" role="menu">
-                    <a href="${pageContext.request.contextPath}/api/user/login" role="menuitem">登录</a>
-                    <a href="${pageContext.request.contextPath}/api/user/register" role="menuitem">注册</a>
-                </div>
-            </c:when>
-
-            <c:otherwise>
-                <img class="user-avatar"
-                     src="${pageContext.request.contextPath}/static/uploads/img/${sessionScope.user.avatar}"
-                     alt="${sessionScope.user.username}的头像"
-                     width="40"
-                     height="40">
-
-                <span class="welcome-text">欢迎，${sessionScope.user.username}</span>
-
-                <div class="dropdown-menu" role="menu">
-                    <a href="${pageContext.request.contextPath}/api/dashboard" role="menuitem">🏠 首页</a>
-                    <a href="${pageContext.request.contextPath}/api/user/home" role="menuitem">👤 用户中心</a>
-                    <c:if test="${sessionScope.user.roleId == 2}">
-                        <a href="${pageContext.request.contextPath}/api/admin/manage/" role="menuitem">⚙️ 管理员中心</a>
-                    </c:if>
-                    <hr class="menu-divider">
-                    <a href="${pageContext.request.contextPath}/api/user/logout" role="menuitem">🚪 登出</a>
-                </div>
-            </c:otherwise>
-        </c:choose>
-    </nav>
-</header>
-
-<!-- ########## 错误提示 ########## -->
 <c:if test="${not empty error}">
-    <div class="error-message" role="alert">
-        ⚠️ ${error}
+    <div style="color: red; margin-bottom: 15px;">
+            ${error}
     </div>
 </c:if>
 
-<!-- ########## 主体内容 ########## -->
-<main class="main">
-    <!-- 知识推荐板块 -->
-    <section class="knowledge" aria-labelledby="knowledge-title">
-        <header class="section-header">
-            <h2 id="knowledge-title">📚 推荐知识</h2>
-            <a href="${pageContext.request.contextPath}/api/knowledge/more"
-               class="btn more-link"
-               aria-label="查看全部知识文章">
-                查看更多 →
-            </a>
-        </header>
+<div class="main">
+    <div class="knowledge">
+        <div class="knowledge-header">
+            <div class="knowledge-header-title"><h2>推荐知识</h2></div>
+            <div>
+                <a href="${pageContext.request.contextPath}/api/knowledge/more" class="btn">查看更多</a>
+            </div>
+        </div>
+        <div class="knowledge-container">
+            <c:forEach items="${knowledgeVOs}" var="knowledge" varStatus="status">
+                <div class="knowledge-item"
+                     onclick="location.href='${pageContext.request.contextPath}/api/knowledge/detail?postId=${knowledge.post.id}'">
 
-        <div class="knowledge-grid">
-            <c:forEach items="${knowledgeVOs}" var="knowledge">
-                <article class="card knowledge-card"
-                         onclick="location.href='${pageContext.request.contextPath}/api/knowledge/detail?postId=${knowledge.post.id}'"
-                         role="article">
-                    <div class="card-media">
+                    <div class="knowledge-media">
                         <c:choose>
                             <c:when test="${fn:startsWith(knowledge.attachment.fileType, 'image/')}">
                                 <img src="${pageContext.request.contextPath}/static/uploads/attachments/img/${knowledge.attachment.filePath}"
-                                     alt="${knowledge.post.title}封面图"
-                                     loading="lazy">
+                                     alt="知识封面">
                             </c:when>
                             <c:when test="${fn:startsWith(knowledge.attachment.fileType, 'video/')}">
-                                <video controls preload="metadata">
+                                <video controls>
                                     <source src="${pageContext.request.contextPath}/static/uploads/attachments/video/${knowledge.attachment.filePath}"
                                             type="${knowledge.attachment.fileType}">
                                 </video>
@@ -91,83 +76,73 @@
                         </c:choose>
                     </div>
 
-                    <div class="card-body">
-                        <h3 class="card-title">${knowledge.post.title}</h3>
-                        <span class="category-tag">${knowledge.category}</span>
-                        <div class="card-meta">
-                            <span class="author">👤 ${knowledge.user}</span>
-                            <time class="date" datetime="<fmt:formatDate value="${knowledge.post.createTime}" pattern="yyyy-MM-dd"/>">
-                                📅 <fmt:formatDate value="${knowledge.post.createTime}" pattern="yyyy-MM-dd"/>
-                            </time>
+                    <div class="knowledge-content">
+                        <h3 class="knowledge-title">${knowledge.post.title}</h3>
+                        <div class="knowledge-category">${knowledge.category}</div>
+                        <div class="knowledge-meta">
+                            <span class="author">${knowledge.user}</span>
+                            <span class="date"><fmt:formatDate value="${knowledge.post.createTime}" pattern="yyyy-MM-dd"/></span>
                         </div>
-                        <div class="card-stats">
-                            <span title="点赞数">👍 ${knowledge.likeCount}</span>
-                            <span title="收藏数">⭐ ${knowledge.collectionCount}</span>
-                            <span title="浏览数">👁️ ${knowledge.viewCount}</span>
+                        <div class="knowledge-stats">
+                            <span>👍 ${knowledge.likeCount}</span>
+                            <span>⭐ ${knowledge.collectionCount}</span>
+                            <span>👁️ ${knowledge.viewCount}</span>
                         </div>
                     </div>
-                </article>
+                </div>
             </c:forEach>
         </div>
-    </section>
+    </div>
 
-    <!-- 帖子推荐板块 -->
-    <section class="post" aria-labelledby="post-title">
-        <header class="section-header">
-            <h2 id="post-title">💬 热门讨论</h2>
-            <a href="${pageContext.request.contextPath}/api/post/more"
-               class="btn more-link"
-               aria-label="查看全部讨论帖子">
-                查看更多 →
-            </a>
-        </header>
-
-        <div class="post-list">
+    <div class="post">
+        <div class="post-header">
+            <div class="post-header-title"><h2>推荐帖子</h2></div>
+            <div>
+                <a href="${pageContext.request.contextPath}/api/post/more" class="btn">查看更多</a>
+            </div>
+        </div>
+        <div class="post-content">
             <c:forEach items="${postVOs}" var="postvo">
-                <article class="card post-card"
-                         onclick="location.href='${pageContext.request.contextPath}/api/post/detail?postId=${postvo.post.id}'"
-                         role="article">
-                    <div class="card-content">
-                        <h3 class="card-title">${postvo.post.title}</h3>
+                <div class="post-item" onclick="location.href='${pageContext.request.contextPath}/api/post/detail?postId=${postvo.post.id}'">
+                    <div class="post-left">
+                        <h3 class="post-title">${postvo.post.title}</h3>
                         <div class="post-meta">
-                            <span class="author">👤 ${postvo.user}</span>
-                            <span class="category-tag">${postvo.category}</span>
+                            <span class="post-author">${postvo.user}</span>
+                            <span class="post-category">${postvo.category}</span>
                         </div>
-                        <p class="card-excerpt">
+                        <div class="post-summary">
                                 ${fn:substring(postvo.post.content, 0, 100)}...
-                        </p>
-                        <div class="card-stats">
-                            <span title="浏览数">👁️ ${postvo.viewCount}</span>
-                            <span title="点赞数">👍 ${postvo.likeCount}</span>
-                            <span title="评论数">💬 ${postvo.commentCount}</span>
-                            <span title="收藏数">⭐ ${postvo.collectionCount}</span>
+                        </div>
+                        <div class="post-stats">
+                            <span>👁️ ${postvo.viewCount}</span>
+                            <span>👍 ${postvo.likeCount}</span>
+                            <span>💬 ${postvo.commentCount}</span>
+                            <span>⭐ ${postvo.collectionCount}</span>
                         </div>
                     </div>
-
-                    <c:if test="${not empty postvo.attachment}">
-                        <div class="card-media">
+                    <div class="post-right">
+                        <c:if test="${not empty postvo.attachment}">
                             <c:choose>
                                 <c:when test="${fn:startsWith(postvo.attachment.fileType, 'image/')}">
                                     <img src="${pageContext.request.contextPath}/static/uploads/attachments/img/${postvo.attachment.filePath}"
-                                         alt="${postvo.post.title}封面图"
-                                         loading="lazy"
+                                         class="post-media"
+                                         alt="封面图"
                                          onerror="this.style.display='none'">
                                 </c:when>
                                 <c:when test="${fn:startsWith(postvo.attachment.fileType, 'video/')}">
-                                    <video controls preload="metadata">
-                                        <source src="${pageContext.request.contextPath}/static/uploads/attachments/video/${postvo.attachment.filePath}"
-                                                type="${postvo.attachment.fileType}">
+                                    <video class="post-media" controls>
+                                        <source src="${pageContext.request.contextPath}/static/uploads/attachments/video/${postvo.attachment.filePath}" type="${postvo.attachment.fileType}">
                                     </video>
                                 </c:when>
                             </c:choose>
-                        </div>
-                    </c:if>
-                </article>
+                        </c:if>
+                    </div>
+                </div>
             </c:forEach>
         </div>
-    </section>
-</main>
+    </div>
+</div>
 
-<script src="${pageContext.request.contextPath}/static/js/dashboard.js" defer></script>
+<script src="${pageContext.request.contextPath}/static/js/dashboard.js"></script>
 </body>
 </html>
