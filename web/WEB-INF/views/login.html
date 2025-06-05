@@ -6,6 +6,9 @@
     <!-- 使用 Thymeleaf 路径表达式 -->
     <link rel="stylesheet"
           th:href="@{/static/css/login.css}">
+    <script th:src="@{/static/js/login.js}"></script>
+    <script th:src="@{/static/js/reload.js}"></script>
+
 
     <!-- Font Awesome 保持 CDN 引用 -->
     <link rel="stylesheet"
@@ -39,8 +42,6 @@
     <a th:href="@{/api/user/reset}" class="action-link">忘记密码</a>
 </div>
 
-<!-- 使用 Thymeleaf 引用静态资源 -->
-<script th:src="@{/static/js/login.js}" src="../../static/js/login.js"></script>
 
 </body>
 </html>

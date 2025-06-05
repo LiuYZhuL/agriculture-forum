@@ -3,6 +3,8 @@
 <head>
     <title>首页</title>
     <link rel="stylesheet" th:href="@{/static/css/dashboard.css}">
+    <script th:src="@{/static/js/dashboard.js}"></script>
+    <script th:src="@{/static/js/reload.js}"></script>
 </head>
 <body>
 <div th:insert="~{header :: user-header(user=${session.user}, logo='首页')}">
@@ -95,6 +97,6 @@
     </div>
 </div>
 
-<script th:src="@{/static/js/dashboard.js}"></script>
+
 </body>
 </html>
