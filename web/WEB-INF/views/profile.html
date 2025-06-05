@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="profile-section(user)" class="content-section">
+    <!-- 组合头像和信息 -->
+    <div class="profile-container">
+        <!-- 头像区块 -->
+        <div class="avatar-section">
+            <div th:if="${msgAvatar}" class="alert alert-success"><span th:text="${msgAvatar}"/></div>
+            <div class="avatar-hover-layer">
+                <div class="preview-frame">
+                    <div class="preview">
+                        <img id="currentAvatar"
+                             th:src="@{/static/uploads/img/{avatar}(avatar = ${user.avatar})}"
+                             alt="当前头像"
+                             onerror="this.src='/static/images/default-avatar.png'">
+                        <div class="edit-mask" onclick="showAvatarEditor()">
+                            ✎ 修改头像
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 信息区块 -->
+        <div class="info-section">
+            <div th:if="${msgUpdate}" class="alert alert-success"><span th:text="${msgUpdate}"/></div>
+            <div class="info-card">
+                <h3>个人信息</h3>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <label>用户名:</label>
+                        <span id="displayUsername" th:text="${user.username}"></span>
+                    </div>
+                    <div class="info-item">
+                        <label>邮箱:</label>
+                        <span id="displayEmail" th:text="${user.email}"></span>
+                    </div>
+                    <div class="info-item">
+                        <label>积分:</label>
+                        <span th:text="${user.score}"></span>
+                    </div>
+                    <div class="info-item">
+                        <label>注册时间:</label>
+                        <span th:text="${#dates.format(user.createTime, 'yyyy-MM-dd HH:mm')}"></span>
+                    </div>
+                </div>
+                <button class="btn-edit" onclick="showInfoEditor()">✎ 编辑信息</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 头像修改模态框 -->
+    <div id="avatarModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeAvatarEditor()">&times;</span>
+            <h2>修改头像</h2>
+            <div class="preview">
+                <img id="previewAvatar"
+                     th:src="@{'/static/uploads/img/' + ${user.avatar}}"
+                     alt="预览头像"
+                     onerror="this.src='/static/images/default-avatar.png'">
+            </div>
+            <input type="file" id="avatarFile" onchange="previewSelectedAvatar()">
+            <button onclick="submitAvatarChange()">提交修改</button>
+        </div>
+    </div>
+
+    <!-- 信息修改模态框 -->
+    <div id="infoModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeInfoEditor()">&times;</span>
+            <h2>修改个人信息</h2>
+            <div class="form-container">
+                <div class="form-group">
+                    <label for="editUsername">用户名:</label>
+                    <input type="text" id="editUsername"
+                           th:value="${user.username}"
+                           required
+                           pattern="^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}">
+                </div>
+                <div class="form-group">
+                    <label for="editEmail">邮箱:</label>
+                    <input type="email" id="editEmail"
+                           th:value="${user.email}"
+                           required
+                           pattern="email">
+                </div>
+                <button class="btn-save" onclick="submitInfoChange()">保存修改</button>
+            </div>
+        </div>
+    </div>
+</div>
+</html>

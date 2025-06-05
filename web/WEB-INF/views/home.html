@@ -1,10 +1,30 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <title>个人中心</title>
+    <link rel="stylesheet" th:href="@{/static/css/home.css}">
+    <!-- 定义基础 URL -->
+    <script>
+        const baseUrl = "[[@{/}]]";
+        let currentContent = "[[${activeSection ?: 'profile'}]]"
+    </script>
+    <script th:src="@{/static/js/home.js}" defer></script>
 </head>
 <body>
-
+<!-- 头部部分 -->
+<div th:insert="~{header :: user-header(user=${session.user}, logo='个人中心')}">
+</div>
+<div class="sidebar">
+    <ul class="nav-menu">
+        <li class="nav-item" data-section="info" onclick="loadContent('profile')">我的信息</li>
+        <li class="nav-item" data-section="change" onclick="loadContent('change')">修改密码</li>
+        <li class="nav-item" data-section="collect" onclick="loadContent('collect')">我的收藏</li>
+        <li class="nav-item" data-section="post" onclick="loadContent('post')">我的发帖</li>
+        <li class="nav-item" data-section="knowledge" onclick="loadContent('knowledge')">我的知识</li>
+        <li class="nav-item" data-section="comment" onclick="loadContent('comment')">我的评论</li>
+    </ul>
+</div>
+<div class="content-area">
+</div>
 </body>
 </html>

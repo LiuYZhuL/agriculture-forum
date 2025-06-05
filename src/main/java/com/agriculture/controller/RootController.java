@@ -6,9 +6,11 @@ import com.agriculture.model.vo.KnowledgeVO;
 import com.agriculture.model.vo.PostVO;
 import com.agriculture.service.*;
 import com.github.pagehelper.PageInfo;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.ArrayList;
@@ -71,6 +73,15 @@ public class RootController {
             modelAndView.addObject("error", e.getMessage());
             return modelAndView;
         }
+        return modelAndView;
+    }
+    @GetMapping("/api/header")
+    public ModelAndView header(
+            HttpSession session) {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("header");
+        modelAndView.addObject("user", session.getAttribute("user"));
+        modelAndView.addObject("logo", "个人中心");
         return modelAndView;
     }
 }

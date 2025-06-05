@@ -222,6 +222,14 @@ public class UserController {
             return modelAndView;
         }
     }
+    @GetMapping("/profile")
+    public ModelAndView profile(HttpSession session) {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.addObject("activeSection", "profile");
+        modelAndView.addObject("user", (User) session.getAttribute("user"));
+        modelAndView.setViewName("profile");
+        return modelAndView;
+    }
     /**
      * 修改头像
      * @param avatar 头像文件
@@ -236,7 +244,7 @@ public class UserController {
         ModelAndView modelAndView = new ModelAndView();
         User user = (User) session.getAttribute("user");
         modelAndView.addObject("activeSection", "avatar");
-        modelAndView.setViewName("home");
+        modelAndView.setViewName("profile");
         try {
             if (avatar.isEmpty()) {
                 modelAndView.addObject("msgAvatar", "请选择上传文件");
@@ -280,8 +288,9 @@ public class UserController {
                     Files.delete(oldFilePath);
                 }
             }
-            session.setAttribute("user", user);
+            modelAndView.addObject("user", user);
             modelAndView.addObject("msgAvatar", "上传成功");
+            modelAndView.addObject("newAvatar", newFileName);
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (RuntimeException runtimeException) {
@@ -306,14 +315,17 @@ public class UserController {
          ModelAndView modelAndView = new ModelAndView();
          User user = (User) session.getAttribute("user");
          modelAndView.addObject("activeSection", "info");
-         modelAndView.setViewName("home");
+         modelAndView.setViewName("profile");
          UpdateUser updateUser = new UpdateUser();
          updateUser.setId(user.getId());
          updateUser.setUsername(username);
          updateUser.setEmail(email);
          try {
              userService.updateUserInfo(updateUser);
+             user.setUsername(username);
+             user.setEmail(email);
              modelAndView.addObject("msgUpdate", "修改成功");
+             modelAndView.addObject("user", user);
              return modelAndView;
          }catch (RuntimeException runtimeException){
              modelAndView.addObject("msgUpdate", runtimeException.getMessage());
