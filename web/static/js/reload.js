@@ -1,5 +1,7 @@
-window.onpageshow = function(event) {
-    if (event.persisted) { // 检测到页面是从缓存载入的
-        location.reload(); // 强制刷新页面
+// 在reload.js中改进实现
+window.addEventListener('pageshow', function(event) {
+    // 同时检测persisted标识和导航类型
+    if (event.persisted || performance.navigation.type === 2) {
+        window.location.reload();
     }
-};
+})
