@@ -83,7 +83,7 @@ public class UserController {
         }
         session.setAttribute("user", user);
         //重定向到首页
-        modelAndView.setViewName("redirect:/");
+        modelAndView.setViewName("redirect:/api/dashboard");
         return modelAndView;
     }
     /**

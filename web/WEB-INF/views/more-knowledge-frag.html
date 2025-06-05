@@ -4,7 +4,7 @@
 <div th:fragment="more-knowledge-frag(knowledgeVOs)" class="knowledge-container">
     <div class="knowledge-item" th:each="knowledge : ${knowledgeVOs}"
          th:onclick="|location.href='@{/api/knowledge/detail(postId=${knowledge.post.id})}'|">
-        <div class="knowledge-media" th:if="${knowledge.attachment}">
+        <div class="knowledge-media" th:if="${knowledge.attachment} and ${!#strings.startsWith(knowledge.attachment.fileType, 'application/')}">
             <img th:if="${#strings.startsWith(knowledge.attachment.fileType, 'image/')}"
                  th:src="@{/static/uploads/attachments/img/{file}(file=${knowledge.attachment.filePath})}"
                  alt="知识封面">

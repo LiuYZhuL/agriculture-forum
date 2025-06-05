@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 keyword: currentKeyword,
                 category: currentCategory
             });
-
+            console.log(params.toString());
             const response = await fetch(`${baseUrl}api/knowledge/search?${params}`);
             const html = await response.text();
 

@@ -204,12 +204,12 @@ public class KnowledgeController {
             @RequestParam(name = "page", defaultValue = "1") Integer page,
             @RequestParam(name = "size", defaultValue = "5") Integer size,
             @RequestParam(name = "keyword", required = false) String keyword,
-            @RequestParam(name = "categoryId", required = false) Integer categoryId) {
+            @RequestParam(name = "category", required = false) Integer category) {
         ModelAndView model = new ModelAndView("more-knowledge-frag");
         Post searchPost = new Post();
         searchPost.setTitle(keyword);
         searchPost.setUsername(keyword);
-        searchPost.setCategoryId(categoryId);
+        searchPost.setCategoryId(category);
         searchPost.setStatus(Post.STATUS_KNOWLEDGE_PUBLISHED);
         PageInfo<Post> postList = postService.searchKnowledges(page, size, searchPost);
         List<PostVO> postVOs = new ArrayList<>();
