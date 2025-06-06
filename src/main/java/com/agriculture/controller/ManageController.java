@@ -6,10 +6,12 @@ import com.agriculture.model.po.Category;
 import com.agriculture.model.po.Post;
 import com.agriculture.model.po.Role;
 import com.agriculture.model.po.User;
-import com.agriculture.service.CategoryService;
-import com.agriculture.service.PostService;
-import com.agriculture.service.UserService;
+import com.agriculture.model.vo.KnowledgeVO;
+import com.agriculture.model.vo.PostVO;
+import com.agriculture.service.*;
 import com.github.pagehelper.PageInfo;
+import com.mysql.cj.Session;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -30,15 +33,48 @@ public class ManageController {
     private CategoryService categoryService;
     @Autowired
     private PostService postService;
+    @Autowired
+    private AttachmentService attachmentService;
+    @Autowired
+    private CommentService commentService;
     /**
      * 管理用户页面
      * @return ModelAndView
      */
     @GetMapping("/")
-    public ModelAndView manage(){
-        ModelAndView mv = new ModelAndView();
-        mv.setViewName("manage");
-        return mv;
+    public ModelAndView manage(HttpSession session){
+        ModelAndView modelAndView = new ModelAndView();
+        User user = (User) session.getAttribute("user");
+        List<PostVO> postVOs = new ArrayList<>();
+        List<Post> postList = postService.getCollectPostsByUser(user.getId());
+        for (Post p : postList) {
+            PostVO postVO = new PostVO(p,
+                    userService.getUserById(p.getUserId()).getUsername(),
+                    categoryService.getCategoryById(p.getCategoryId()).getName(),
+                    attachmentService.getAttachmentByPostId(p.getId()).isEmpty() ? null : attachmentService.getAttachmentByPostId(p.getId()).get(0),
+                    commentService.getCommentCountByPostId(p.getId()),
+                    p.getViewCount(),
+                    postService.getPostLikeCount(p.getId()),
+                    postService.getPostCollectionCount(p.getId()));
+            postVOs.add(postVO);
+        }
+        List<KnowledgeVO>  knowledgeVOs = new ArrayList<>();
+        List<Post> knowledgeList = postService.getCollectKnowledgeByUser(user.getId());
+        for (Post k : knowledgeList) {
+            KnowledgeVO knowledgeVO = new KnowledgeVO(k,
+                    userService.getUserById(k.getUserId()).getUsername(),
+                    categoryService.getCategoryById(k.getCategoryId()).getName(),
+                    attachmentService.getAttachmentByPostId(k.getId()).isEmpty() ? null : attachmentService.getAttachmentByPostId(k.getId()).get(0),
+                    k.getViewCount(),
+                    postService.getPostLikeCount(k.getId()),
+                    postService.getPostCollectionCount(k.getId()));
+            knowledgeVOs.add(knowledgeVO);
+        }
+        modelAndView.addObject("postVOs", postVOs);
+        modelAndView.addObject("knowledgeVOs", knowledgeVOs);
+        modelAndView.addObject("user", user);
+        modelAndView.setViewName("manage");
+        return modelAndView;
     }
 
     /**
@@ -48,7 +84,7 @@ public class ManageController {
      * @param selectUser 查询条件
      * @return ModelAndView
      */
-    @GetMapping("/user")
+    @GetMapping("/usermgt")
     public ModelAndView listUsers(
             @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
             @RequestParam(value = "pageSize", defaultValue = "5") Integer pageSize,
@@ -66,7 +102,7 @@ public class ManageController {
                 user.setStatus(User.STATUS_NORMAL);
             }
         }
-        if (selectUser.getRoleId() != null){
+                if (selectUser.getRoleId() != null){
             if (selectUser.getRoleId().equals(Role.ROLE_ADMIN)){
                 user.setRoleId(Role.ROLE_ADMIN);
             }else if (selectUser.getRoleId().equals(Role.ROLE_USER)){
@@ -80,12 +116,12 @@ public class ManageController {
             mv.addObject("pageInfo", pageInfo);
             mv.addObject("userSuccess", true);
             mv.addObject("userMsg", "用户列表获取成功");
-            mv.setViewName("manage");
+            mv.setViewName("usermgt");
             return mv;
         }catch (RuntimeException e) {
             mv.addObject("userSuccess", false);
             mv.addObject("userMsg", e.getMessage());
-            mv.setViewName("manage");
+            mv.setViewName("usermgt");
             return mv;
         }
     }
@@ -97,7 +133,7 @@ public class ManageController {
      * @param searchCategory 分类名称
      * @return ModelAndView
      */
-    @GetMapping("/category")
+    @GetMapping("/categorymgt")
     public ModelAndView ListCategories(
             @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
             @RequestParam(value = "pageSize", defaultValue = "5") Integer pageSize,
@@ -115,16 +151,16 @@ public class ManageController {
             }
             mv.addObject("categorySuccess", true);
             mv.addObject("categoryMsg", "分类列表获取成功");
-            mv.setViewName("manage");
+            mv.setViewName("categorymgt");
             return mv;
         }catch (RuntimeException e) {
             mv.addObject("categorySuccess", false);
             mv.addObject("categoryMsg", e.getMessage());
-            mv.setViewName("manage");
+            mv.setViewName("categorymgt");
             return mv;
         }
     }
-    @GetMapping("/post")
+    @GetMapping("/postmgt")
     public ModelAndView ListPosts(
             @RequestParam(value = "pageNum", defaultValue = "1")Integer pageNum,
             @RequestParam(value = "pageSize", defaultValue = "5") Integer pageSize,
@@ -150,17 +186,17 @@ public class ManageController {
             mv.addObject("postSuccess", true);
             mv.addObject("postMsg", "帖子列表获取成功");
             mv.addObject("pagePost", pagePost);
-            mv.setViewName("manage");
+            mv.setViewName("postmgt");
             return mv;
         } catch (RuntimeException e) {
             e.printStackTrace();
             mv.addObject("postSuccess", false);
             mv.addObject("postMsg", e.getMessage());
-            mv.setViewName("manage");
+            mv.setViewName("postmgt");
             return mv;
         }
     }
-    @GetMapping("/knowledge")
+    @GetMapping("/knowledgemgt")
     public ModelAndView ListKnowledge(
             @RequestParam(value = "pageNum", defaultValue = "1")Integer pageNum,
             @RequestParam(value = "pageSize", defaultValue = "5") Integer pageSize,
@@ -196,13 +232,13 @@ public class ManageController {
             mv.addObject("knowledgeSuccess", true);
             mv.addObject("knowledgeMsg", "知识列表获取成功");
             mv.addObject("pageK", pageK);
-            mv.setViewName("manage");
+            mv.setViewName("knowledgemgt");
             return mv;
         } catch (RuntimeException e) {
             e.printStackTrace();
             mv.addObject("knowledgeSuccess", false);
             mv.addObject("knowledgeMsg", e.getMessage());
-            mv.setViewName("manage");
+            mv.setViewName("knowledgemgt");
             return mv;
         }
     }
