@@ -343,17 +343,17 @@ public class UserController {
      */
     @PostMapping("/change")
     public ModelAndView change(
-
             @RequestParam("password") String password,
             @RequestParam("newPassword") String newPassword,
             HttpSession session){
         ModelAndView modelAndView = new ModelAndView();
         User user = (User) session.getAttribute("user");
         modelAndView.addObject("activeSection", "change");
-        modelAndView.setViewName("home");
+        modelAndView.setViewName("profile");
             try {
                 userService.changePassword(new UpdateUser(user.getId(),user.getUsername(), password, newPassword,user.getEmail()));
                 modelAndView.addObject("msgChange", "修改成功");
+                modelAndView.addObject("user", user);
                 return modelAndView;
             }catch (RuntimeException runtimeException){
                 modelAndView.addObject("msgChange", runtimeException.getMessage());

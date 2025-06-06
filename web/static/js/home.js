@@ -250,3 +250,131 @@ function showToast(message, type) {
     }, 3000);
 }
 
+// 显示密码修改模态框
+function showPasswordEditor() {
+    // 重置表单内容
+    document.getElementById('oldPassword').value = '';
+    document.getElementById('newPassword').value = '';
+    document.getElementById('confirmPassword').value = '';
+
+    // 清除错误状态
+    const errorContainer = document.getElementById('clientError');
+    errorContainer.style.display = 'none';
+    document.getElementById('errorText').textContent = '';
+
+    // 清除输入框错误样式
+    ['oldPassword', 'newPassword', 'confirmPassword'].forEach(id => {
+        document.getElementById(id).classList.remove('error');
+    });
+
+    // 显示模态框
+    document.getElementById('passwordModal').style.display = 'block';
+}
+
+// 关闭密码修改模态框
+function closePasswordEditor() {
+    // 重置表单内容
+    document.getElementById('oldPassword').value = '';
+    document.getElementById('newPassword').value = '';
+    document.getElementById('confirmPassword').value = '';
+
+    // 清除错误状态
+    const errorContainer = document.getElementById('clientError');
+    errorContainer.style.display = 'none';
+    document.getElementById('errorText').textContent = '';
+
+    // 清除输入框错误样式
+    ['oldPassword', 'newPassword', 'confirmPassword'].forEach(id => {
+        document.getElementById(id).classList.remove('error');
+    });
+
+    document.getElementById('passwordModal').style.display = 'none';
+}
+
+// 提交密码修改
+function submitPasswordChange() {
+    const btn = document.querySelector('#passwordModal .btn-save');
+    const originalText = btn.innerHTML; // 保存原始按钮文本
+    const errorContainer = document.getElementById('clientError');
+    const errorText = document.getElementById('errorText');
+
+    // 重置所有状态
+    btn.disabled = false;
+    btn.innerHTML = originalText;
+    errorContainer.style.display = 'none';
+    errorText.textContent = '';
+    // 验证逻辑
+    const oldPassword = document.getElementById('oldPassword').value;
+    const newPassword = document.getElementById('newPassword').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+
+    if (!oldPassword || !newPassword || !confirmPassword) {
+        errorText.textContent = '所有字段都必须填写';
+        errorContainer.style.display = 'block';
+        return;
+    }
+
+    if (newPassword !== confirmPassword) {
+        errorText.textContent = '两次输入的新密码不一致';
+        errorContainer.style.display = 'block';
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('password', oldPassword);
+    formData.append('newPassword', newPassword);
+
+    btn.innerHTML = '⏳ 提交中...';
+    btn.disabled = true;
+
+    fetch(`${baseUrl}api/user/change`, {
+        method: 'POST',
+        body: formData
+    })
+        .then(response => response.text())
+        .then(html => {
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = html;
+            const newContent = tempDiv.querySelector('.content-section');
+            // 无论成功失败都恢复按钮
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+
+
+            if (serverError && !serverError.classList.contains('alert-success')) {
+                errorText.textContent = serverError.textContent;
+                errorContainer.style.display = 'block';
+                return; // 服务端验证错误
+            }
+
+            // 统一内容替换逻辑
+            if (newContent) {
+                document.querySelector('.content-area').innerHTML = '';
+                document.querySelector('.content-area').appendChild(newContent);
+            }
+
+            // 使用现有提示系统
+            const serverMsg = tempDiv.querySelector('.alert');
+            if (serverMsg) {
+                showToast(serverMsg.textContent, 'success');
+            } else {
+                showToast('密码修改成功', 'success');
+            }
+
+            closePasswordEditor();
+            initGlobalEvents(); // 复用全局事件绑定
+        })
+        .catch(error => {
+            // 网络错误时恢复按钮
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+            console.error('修改失败:', error);
+            errorText.textContent = '网络请求失败，请检查连接';
+            errorContainer.style.display = 'block';
+        })
+        .finally(() => {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        });
+}
+
