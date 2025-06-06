@@ -55,7 +55,6 @@
             <td th:text="${itemUser.id}"></td>
             <td th:text="${itemUser.username}"></td>
             <td>
-                <a th:href="@{/api/admin/user/reset(userId=${itemUser.id})}">重置密码</a>
                 <button th:onclick="'resetPassword('+${itemUser.id}+','+${pageInfo.pageNum}+')'" th:value="${itemUser.id}">修改密码</button>
             </td>
             <td th:text="${itemUser.email}"></td>
