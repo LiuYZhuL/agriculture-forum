@@ -53,7 +53,7 @@ public class AdminController {
             mv.addObject("activeSection","userMgt");
             mv.addObject("userSuccess", false);
             mv.addObject("userMsg", e.getMessage());
-            mv.setViewName("manage");
+            mv.setViewName("usermgt");
             return mv;
         }
     }
@@ -154,7 +154,7 @@ public class AdminController {
         mv.addObject("activeSection","userMgt");
         PageInfo<User> pageInfo = userService.listUsers(1, 5, new User());
         mv.addObject("pageInfo", pageInfo);
-        mv.setViewName("manage");
+        mv.setViewName("usermgt");
         return mv;
     }
 
@@ -174,7 +174,7 @@ public class AdminController {
         mv.addObject("activeSection","categoryMgt");
         PageInfo<Category> pageCategory = categoryService.listCategories(1, 5);
         mv.addObject("pageCategory", pageCategory);
-        mv.setViewName("manage");
+        mv.setViewName("categorymgt");
         return mv;
     }
     @PostMapping("/category/add")
@@ -196,7 +196,7 @@ public class AdminController {
         mv.addObject("activeSection","categoryMgt");
         PageInfo<Category> pageCategory = categoryService.listCategories(1, 5);
         mv.addObject("pageCategory", pageCategory);
-        mv.setViewName("manage");
+        mv.setViewName("categorymgt");
         return mv;
     }
 
