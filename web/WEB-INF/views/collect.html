@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="collect-section(postVOs, knowledgeVOs)" class="content-section">
+    <div class="collect-container">
+        <!-- 帖子收藏 -->
+        <div class="post-collect">
+            <h3>收藏的帖子</h3>
+            <div th:replace="~{more-post-frag :: more-post-frag(${postVOs})}"></div>
+        </div>
+
+        <!-- 知识收藏 -->
+        <div class="knowledge-collect">
+            <h3>收藏的知识</h3>
+            <div th:replace="~{more-knowledge-frag :: more-knowledge-frag(${knowledgeVOs})}"></div>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,5 +1,7 @@
 
-
+function setHome(section){
+    window.location.href = `${baseUrl}api/user/home?section=${section}`;
+}
 // 修改后的 loadContent 函数
 function loadContent(section) {
     const contentArea = document.querySelector('.content-area');
@@ -39,6 +41,62 @@ function showAvatarEditor() {
 function closeAvatarEditor() {
     const modal = document.getElementById('avatarModal');
     modal.style.display = 'none';
+}
+// 显示信息修改模态框
+function showInfoEditor() {
+    const modal = document.getElementById('infoModal');
+    modal.style.display = 'block';
+
+    // 初始化表单值
+    document.getElementById('editUsername').value =
+        document.getElementById('displayUsername').textContent;
+    document.getElementById('editEmail').value =
+        document.getElementById('displayEmail').textContent;
+}
+
+// 关闭信息修改模态框
+function closeInfoEditor() {
+    document.getElementById('infoModal').style.display = 'none';
+}
+// 显示密码修改模态框
+function showPasswordEditor() {
+    // 重置表单内容
+    document.getElementById('oldPassword').value = '';
+    document.getElementById('newPassword').value = '';
+    document.getElementById('confirmPassword').value = '';
+
+    // 清除错误状态
+    const errorContainer = document.getElementById('clientError');
+    errorContainer.style.display = 'none';
+    document.getElementById('errorText').textContent = '';
+
+    // 清除输入框错误样式
+    ['oldPassword', 'newPassword', 'confirmPassword'].forEach(id => {
+        document.getElementById(id).classList.remove('error');
+    });
+
+    // 显示模态框
+    document.getElementById('passwordModal').style.display = 'block';
+}
+
+// 关闭密码修改模态框
+function closePasswordEditor() {
+    // 重置表单内容
+    document.getElementById('oldPassword').value = '';
+    document.getElementById('newPassword').value = '';
+    document.getElementById('confirmPassword').value = '';
+
+    // 清除错误状态
+    const errorContainer = document.getElementById('clientError');
+    errorContainer.style.display = 'none';
+    document.getElementById('errorText').textContent = '';
+
+    // 清除输入框错误样式
+    ['oldPassword', 'newPassword', 'confirmPassword'].forEach(id => {
+        document.getElementById(id).classList.remove('error');
+    });
+
+    document.getElementById('passwordModal').style.display = 'none';
 }
 
 // 预览选择的头像
@@ -118,6 +176,18 @@ function submitAvatarChange() {
             btn.disabled = false;
         });
 }
+// 新增全局事件绑定（与头像模块保持统一）
+function initGlobalEvents() {
+    initInfoEvents();
+    initAvatarEvents();
+}
+
+// 初始化信息相关事件
+function initInfoEvents() {
+    const editBtn = document.querySelector('.btn-edit');
+
+    if (editBtn) editBtn.onclick = showInfoEditor;
+}
 
 // 初始化头像相关事件
 function initAvatarEvents() {
@@ -149,22 +219,7 @@ function refreshHeaderComponent() {
             }
         });
 }
-// 显示信息修改模态框
-function showInfoEditor() {
-    const modal = document.getElementById('infoModal');
-    modal.style.display = 'block';
 
-    // 初始化表单值
-    document.getElementById('editUsername').value =
-        document.getElementById('displayUsername').textContent;
-    document.getElementById('editEmail').value =
-        document.getElementById('displayEmail').textContent;
-}
-
-// 关闭信息修改模态框
-function closeInfoEditor() {
-    document.getElementById('infoModal').style.display = 'none';
-}
 
 // 提交信息修改
 // 提交信息修改（适配视图返回）
@@ -224,19 +279,6 @@ function submitInfoChange() {
         });
 }
 
-// 新增全局事件绑定（与头像模块保持统一）
-function initGlobalEvents() {
-    initInfoEvents();
-    initAvatarEvents();
-}
-
-
-// 初始化信息相关事件
-function initInfoEvents() {
-    const editBtn = document.querySelector('.btn-edit');
-
-    if (editBtn) editBtn.onclick = showInfoEditor;
-}
 
 // 通用Toast提示
 function showToast(message, type) {
@@ -250,46 +292,7 @@ function showToast(message, type) {
     }, 3000);
 }
 
-// 显示密码修改模态框
-function showPasswordEditor() {
-    // 重置表单内容
-    document.getElementById('oldPassword').value = '';
-    document.getElementById('newPassword').value = '';
-    document.getElementById('confirmPassword').value = '';
 
-    // 清除错误状态
-    const errorContainer = document.getElementById('clientError');
-    errorContainer.style.display = 'none';
-    document.getElementById('errorText').textContent = '';
-
-    // 清除输入框错误样式
-    ['oldPassword', 'newPassword', 'confirmPassword'].forEach(id => {
-        document.getElementById(id).classList.remove('error');
-    });
-
-    // 显示模态框
-    document.getElementById('passwordModal').style.display = 'block';
-}
-
-// 关闭密码修改模态框
-function closePasswordEditor() {
-    // 重置表单内容
-    document.getElementById('oldPassword').value = '';
-    document.getElementById('newPassword').value = '';
-    document.getElementById('confirmPassword').value = '';
-
-    // 清除错误状态
-    const errorContainer = document.getElementById('clientError');
-    errorContainer.style.display = 'none';
-    document.getElementById('errorText').textContent = '';
-
-    // 清除输入框错误样式
-    ['oldPassword', 'newPassword', 'confirmPassword'].forEach(id => {
-        document.getElementById(id).classList.remove('error');
-    });
-
-    document.getElementById('passwordModal').style.display = 'none';
-}
 
 // 提交密码修改
 function submitPasswordChange() {
