@@ -1,17 +1,22 @@
 
 function loadContent(section) {
     const contentArea = document.querySelector('.content-area');
-    // 清空内容区域
-    contentArea.innerHTML  = '';
+    contentArea.innerHTML = '<div class="loading">加载中...</div>';
+
     fetch(`${baseUrl}api/admin/manage/${section}`, {
         method: 'GET',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        headers: {
+            'Accept': 'text/html',
+            'X-Requested-With': 'XMLHttpRequest'
+        }
     })
         .then(response => response.text())
         .then(html => {
             contentArea.innerHTML = html;
-
             setActiveSection(section);
+            if(section === 'usermgt') {
+                rebindUserMgtEvents();
+            }
         });
 }
 
@@ -23,4 +28,61 @@ function setActiveSection(section) {
             item.classList.add('active');
         }
     });
+}
+// 统一处理搜索和分页请求
+function handleSearch(event) {
+    event.preventDefault();
+    const form = event.target;
+    submitUserMgtRequest(new FormData(form));
+    return false;
+}
+
+// 通用请求处理函数
+function submitUserMgtRequest(formData) {
+    const params = new URLSearchParams(formData);
+
+    fetch(`${baseUrl}api/admin/manage/usermgt?${params}`, {
+        method: 'GET',
+        headers: {
+            'Accept': 'text/html',
+            'X-Requested-With': 'XMLHttpRequest' // 添加AJAX标识
+        }
+    })
+        .then(response => {
+            if (!response.ok) throw new Error('网络响应异常');
+            return response.text();
+        })
+        .then(html => {
+            document.querySelector('.content-area').innerHTML = html;
+            rebindUserMgtEvents();
+        })
+        .catch(error => {
+            console.error('请求失败:', error);
+            showErrorMessage('操作失败，请稍后重试');
+        });
+}
+
+// 重新绑定事件
+function rebindUserMgtEvents() {
+    // 绑定搜索表单
+    const searchForm = document.getElementById('searchForm');
+    if (searchForm) {
+        searchForm.onsubmit = handleSearch;
+    }
+
+    // 绑定分页按钮
+    document.querySelectorAll('.pagination form').forEach(form => {
+        form.onsubmit = function(e) {
+            e.preventDefault();
+            submitUserMgtRequest(new FormData(this));
+        };
+    });
+}
+
+// 显示错误消息
+function showErrorMessage(msg) {
+    const errorDiv = document.createElement('div');
+    errorDiv.style.color = 'red';
+    errorDiv.textContent = msg;
+    document.querySelector('.content-area').prepend(errorDiv);
 }

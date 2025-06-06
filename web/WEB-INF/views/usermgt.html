@@ -1,4 +1,144 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<a>aawdawd</a>
+    <!-- 消息提示 -->
+    <div th:if="${userMsg}" th:style="'color:' + (${userSuccess} ? 'green' : 'red')">
+        [[${userMsg}]]
+    </div>
+
+    <!-- 搜索表单 -->
+    <form id="searchForm" onsubmit="return handleSearch(event)">
+        <div>
+            <label for="id">ID：</label>
+            <input type="text" id="id" name="id" placeholder="请输入ID" th:value="${selectUser.id}">
+
+            <label for="username">用户名：</label>
+            <input type="text" id="username" name="username" placeholder="请输入用户名" th:value="${selectUser.username}">
+
+            <label for="email">邮箱：</label>
+            <input type="text" id="email" name="email" placeholder="请输入邮箱" th:value="${selectUser.email}">
+
+            <label for="roleId">角色：</label>
+            <select name="roleId" id="roleId">
+                <option value="0" th:selected="${selectUser.roleId == 0}">全部</option>
+                <option value="1" th:selected="${selectUser.roleId == 1}">用户</option>
+                <option value="2" th:selected="${selectUser.roleId == 2}">管理员</option>
+            </select>
+
+            <label for="status">状态：</label>
+            <select name="status" id="status">
+                <option value="2" th:selected="${selectUser.status == 2}">全部</option>
+                <option value="1" th:selected="${selectUser.status == 1}">启用</option>
+                <option value="0" th:selected="${selectUser.status == 0}">禁用</option>
+            </select>
+
+            <button type="submit">搜索</button>
+        </div>
+    </form>
+
+    <h2>用户列表</h2>
+    <table class="user-table">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>用户名</th>
+            <th>密码</th>
+            <th>邮箱</th>
+            <th>角色</th>
+            <th>状态</th>
+            <th>创建时间</th>
+            <th>最后登录</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="itemUser : ${pageInfo.list}">
+            <td th:text="${itemUser.id}"></td>
+            <td th:text="${itemUser.username}"></td>
+            <td>
+                <a th:href="@{/api/admin/user/reset(userId=${itemUser.id})}">重置密码</a>
+            </td>
+            <td th:text="${itemUser.email}"></td>
+            <td>
+                <span th:if="${itemUser.roleId == 1}" style="color: green;">用户</span>
+                <span th:if="${itemUser.roleId == 2}" style="color: blue;">管理员</span>
+            </td>
+            <td>
+                <span th:if="${itemUser.status == 1}" style="color: green;">启用</span>
+                <span th:if="${itemUser.status == 0}" style="color: red;">禁用</span>
+            </td>
+            <td th:text="${#dates.format(itemUser.createTime, 'yyyy-MM-dd HH:mm')}"></td>
+            <td th:text="${#dates.format(itemUser.lastLoginTime, 'yyyy-MM-dd HH:mm')}"></td>
+            <td>
+                <a th:href="@{/api/admin/user/update(userId=${itemUser.id})}">修改</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- 分页导航 -->
+    <div class="table-container">
+        <div style="line-height: 30px;">
+            当前第<span class="pageStyle" th:text="${pageInfo.pageNum}"></span>页
+            共<span class="pageStyle" th:text="${pageInfo.pages}"></span>页
+            总计<span class="pageStyle" th:text="${pageInfo.total}"></span>条
+        </div>
+        <div>
+            <nav aria-label="Page navigation">
+                <ul class="pagination pagination-sm">
+                    <!-- 首页 -->
+                    <li>
+
+                        <form onsubmit="return handleSearch(event)">
+                            <input type="hidden" name="id" th:value="${selectUser.id}">
+                            <input type="hidden" name="username" th:value="${selectUser.username}">
+                            <input type="hidden" name="email" th:value="${selectUser.email}">
+                            <input type="hidden" name="roleId" th:value="${selectUser.roleId}">
+                            <input type="hidden" name="status" th:value="${selectUser.status}">
+                            <input type="hidden" name="pageNum" value="1">
+                            <input type="submit" value="首页">
+                        </form>
+
+                    </li>
+
+                    <!-- 上一页 -->
+                    <li th:if="${pageInfo.pageNum != 1}">
+                        <form th:action="@{/api/admin/manage/usermgt}" method="get">
+                            <input type="hidden" name="pageNum" th:value="${pageInfo.pageNum - 1}">
+                            <!-- 保留其他查询参数 -->
+                            <input type="submit" value="上一页" style="border: none; background: none;">
+                        </form>
+                    </li>
+
+                    <!-- 页码 -->
+                    <li th:each="itemPage : ${#numbers.sequence(1, pageInfo.pages)}"
+                        th:class="${pageInfo.pageNum == itemPage} ? 'active'">
+                        <form th:action="@{/api/admin/manage/usermgt}" method="get">
+                            <input type="hidden" name="pageNum" th:value="${itemPage}">
+                            <!-- 保留其他查询参数 -->
+                            <input type="submit" th:value="${itemPage}" style="border: none; background: none;">
+                        </form>
+                    </li>
+
+                    <!-- 下一页 -->
+                    <li th:if="${pageInfo.pageNum != pageInfo.pages}">
+                        <form th:action="@{/api/admin/manage/usermgt}" method="get">
+                            <input type="hidden" name="pageNum" th:value="${pageInfo.pageNum + 1}">
+                            <!-- 保留其他查询参数 -->
+                            <input type="submit" value="下一页" style="border: none; background: none;">
+                        </form>
+                    </li>
+
+                    <!-- 尾页 -->
+                    <li>
+                        <form th:action="@{/api/admin/manage/usermgt}" method="get">
+                            <input type="hidden" name="pageNum" th:value="${pageInfo.pages}">
+                            <!-- 保留其他查询参数 -->
+                            <input type="submit" value="尾页" style="border: none; background: none;">
+                        </form>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
 </html>
