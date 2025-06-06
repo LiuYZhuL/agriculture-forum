@@ -9,26 +9,26 @@
     <form id="searchForm" onsubmit="return handleSearch(event)">
         <div>
             <label for="id">ID：</label>
-            <input type="text" id="id" name="id" placeholder="请输入ID" th:value="${selectUser.id}">
+            <input type="text" id="id" name="id" placeholder="请输入ID" th:value="${selectUser?.id}">
 
             <label for="username">用户名：</label>
-            <input type="text" id="username" name="username" placeholder="请输入用户名" th:value="${selectUser.username}">
+            <input type="text" id="username" name="username" placeholder="请输入用户名" th:value="${selectUser?.username}">
 
             <label for="email">邮箱：</label>
-            <input type="text" id="email" name="email" placeholder="请输入邮箱" th:value="${selectUser.email}">
+            <input type="text" id="email" name="email" placeholder="请输入邮箱" th:value="${selectUser?.email}">
 
             <label for="roleId">角色：</label>
             <select name="roleId" id="roleId">
-                <option value="0" th:selected="${selectUser.roleId == 0}">全部</option>
-                <option value="1" th:selected="${selectUser.roleId == 1}">用户</option>
-                <option value="2" th:selected="${selectUser.roleId == 2}">管理员</option>
+                <option value="0" th:selected="${selectUser?.roleId == 0}">全部</option>
+                <option value="1" th:selected="${selectUser?.roleId == 1}">用户</option>
+                <option value="2" th:selected="${selectUser?.roleId == 2}">管理员</option>
             </select>
 
             <label for="status">状态：</label>
             <select name="status" id="status">
-                <option value="2" th:selected="${selectUser.status == 2}">全部</option>
-                <option value="1" th:selected="${selectUser.status == 1}">启用</option>
-                <option value="0" th:selected="${selectUser.status == 0}">禁用</option>
+                <option value="2" th:selected="${selectUser?.status == 2}">全部</option>
+                <option value="1" th:selected="${selectUser?.status == 1}">启用</option>
+                <option value="0" th:selected="${selectUser?.status == 0}">禁用</option>
             </select>
 
             <button type="submit">搜索</button>
@@ -56,6 +56,7 @@
             <td th:text="${itemUser.username}"></td>
             <td>
                 <a th:href="@{/api/admin/user/reset(userId=${itemUser.id})}">重置密码</a>
+                <button th:onclick="'resetPassword('+${itemUser.id}+','+${pageInfo.pageNum}+')'" th:value="${itemUser.id}">修改密码</button>
             </td>
             <td th:text="${itemUser.email}"></td>
             <td>

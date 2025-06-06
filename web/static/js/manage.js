@@ -86,3 +86,33 @@ function showErrorMessage(msg) {
     errorDiv.textContent = msg;
     document.querySelector('.content-area').prepend(errorDiv);
 }
+
+function resetPassword(userId, pageNum){
+    const id = document.getElementById('id').value;
+    const email = document.getElementById('email').value;
+    const username = document.getElementById('username').value;
+    const roleId = document.getElementById('roleId').value;
+    const status = document.getElementById('status').value;
+    console.log(id,email,username,roleId,status);
+    const params = new URLSearchParams();
+    params.append('id', id);
+    params.append('email', email);
+    params.append('username', username);
+    params.append('roleId', roleId);
+    params.append('status', status);
+    params.append('pageNum', pageNum);
+    console.log(params);
+    fetch(`${baseUrl}api/admin/user/reset/`+userId, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: params
+    }).then(response => response.text())
+        .then(html => {
+            document.querySelector('.content-area').innerHTML = html;
+            rebindUserMgtEvents();
+        })
+        .catch(error => {
+            console.error('请求失败:', error);
+            showErrorMessage('操作失败，请稍后重试');
+        });
+}

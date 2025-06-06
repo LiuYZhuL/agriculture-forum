@@ -340,13 +340,6 @@ function submitPasswordChange() {
             btn.disabled = false;
             btn.innerHTML = originalText;
 
-
-            if (serverError && !serverError.classList.contains('alert-success')) {
-                errorText.textContent = serverError.textContent;
-                errorContainer.style.display = 'block';
-                return; // 服务端验证错误
-            }
-
             // 统一内容替换逻辑
             if (newContent) {
                 document.querySelector('.content-area').innerHTML = '';

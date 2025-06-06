@@ -44,9 +44,6 @@
 </div>
 <div class="sidebar">
     <ul class="nav-menu">
-        <li class="nav-item active" data-section="avatar" onclick="loadContent('avatar')">我的头像</li>
-        <li class="nav-item" data-section="avatar" onclick="loadContent('info')">我的信息</li>
-        <li class="nav-item"  data-section="avatar" onclick="loadContent('change')">修改密码</li>
         <li class="nav-item" data-section="avatar" onclick="loadContent('collect')">我的收藏</li>
         <li class="nav-item"data-section="avatar"  onclick="loadContent('post')">我的发帖</li>
         <li class="nav-item" data-section="avatar" onclick="loadContent('knowledge')">我的知识</li>
@@ -54,61 +51,6 @@
     </ul>
 </div>
 <div class="content-area">
-    <div id="avatar" class="content-section" style="display: block;">
-        <c:if test="${not empty msgAvatar}">
-            <div style="color: green; margin-bottom: 15px;">
-                    ${msgAvatar}
-            </div>
-        </c:if>
-        <form action="${pageContext.request.contextPath}/api/user/avatar" method="post"
-              enctype="multipart/form-data">
-            <div class="preview">
-                <img id="avatarPreview"
-                     src="${pageContext.request.contextPath}/static/uploads/img/${sessionScope.user.avatar}"
-                     alt="当前头像">
-            </div>
-            <input type="file" name="avatar" accept="image/*" required
-                   onchange="document.getElementById('avatarPreview').src = window.URL.createObjectURL(this.files[0])">
-            <button type="submit">上传新头像</button>
-        </form>
-    </div>
-    <div id="info" class="content-section" style="display: none;">
-        <c:if test="${not empty msgUpdate}">
-            <div style="color:  green; margin-bottom: 15px;">
-                    ${msgUpdate}
-            </div>
-        </c:if>
-        <form action="${pageContext.request.contextPath}/api/user/update" method="post">
-            <label for="username">用户名:</label>
-            <input type="text" id="username" name="username" value="${sessionScope.user.username}">
-            <label for="email">邮箱:</label>
-            <input type="text" id="email" name="email" value="${sessionScope.user.email}">
-            <input type="submit" value="修改个人信息">
-        </form>
-        <div class="score">
-            <a href="${pageContext.request.contextPath}/api/user/score">更新积分</a>
-             <div class="score-value">
-                当前积分: ${sessionScope.user.score}
-            </div>
-            <div>
-                积分获取方式：发表知识/帖子24h后, 每赞加0.01分, 收藏/评论加0.1分
-            </div>
-        </div>
-    </div>
-    <div id="change" class="content-section" style="display: none;">
-        <c:if test="${not empty msgChange}">
-            <div style="color: green; margin-bottom: 15px;">
-                    ${msgChange}
-            </div>
-        </c:if>
-        <form action="${pageContext.request.contextPath}/api/user/change" method="post">
-            <label for="password">旧密码:</label>
-            <input type="password" id="password" name="password" required>
-            <label for="newPassword">新密码:</label>
-            <input type="password" id="newPassword" name="newPassword" required>
-            <input type="submit" value="修改密码">
-        </form>
-    </div>
     <div id="collect" class="content-section" style="display: none;">
         <c:if test="${not empty msgCollect}">
             <div style="color:  green; margin-bottom: 15px;">

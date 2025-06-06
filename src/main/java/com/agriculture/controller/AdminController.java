@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpSession;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
@@ -139,21 +140,34 @@ public class AdminController {
      * @param userId 用户id
      * @return ModelAndView
      */
-    @GetMapping("/user/reset")
+    @PostMapping("/user/reset/{userId}")
     public ModelAndView resetUserPassword(
-            @RequestParam("userId") Integer userId){
+            @PathVariable("userId") Integer userId,
+            @RequestParam(name = "id", required = false) Integer id,
+            @RequestParam(name = "username", required = false) String username,
+            @RequestParam(name = "email", required = false) String email,
+            @RequestParam(name = "roleId", defaultValue = "0") Integer roleId,
+            @RequestParam(name = "status", defaultValue = "2") Integer status,
+            @RequestParam(name = "pageNum",  defaultValue = "1") Integer pageNum){
         ModelAndView mv = new ModelAndView();
         try {
+            User user = new User(id, username, null, email, null, null, null, null, null, null);
+            if(roleId != 0) user.setRoleId(roleId);
+            if(status != 2) user.setStatus(status);
+            SelectUser selectUser = new SelectUser(id, username, email, roleId, status);
             userService.resetPassword(userId);
             mv.addObject("userSuccess", true);
             mv.addObject("userMsg", "用户[" + userId + "]的密码重置成功");
+            PageInfo<User> pageInfo = userService.listUsers(pageNum, 5, user);
+            mv.addObject("pageInfo", pageInfo);
+            mv.addObject("selectUser", selectUser);
         } catch (RuntimeException e) {
             mv.addObject("userSuccess", false);
             mv.addObject("userMsg", e.getMessage());
         }
         mv.addObject("activeSection","userMgt");
-        PageInfo<User> pageInfo = userService.listUsers(1, 5, new User());
-        mv.addObject("pageInfo", pageInfo);
+
+
         mv.setViewName("usermgt");
         return mv;
     }
