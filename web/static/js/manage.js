@@ -17,6 +17,9 @@ function loadContent(section) {
             if(section === 'usermgt') {
                 rebindUserMgtEvents();
             }
+            if(section === 'categorymgt') {
+                rebindCategoryMgtEvents();
+            }
         });
 }
 
@@ -37,6 +40,12 @@ function handleSearch(event) {
     return false;
 }
 
+function handleCategorySearch(event) {
+    event.preventDefault();
+    const form = event.target;
+    submitCategoryMgtRequest(new FormData(form));
+    return false;
+}
 // 通用请求处理函数
 function submitUserMgtRequest(formData) {
     const params = new URLSearchParams(formData);
@@ -62,6 +71,23 @@ function submitUserMgtRequest(formData) {
         });
 }
 
+function submitCategoryMgtRequest(formData) {
+    const params = new URLSearchParams(formData);
+
+    fetch(`${baseUrl}api/admin/manage/categorymgt?${params}`, {
+        method: 'GET',
+        headers: {
+            'Accept': 'text/html',
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+        .then(response => response.text())
+        .then(html => {
+            document.querySelector('.content-area').innerHTML = html;
+            rebindCategoryMgtEvents();
+        });
+}
+
 // 重新绑定事件
 function rebindUserMgtEvents() {
     // 绑定搜索表单
@@ -75,6 +101,22 @@ function rebindUserMgtEvents() {
         form.onsubmit = function(e) {
             e.preventDefault();
             submitUserMgtRequest(new FormData(this));
+        };
+    });
+}
+
+function rebindCategoryMgtEvents() {
+    // 绑定搜索表单
+    const searchForm = document.getElementById('categorySearchForm');
+    if (searchForm) {
+        searchForm.onsubmit = handleCategorySearch;
+    }
+
+    // 绑定分页按钮
+    document.querySelectorAll('.pagination form').forEach(form => {
+        form.onsubmit = function(e) {
+            e.preventDefault();
+            submitCategoryMgtRequest(new FormData(this));
         };
     });
 }

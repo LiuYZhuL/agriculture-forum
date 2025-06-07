@@ -84,8 +84,10 @@ public class CategoryServiceImpl implements CategoryService {
             PageHelper.startPage(pageNum, pageSize);
             List<Category> categories = categoryMapper.selectAllCategory();
             return new PageInfo<>(categories, pageSize);
-        } catch (Exception e){
-            throw new RuntimeException("获取分类列表失败");
+        } catch (Exception e) {
+            // 捕获异常并记录日志
+            e.printStackTrace();
+            throw new RuntimeException("获取分类列表失败：" + e.getMessage());
         }
     }
 
@@ -93,10 +95,15 @@ public class CategoryServiceImpl implements CategoryService {
     public PageInfo<Category> searchCategories(String searchText, int pageNum, int pageSize) {
         try {
             PageHelper.startPage(pageNum, pageSize);
-            List<Category> categories = categoryMapper.searchCategoryByName(searchText);
+            // 添加空值判断
+            if(searchText == null || searchText.trim().isEmpty()) {
+                return new PageInfo<>(categoryMapper.selectAllCategory(), pageSize);
+            }
+            List<Category> categories = categoryMapper.searchCategoryByName(searchText.trim());
             return new PageInfo<>(categories, pageSize);
-        } catch (Exception e){
-            throw new RuntimeException("搜索分类失败");
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("搜索分类失败：" + e.getMessage());
         }
     }
 

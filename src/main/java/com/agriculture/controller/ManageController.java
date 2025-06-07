@@ -137,15 +137,16 @@ public class ManageController {
     public ModelAndView ListCategories(
             @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
             @RequestParam(value = "pageSize", defaultValue = "5") Integer pageSize,
-            @RequestParam(value = "searchCategory", required = false) String searchCategory){
+            @RequestParam(value = "searchCategory", required = false) String searchCategory) {
         ModelAndView mv = new ModelAndView();
-        mv.addObject("activeSection","categoryMgt");
+        mv.addObject("activeSection", "categoryMgt");
         mv.addObject("searchCategory", searchCategory);
+
         try {
-            if (searchCategory != null && !searchCategory.isEmpty()){
+            if (searchCategory != null && !searchCategory.isEmpty()) {
                 PageInfo<Category> pageCategory = categoryService.searchCategories(searchCategory, pageNum, pageSize);
                 mv.addObject("pageCategory", pageCategory);
-            }else{
+            } else {
                 PageInfo<Category> pageCategory = categoryService.listCategories(pageNum, pageSize);
                 mv.addObject("pageCategory", pageCategory);
             }
@@ -153,9 +154,11 @@ public class ManageController {
             mv.addObject("categoryMsg", "分类列表获取成功");
             mv.setViewName("categorymgt");
             return mv;
-        }catch (RuntimeException e) {
+        } catch (RuntimeException e) {
+            // 捕获异常并记录日志
+            e.printStackTrace();
             mv.addObject("categorySuccess", false);
-            mv.addObject("categoryMsg", e.getMessage());
+            mv.addObject("categoryMsg", "分类列表获取失败：" + e.getMessage());
             mv.setViewName("categorymgt");
             return mv;
         }
