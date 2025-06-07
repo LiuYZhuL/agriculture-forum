@@ -179,6 +179,11 @@ function rebindCategoryMgtEvents() {
     if (searchForm) {
         searchForm.onsubmit = handleCategorySearch;
     }
+    const addForm = document.querySelector('form[action*="/api/admin/category/add"]');
+    if (addForm) {
+        addForm.onsubmit = handleAddCategory;
+    }
+
 
     // 绑定分页按钮
     document.querySelectorAll('.pagination form').forEach(form => {
@@ -255,5 +260,26 @@ function resetPassword(userId, pageNum){
         .catch(error => {
             console.error('请求失败:', error);
             showErrorMessage('操作失败，请稍后重试');
+        });
+}
+function handleAddCategory(event) {
+    event.preventDefault();
+    const formData = new URLSearchParams(new FormData(event.target)); // 转换为URL编码格式
+
+    fetch(`${baseUrl}api/admin/category/add`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded' // 明确指定编码类型
+        },
+        body: formData
+    })
+        .then(response => response.text())
+        .then(html => {
+            document.querySelector('.content-area').innerHTML = html;
+            rebindCategoryMgtEvents();
+        })
+        .catch(error => {
+            console.error('添加失败:', error);
+            showErrorMessage('分类添加失败：' + error.message);
         });
 }
