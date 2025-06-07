@@ -6,7 +6,7 @@
 </div>
 
 <!-- 搜索表单 -->
-<form id="categorySearchForm" th:action="@{/api/admin/manage/categorymgt}" method="get">
+<form id="categorySearchForm" onsubmit="return handleSearch(event)">
 <div class="form-group">
         <label for="searchCategory">搜索分类：</label>
         <input type="text" id="searchCategory" name="searchCategory"
@@ -15,7 +15,18 @@
         <button type="submit">搜索</button>
     </div>
 </form>
-
+<!-- 添加分类表单 -->
+<form th:action="@{/api/admin/category/add}" method="post" enctype="application/x-www-form-urlencoded">
+    <div class="form-group">
+        <label for="categoryName">分类名称：</label>
+        <input type="text" id="categoryName" name="categoryName"
+               class="form-control" placeholder="请输入分类名称">
+        <label for="categoryDesc">分类描述：</label>
+        <input type="text" id="categoryDesc" name="categoryDesc"
+               class="form-control" placeholder="请输入分类描述">
+        <button type="submit" >添加</button>
+    </div>
+</form>
 
 
 <h2>分类列表</h2>

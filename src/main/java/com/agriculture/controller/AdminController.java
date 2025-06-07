@@ -194,7 +194,8 @@ public class AdminController {
     @PostMapping("/category/add")
     public ModelAndView addCategory(
             @RequestParam("categoryName") String categoryName,
-            @RequestParam("categoryDesc") String categoryDesc){
+            @RequestParam("categoryDesc") String categoryDesc,
+            @RequestParam( name="pageNum", defaultValue = "1")Integer  pageNum){
         ModelAndView mv = new ModelAndView();
         try {
             Category category = new Category();
@@ -208,7 +209,7 @@ public class AdminController {
             mv.addObject("categoryMsg", e.getMessage());
         }
         mv.addObject("activeSection","categoryMgt");
-        PageInfo<Category> pageCategory = categoryService.listCategories(1, 5);
+        PageInfo<Category> pageCategory = categoryService.listCategories(pageNum, 5);
         mv.addObject("pageCategory", pageCategory);
         mv.setViewName("categorymgt");
         return mv;
