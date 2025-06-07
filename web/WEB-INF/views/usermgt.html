@@ -102,38 +102,56 @@
 
                     <!-- 上一页 -->
                     <li th:if="${pageInfo.pageNum != 1}">
-                        <form th:action="@{/api/admin/manage/usermgt}" method="get">
+                        <form onsubmit="return handleSearch(event)">
                             <input type="hidden" name="pageNum" th:value="${pageInfo.pageNum - 1}">
-                            <!-- 保留其他查询参数 -->
-                            <input type="submit" value="上一页" style="border: none; background: none;">
+                            <input type="hidden" name="id" th:value="${selectUser.id}">
+                            <input type="hidden" name="username" th:value="${selectUser.username}">
+                            <input type="hidden" name="email" th:value="${selectUser.email}">
+                            <input type="hidden" name="roleId" th:value="${selectUser.roleId}">
+                            <input type="hidden" name="status" th:value="${selectUser.status}">
+                            <input type="submit" value="上一页">
                         </form>
                     </li>
 
                     <!-- 页码 -->
                     <li th:each="itemPage : ${#numbers.sequence(1, pageInfo.pages)}"
                         th:class="${pageInfo.pageNum == itemPage} ? 'active'">
-                        <form th:action="@{/api/admin/manage/usermgt}" method="get">
+                        <form onsubmit="return handleSearch(event)">
                             <input type="hidden" name="pageNum" th:value="${itemPage}">
-                            <!-- 保留其他查询参数 -->
-                            <input type="submit" th:value="${itemPage}" style="border: none; background: none;">
+                            <input type="hidden" name="id" th:value="${selectUser.id}">
+                            <input type="hidden" name="username" th:value="${selectUser.username}">
+                            <input type="hidden" name="email" th:value="${selectUser.email}">
+                            <input type="hidden" name="roleId" th:value="${selectUser.roleId}">
+                            <input type="hidden" name="status" th:value="${selectUser.status}">
+                            <input type="submit" th:value="${itemPage}" >
                         </form>
                     </li>
 
                     <!-- 下一页 -->
                     <li th:if="${pageInfo.pageNum != pageInfo.pages}">
-                        <form th:action="@{/api/admin/manage/usermgt}" method="get">
+                        <form onsubmit="return handleSearch(event)">
                             <input type="hidden" name="pageNum" th:value="${pageInfo.pageNum + 1}">
-                            <!-- 保留其他查询参数 -->
-                            <input type="submit" value="下一页" style="border: none; background: none;">
+                            <input type="hidden" name="pageNum" th:value="${itemPage}">
+                            <input type="hidden" name="id" th:value="${selectUser.id}">
+                            <input type="hidden" name="username" th:value="${selectUser.username}">
+                            <input type="hidden" name="email" th:value="${selectUser.email}">
+                            <input type="hidden" name="roleId" th:value="${selectUser.roleId}">
+                            <input type="hidden" name="status" th:value="${selectUser.status}">
+                            <input type="submit" value="下一页" >
                         </form>
                     </li>
 
                     <!-- 尾页 -->
                     <li>
-                        <form th:action="@{/api/admin/manage/usermgt}" method="get">
+                        <form onsubmit="return handleSearch(event)">
                             <input type="hidden" name="pageNum" th:value="${pageInfo.pages}">
-                            <!-- 保留其他查询参数 -->
-                            <input type="submit" value="尾页" style="border: none; background: none;">
+                            <input type="hidden" name="pageNum" th:value="${itemPage}">
+                            <input type="hidden" name="id" th:value="${selectUser.id}">
+                            <input type="hidden" name="username" th:value="${selectUser.username}">
+                            <input type="hidden" name="email" th:value="${selectUser.email}">
+                            <input type="hidden" name="roleId" th:value="${selectUser.roleId}">
+                            <input type="hidden" name="status" th:value="${selectUser.status}">
+                            <input type="submit" value="尾页" >
                         </form>
                     </li>
                 </ul>

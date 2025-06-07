@@ -1,4 +1,214 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<a>aawdawdaaa</a>
+
+
+    <div th:if="${ postMsg}"
+         th:style="'color:' + ${postSuccess ? 'green' : 'red'} + '; margin-bottom: 15px;'"
+         th:text="${postMsg}"></div>
+
+    <!-- 搜索表单 -->
+    <form id="searchForm" onsubmit="return handlePostSearch(event)">
+    <div class="form-group">
+            <label for="postId">id:</label>
+            <input type="text" id="postId" name="postId" th:value="${selectPost.postId}">
+            <label for="user">用户名:</label>
+            <input type="text" id="user" name="user" th:value="${selectPost.user}">
+            <label for="title">标题:</label>
+            <input type="text" id="title" name="title" th:value="${selectPost.title}">
+
+            <label for="sts">状态:</label>
+            <select id="sts" name="sts">
+                <option value="">全部</option>
+                <option value="0" th:selected="${selectPost.sts == 0}">未审核</option>
+                <option value="1" th:selected="${selectPost.sts == 1}">已审核</option>
+                <option value="2" th:selected="${selectPost.sts == 2}">待修改</option>
+            </select>
+
+            <label for="category">分类:</label>
+            <select id="category" name="categoryId">
+                <option value="">全部</option>
+                <option th:each="category : ${categories}"
+                        th:value="${category.id}"
+                        th:selected="${selectPost.categoryId == category.id}"
+                        th:text="${category.name}"></option>
+            </select>
+
+            <label for="isTop">置顶:</label>
+            <select id="isTop" name="isTop">
+                <option value="">全部</option>
+                <option value="0" th:selected="${selectPost.isTop == 0}">否</option>
+                <option value="1" th:selected="${selectPost.isTop == 1}">是</option>
+            </select>
+
+            <label for="isEssence">精华:</label>
+            <select id="isEssence" name="isEssence">
+                <option value="">全部</option>
+                <option value="0" th:selected="${selectPost.isEssence == 0}">否</option>
+                <option value="1" th:selected="${selectPost.isEssence == 1}">是</option>
+            </select>
+
+            <button type="submit" class="btn btn-primary">搜索</button>
+        </div>
+    </form>
+    <h2>帖子列表</h2>
+    <!-- 帖子表格 -->
+    <table class="category-table">
+        <thead>
+        <tr>
+            <th>帖子ID</th>
+            <th>帖子标题</th>
+            <th>作者</th>
+            <th>分类</th>
+            <th>状态</th>
+            <th>状态操作</th>
+            <th>置顶</th>
+            <th>置顶操作</th>
+            <th>精华</th>
+            <th>精华操作</th>
+            <th>发布时间</th>
+            <th>浏览量</th>
+            <th>帖子操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="post : ${pagePost.list}">
+            <td th:text="${post.id}"></td>
+            <td th:text="${post.title}"></td>
+            <td th:text="${post.username}"></td>
+            <td th:text="${post.category}"></td>
+
+            <td>
+                <span th:if="${post.status == 0}" style="color: red;">未审核</span>
+                <span th:if="${post.status == 1}" style="color: green;">已审核</span>
+                <span th:if="${post.status == 2}" style="color: gray;">须修改</span>
+            </td>
+
+            <td>
+                <a th:if="${post.status != 1}"
+                   th:href="@{/api/post/status(postId=${post.id}, status=1)}">通过</a>
+                <a th:if="${post.status != 2}"
+                   th:href="@{/api/post/status(postId=${post.id}, status=2)}">不通过</a>
+            </td>
+
+            <td>
+                <span th:if="${post.isTop == 0}" style="color: red;">否</span>
+                <span th:if="${post.isTop == 1}" style="color: green;">是</span>
+            </td>
+
+            <td>
+                <a th:if="${post.isTop != 1}"
+                   th:href="@{/api/post/top(postId=${post.id}, isTop=1)}">置顶</a>
+                <a th:if="${post.isTop != 0}"
+                   th:href="@{/api/post/top(postId=${post.id}, isTop=0)}">取消置顶</a>
+            </td>
+
+            <td>
+                <span th:if="${post.isEssence == 0}" style="color: red;">否</span>
+                <span th:if="${post.isEssence == 1}" style="color: green;">是</span>
+            </td>
+
+            <td>
+                <a th:if="${post.isEssence != 1}"
+                   th:href="@{/api/post/essence(postId=${post.id}, isEssence=1)}">精华</a>
+                <a th:if="${post.isEssence != 0}"
+                   th:href="@{/api/post/essence(postId=${post.id}, isEssence=0)}">取消精华</a>
+            </td>
+
+            <td th:text="${#dates.format(post.createTime, 'yyyy-MM-dd HH:mm')}"></td>
+            <td th:text="${post.viewCount}"></td>
+
+            <td>
+                <a th:href="@{/api/post/show(postId=${post.id})}">详情</a>
+                <a th:href="@{/api/post/delete(postId=${post.id})}">删除</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- 分页导航 -->
+    <div class="table-container">
+        <div style="line-height: 30px;">
+            当前第<span class="pageStyle" th:text="${pagePost.pageNum}"></span>页
+            共<span class="pageStyle" th:text="${pagePost.pages}"></span>页
+            总计<span class="pageStyle" th:text="${pagePost.total}"></span>条
+        </div>
+        <div>
+            <nav aria-label="Page navigation">
+                <ul class="pagination pagination-sm">
+                    <!-- 统一使用form提交 -->
+                    <li>
+                        <form onsubmit="return handlePostSearch(event)">
+                            <input type="hidden" name="pageNum" value="1">
+                            <input type="hidden" name="postId" th:value="${selectPost.postId}">
+                            <input type="hidden" name="user" th:value="${selectPost.user}">
+                            <input type="hidden" name="title" th:value="${selectPost.title}">
+                            <input type="hidden" name="sts" th:value="${selectPost.sts}">
+                            <input type="hidden" name="categoryId" th:value="${selectPost.categoryId}">
+                            <input type="hidden" name="isTop" th:value="${selectPost.isTop}">
+                            <input type="hidden" name="isEssence" th:value="${selectPost.isEssence}">
+                            <input type="submit" value="首页">
+                        </form>
+                    </li>
+
+                    <li th:if="${pagePost.pageNum != 1}">
+                        <form onsubmit="return handlePostSearch(event)">
+                            <input type="hidden" name="pageNum" th:value="${pagePost.pageNum - 1}">
+                            <input type="hidden" name="postId" th:value="${selectPost.postId}">
+                            <input type="hidden" name="user" th:value="${selectPost.user}">
+                            <input type="hidden" name="title" th:value="${selectPost.title}">
+                            <input type="hidden" name="sts" th:value="${selectPost.sts}">
+                            <input type="hidden" name="categoryId" th:value="${selectPost.categoryId}">
+                            <input type="hidden" name="isTop" th:value="${selectPost.isTop}">
+                            <input type="hidden" name="isEssence" th:value="${selectPost.isEssence}">
+                            <input type="submit" value="上一页">
+                        </form>
+                    </li>
+
+                    <li th:each="itemPage : ${#numbers.sequence(1, pagePost.pages)}">
+                        <form onsubmit="return handlePostSearch(event)">
+                            <input type="hidden" name="pageNum" th:value="${itemPage}">
+                            <input type="hidden" name="postId" th:value="${selectPost.postId}">
+                            <input type="hidden" name="user" th:value="${selectPost.user}">
+                            <input type="hidden" name="title" th:value="${selectPost.title}">
+                            <input type="hidden" name="sts" th:value="${selectPost.sts}">
+                            <input type="hidden" name="categoryId" th:value="${selectPost.categoryId}">
+                            <input type="hidden" name="isTop" th:value="${selectPost.isTop}">
+                            <input type="hidden" name="isEssence" th:value="${selectPost.isEssence}">
+                            <input type="submit" th:value="${itemPage}">
+                        </form>
+                    </li>
+
+                    <li th:if="${pagePost.pageNum != pagePost.pages}">
+                        <form onsubmit="return handlePostSearch(event)">
+                            <input type="hidden" name="pageNum" th:value="${pagePost.pageNum + 1}">
+                            <input type="hidden" name="postId" th:value="${selectPost.postId}">
+                            <input type="hidden" name="user" th:value="${selectPost.user}">
+                            <input type="hidden" name="title" th:value="${selectPost.title}">
+                            <input type="hidden" name="sts" th:value="${selectPost.sts}">
+                            <input type="hidden" name="categoryId" th:value="${selectPost.categoryId}">
+                            <input type="hidden" name="isTop" th:value="${selectPost.isTop}">
+                            <input type="hidden" name="isEssence" th:value="${selectPost.isEssence}">
+                            <input type="submit" value="下一页">
+                        </form>
+                    </li>
+
+                    <li>
+                        <form onsubmit="return handlePostSearch(event)">
+                            <input type="hidden" name="pageNum" th:value="${pagePost.pages}">
+                            <input type="hidden" name="postId" th:value="${selectPost.postId}">
+                            <input type="hidden" name="user" th:value="${selectPost.user}">
+                            <input type="hidden" name="title" th:value="${selectPost.title}">
+                            <input type="hidden" name="sts" th:value="${selectPost.sts}">
+                            <input type="hidden" name="categoryId" th:value="${selectPost.categoryId}">
+                            <input type="hidden" name="isTop" th:value="${selectPost.isTop}">
+                            <input type="hidden" name="isEssence" th:value="${selectPost.isEssence}">
+                            <input type="submit" value="尾页">
+                        </form>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+
 </html>
