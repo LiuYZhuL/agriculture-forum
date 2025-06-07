@@ -834,3 +834,42 @@ function searchKnowledgePage(pageNum){
         })
 
 }
+function deleteComment(commentId){
+    if (!confirm('确定要删除该评论吗？')) return;
+
+    fetch(`${baseUrl}api/comment/delete/${commentId}`, {
+        method: 'DELETE'
+    }).then(response => {
+        if (!response.ok) throw new Error('HTTP错误状态码: ' + response.status);
+        return response.json();
+    })
+        .then(data => {
+            if (data.success) {
+                showToast(data.message, 'success');
+                // 获取当前分页并刷新
+                const currentPage = document.querySelector('.pagination .active')?.textContent || 1;
+                searchCommentPage(currentPage);
+            } else {
+                throw new Error(data.message);
+            }
+        })
+        .catch(error => {
+            console.error('删除失败:', error);
+            showToast(error.message, 'error');
+        });
+}
+function CommentDetail(postId){
+    window.location.href = `${baseUrl}api/comment/detail/`+postId;
+}
+function searchCommentPage(pageNum){
+    fetch(`${baseUrl}api/user/comment?pageNum=${pageNum}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'}
+    }).then(response => response.text())
+        .then(html => {
+            const contentArea = document.querySelector('.content-area');
+
+            contentArea.innerHTML = html;
+    })
+}

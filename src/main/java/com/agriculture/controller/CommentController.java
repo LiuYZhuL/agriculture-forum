@@ -1,19 +1,25 @@
 package com.agriculture.controller;
 import com.agriculture.model.po.Comment;
+import com.agriculture.model.po.Post;
 import com.agriculture.model.po.User;
 import com.agriculture.model.vo.CommentVO;
 import com.agriculture.service.CommentService;
+import com.agriculture.service.PostService;
 import com.agriculture.service.UserService;
 import com.github.pagehelper.PageInfo;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/api/comment")
@@ -22,6 +28,8 @@ public class CommentController {
     private CommentService commentService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private PostService postService;
     @PostMapping("/add")
     public ModelAndView add(@RequestParam("postId") Integer postId,
                             @RequestParam("userId") Integer userId,
@@ -84,18 +92,38 @@ public class CommentController {
         return model;
     }
 
-    @PostMapping("/delete/{commentId}")
-     public ModelAndView delete(@PathVariable("commentId") Integer commentId) {
-        ModelAndView mv = new ModelAndView();
+    @DeleteMapping("/delete/{commentId}")
+    @ResponseBody
+     public ResponseEntity<Map<String, Object>> delete(@PathVariable("commentId") Integer commentId) {
+        Map<String, Object> response = new HashMap<>();
         try {
             Comment comment = commentService.selectCommentById(commentId);
-            mv.setViewName("redirect:/api/post/detail?postId=" + comment.getPostId());
+            response.put("success", true);
+            response.put("message", "删除成功");
             commentService.deleteComment(commentId);
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
-            mv.setViewName( "redirect:/");
+            e.printStackTrace();
+            response.put("success", false);
+            response.put("message", "删除失败");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+    @GetMapping("/detail/{postId}")
+    public ModelAndView detail(@PathVariable("postId") Integer postId) {
+        ModelAndView model = new ModelAndView();
+        try {
+            Post post = postService.getbyId(postId);
+            if (post.getStatus() >= Post.STATUS_KNOWLEDGE_WAITING_AUDIT){
+                model.setViewName("redirect:/api/knowledge/detail?postId=" + postId);
+            }else{
+                model.setViewName("redirect:/api/post/detail?postId=" + postId);
+            }
+            return model;
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        return mv;
+        return model;
     }
 
 }
