@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<!-- 评论列表组件 -->
+<div th:fragment="comment-list(pageComment)" class="comment-section">
+    <h2>我的评论</h2>
+    <!-- 消息提示 -->
+    <div th:if="${commentMsg}"
+         th:style="'color: ' + (${commentSuccess} ? 'green' : 'red') + '; margin-bottom: 15px;'"
+         th:text="${commentMsg}"></div>
+
+    <!-- 评论列表 -->
+    <div class="comment-list">
+        <div th:each="comment : ${pageComment.list}" class="comment-item">
+            <div class="comment-header">
+                <img th:src="@{/static/uploads/img/{avatar}(avatar=${user.avatar})}"
+                     class="comment-avatar"
+                     alt="用户头像">
+                <div class="comment-info">
+                    <span class="comment-username" th:text="${user.username}"></span>
+                    <span class="comment-time"
+                          th:text="${#dates.format(comment.createTime, 'yyyy-MM-dd HH:mm')}"></span>
+                </div>
+                <button type="button" class="btn-primary"
+                        th:onclick="|deleteComment(${comment.id})|">删除</button>
+                <button type="button" class="btn-primary"
+                        th:onclick="|CommentDetail(${comment.postId})|">查看详帖</button>
+            </div>
+            <div class="comment-content" th:text="${comment.content}"></div>
+        </div>
+    </div>
+    <div class="table-container">
+        <div style="line-height: 30px;">
+            当前第<span class="pageStyle" th:text="${pageComment.pageNum}"></span>页
+            共<span class="pageStyle" th:text="${pageComment.pages}"></span>页
+            总计<span class="pageStyle" th:text="${pageComment.total}"></span>条
+        </div>
+        <div>
+            <nav aria-label="Page navigation">
+                <ul class="pagination pagination-sm">
+                    <li>
+                        <button type="button" th:onclick="|searchCommentPage(1)|">首页</button>
+                    </li>
+                    <li th:if="${pageComment.pageNum != 1}">
+                        <button type="button"
+                                th:onclick="|searchCommentPage(${pageComment.pageNum - 1})|">
+                            上一页
+                        </button>
+                    </li>
+                    <li th:each="i : ${#numbers.sequence(1, pageComment.pages)}">
+                        <button type="button"
+                                th:onclick="|searchCommentPage(${i})|"
+                                th:classappend="${pageComment.pageNum == i} ? 'active' : ''">
+                            <span th:text="${i}"></span>
+                        </button>
+                    </li>
+                    <li th:if="${pageComment.pageNum != pageComment.pages}">
+                        <button type="button"
+                                th:onclick="|searchCommentPage(${pageComment.pageNum + 1})|">
+                            下一页
+                        </button>
+                    </li>
+                    <li>
+                        <button type="button"
+                                th:onclick="|searchCommentPage(${pageComment.pages})|">
+                            尾页
+                        </button>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+</html>

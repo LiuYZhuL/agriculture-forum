@@ -97,19 +97,28 @@ async function submitComment() {
 }
 
 // 删除评论
-async function deleteComment(commentId) {
-    if (!confirm('确定删除该评论？')) return;
 
-    fetch(`${baseUrl}api/comment/delete/` + commentId, {
-        method: 'POST',
-    }).then(() => {
-        document.querySelector(`[data-comment-id="${commentId}"]`).remove();
-        showAlert('删除成功');
-        window.location.reload();
-    }).catch(error => {
-        showAlert('删除失败: ' + error.message);
-    });
+function deleteComment(commentId){
+    if (!confirm('确定要删除该评论吗？')) return;
 
+    fetch(`${baseUrl}api/comment/delete/${commentId}`, {
+        method: 'DELETE'
+    }).then(response => {
+        if (!response.ok) throw new Error('HTTP错误状态码: ' + response.status);
+        return response.json();
+    })
+        .then(data => {
+            if (data.success) {
+                document.querySelector(`[data-comment-id="${commentId}"]`).remove();
+                showAlert('删除成功');
+                window.location.reload();
+            } else {
+                throw new Error(data.message);
+            }
+        })
+        .catch(error => {
+            showAlert('删除失败: ' + error.message);
+        });
 }
 
 // 点赞/收藏切换

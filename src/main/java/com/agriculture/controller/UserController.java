@@ -472,7 +472,8 @@ public class UserController {
         List<Comment> comments = commentService.getCommentsByUserId(user.getId());
         PageInfo<Comment> pageComment = new PageInfo<>(comments, pageSize);
         mv.addObject("pageComment", pageComment);
-        mv.setViewName("home");
+        mv.addObject("user", user);
+        mv.setViewName("home-comment-list");
         return mv;
     }
 
