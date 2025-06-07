@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="home-post-list" class="content-section">
+    <div class="form-group">
+        <label for="title">标题:</label>
+        <input type="text" id="title" name="title"
+               th:value="${selectPost.title}">
+
+        <label for="sts">状态:</label>
+        <select id="sts" name="status">
+            <option value="">全部</option>
+            <option value="0" th:selected="${selectPost.sts == 0}">未审核</option>
+            <option value="1" th:selected="${selectPost.sts == 1}">已审核</option>
+            <option value="2" th:selected="${selectPost.sts == 2}">已删除</option>
+        </select>
+
+        <label for="category">分类:</label>
+        <select id="category" name="categoryId">
+            <option value="">全部</option>
+            <option th:each="category : ${categories}"
+                    th:value="${category.id}"
+                    th:selected="${selectPost.categoryId == category.id}"
+                    th:text="${category.name}"></option>
+        </select>
+
+        <label for="isTop">置顶:</label>
+        <select id="isTop" name="isTop">
+            <option value="">全部</option>
+            <option value="0" th:selected="${selectPost.isTop == 0}">否</option>
+            <option value="1" th:selected="${selectPost.isTop == 1}">是</option>
+        </select>
+
+        <label for="isEssence">精华:</label>
+        <select id="isEssence" name="isEssence">
+            <option value="">全部</option>
+            <option value="0" th:selected="${selectPost.isEssence == 0}">否</option>
+            <option value="1" th:selected="${selectPost.isEssence == 1}">是</option>
+        </select>
+
+        <button type="submit" class="btn btn-primary"
+                th:onclick="|searchPostPage(1)|">搜索</button>
+    </div>
+    <!-- 帖子表格 -->
+    <table class="table">
+        <thead>
+        <tr>
+            <th>帖子标题</th>
+            <th>分类</th>
+            <th>状态</th>
+            <th>置顶</th>
+            <th>精华</th>
+            <th>发布时间</th>
+            <th>浏览量</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="post : ${pagePost.list}">
+            <td th:text="${post.title}"></td>
+            <td th:text="${post.category}"></td>
+            <td>
+                <span th:if="${post.status == 0}" style="color: red;">未审核</span>
+                <span th:if="${post.status == 1}" style="color: green;">已审核</span>
+                <span th:if="${post.status == 2}" style="color: gray;">待修改</span>
+            </td>
+            <td>
+                <span th:if="${post.isTop == 0}" style="color: red;">否</span>
+                <span th:if="${post.isTop == 1}" style="color: green;">是</span>
+            </td>
+            <td>
+                <span th:if="${post.isEssence == 0}" style="color: red;">否</span>
+                <span th:if="${post.isEssence == 1}" style="color: green;">是</span>
+            </td>
+            <td th:text="${#dates.format(post.createTime, 'yyyy-MM-dd HH:mm')}"></td>
+            <td th:text="${post.viewCount}"></td>
+            <td>
+                <button type="button" class="btn btn-primary"
+                        th:onclick="|postDetail(${post.id})|">详情</button>
+                <button type="button" class="btn btn-primary"
+                        th:onclick="|editPost(${post.id})|">编辑</button>
+                <button type="button" class="btn btn-primary"
+                        th:onclick="|deletePost(${post.id})|">删除</button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- 分页导航 -->
+    <div class="table-container">
+        <div style="line-height: 30px;">
+            当前第<span class="pageStyle" th:text="${pagePost.pageNum}"></span>页
+            共<span class="pageStyle" th:text="${pagePost.pages}"></span>页
+            总计<span class="pageStyle" th:text="${pagePost.total}"></span>条
+        </div>
+        <div>
+            <nav aria-label="Page navigation">
+                <ul class="pagination pagination-sm">
+                    <li>
+                        <button type="button" th:onclick="|searchPostPage(1)|">首页</button>
+                    </li>
+                    <li th:if="${pagePost.pageNum != 1}">
+                        <button type="button"
+                                th:onclick="|searchPostPage(${pagePost.pageNum - 1})|">
+                            上一页
+                        </button>
+                    </li>
+                    <li th:each="i : ${#numbers.sequence(1, pagePost.pages)}">
+                        <button type="button"
+                                th:onclick="|searchPostPage(${i})|"
+                                th:classappend="${pagePost.pageNum == i} ? 'active' : ''">
+                            <span th:text="${i}"></span>
+                        </button>
+                    </li>
+                    <li th:if="${pagePost.pageNum != pagePost.pages}">
+                        <button type="button"
+                                th:onclick="|searchPostPage(${pagePost.pageNum + 1})|">
+                            下一页
+                        </button>
+                    </li>
+                    <li>
+                        <button type="button"
+                                th:onclick="|searchPostPage(${pagePost.pages})|">
+                            尾页
+                        </button>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    <div id="postEditModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closePostModal()">&times;</span>
+            <h2>修改帖子</h2>
+
+            <!-- 表单内容替换为div -->
+            <div id="postForm">
+                <input type="hidden" id="postId" th:value="${post.id}">
+
+                <div class="form-group">
+                    <input type="text" id="postTitle" class="form-input"
+                           placeholder="标题" th:value="${post.title}">
+                </div>
+
+                <div class="form-group">
+          <textarea id="postContent" class="form-input auto-resize"
+                    placeholder="内容" th:text="${post.content}"></textarea>
+                </div>
+
+                <!-- 附件展示区 -->
+                <div class="form-group">
+                    <label>已有附件：</label>
+                    <div class="upload-progress" id="existingAttachments">
+                        <div th:each="attach : ${attachments}" class="preview-item">
+                            <th:block th:switch="${#strings.startsWith(attach.fileType, 'image/')} ? 'image' :
+                                        (#strings.startsWith(attach.fileType, 'video/') ? 'video' : 'file')}">
+                                <!-- 图片预览 -->
+                                <img th:case="image"
+                                     th:src="@{/static/uploads/attachments/img/{path}(path=${attach.filePath})}"
+                                     class="preview-media">
+                                <!-- 视频预览 -->
+                                <video th:case="video" class="preview-media" controls>
+                                    <source th:src="@{/static/uploads/attachments/video/{path}(path=${attach.filePath})}"
+                                            th:attr="type=${attach.fileType}">
+                                </video>
+                                <!-- 文件预览 -->
+                                <div th:case="file" class="file-preview">
+                                    <i class="file-icon">📁</i>
+                                    <div class="file-info">
+                                        <div class="file-name" th:text="${attach.filePath}"></div>
+                                        <div class="file-type" th:text="${#strings.toLowerCase(attach.fileType)}"></div>
+                                    </div>
+                                </div>
+                            </th:block>
+                            <button type="button" class="remove-btn"
+                                    th:onclick="|removeAttachment(this, ${attach.id})|">X</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 文件上传控件 -->
+                <div class="media-upload">
+                    <label class="upload-btn">
+                        <input type="file" class="file-input" accept="image/*" multiple hidden>
+                        <span>添加图片</span>
+                    </label>
+                    <label class="upload-btn">
+                        <input type="file" class="file-input" accept="video/*" multiple hidden>
+                        <span>添加视频</span>
+                    </label>
+                    <label class="upload-btn">
+                        <input type="file" class="file-input"
+                               accept=".doc,.docx,.ppt,.pptx,.xls,.xlsx,.pdf,.zip,.7z" multiple hidden>
+                        <span>添加附件</span>
+                    </label>
+                </div>
+
+
+                <div class="form-group">
+                    <select id="postCategory" class="form-input">
+                        <option th:each="category : ${categories}"
+                                th:value="${category.id}"
+                                th:selected="${category.id == post.categoryId}"
+                                th:text="${category.name}"></option>
+                    </select>
+                </div>
+
+                <button class="btn-save" onclick="submitPostChange()">确认修改</button>
+            </div>
+        </div>
+    </div>
+    <dic class="post-modal">
+
+    </dic>
+</div>
+
+
+</html>

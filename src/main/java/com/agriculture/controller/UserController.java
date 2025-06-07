@@ -382,8 +382,7 @@ public class UserController {
             @Valid SelectPost selectPost,
             HttpSession   session )
     {
-        ModelAndView mv = new ModelAndView();
-        mv.addObject("activeSection","post");
+        ModelAndView mv = new ModelAndView("home-post-list");
         mv.addObject("selectPost", selectPost);
         User user = (User) session.getAttribute("user");
         Post post = new Post();
@@ -403,13 +402,12 @@ public class UserController {
             mv.addObject("postSuccess", true);
             mv.addObject("postMsg", "帖子列表获取成功");
             mv.addObject("pagePost", pagePost);
-            mv.setViewName("home");
+
             return mv;
         } catch (RuntimeException e) {
             e.printStackTrace();
             mv.addObject("postSuccess", false);
             mv.addObject("postMsg", e.getMessage());
-            mv.setViewName("home");
             return mv;
         }
     }

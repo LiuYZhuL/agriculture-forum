@@ -10,11 +10,10 @@ import com.github.pagehelper.PageInfo;
 import jakarta.servlet.http.HttpSession;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -129,13 +128,14 @@ public class PostController {
             return mv;
         }
     }
-    @GetMapping("/delete")
-    public ModelAndView delete(
-            @RequestParam("postId") Integer postId,
+    @DeleteMapping("/delete/{postId}")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>>
+            delete(
+            @PathVariable("postId") Integer postId,
             HttpSession session) {
-        ModelAndView mv = new ModelAndView();
-        mv.addObject("activeSection", "post");
-        mv.setViewName("home");
+        Map<String, Object> response = new HashMap<>();
+
         Post post = null;
         try {
             post = postService.getbyId(postId);
@@ -168,22 +168,19 @@ public class PostController {
                 interactionService.deletePostInteraction(postId);
             }
             postService.deletePost(postId);
-            mv.addObject("postSuccess", true);
-            mv.addObject("postMsg", "删除[" + post.getTitle() + "]成功");
-            return mv;
-        }catch (RuntimeException e){
-            mv.addObject("postSuccess", false);
-
-            mv.addObject("postMsg", e.getMessage());
-
-            return mv;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            response.put("success", true);
+            response.put("message", "删除[" + post.getTitle() + "]成功");
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException | IOException e) {
+            response.put("success", false);
+            response.put("message", "删除失败: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
+
     }
-    @GetMapping("/show")
+    @GetMapping("/show/{postId}")
     public ModelAndView show(
-            @RequestParam("postId") Integer postId) {
+            @PathVariable("postId") Integer postId) {
         ModelAndView mv = new ModelAndView();
         try {
             Post post = postService.getbyId(postId);
@@ -213,7 +210,10 @@ public class PostController {
             User postUser = userService.getUserById(post.getUserId());
             Category category = categoryService.getCategoryById(post.getCategoryId());
             List<Attachment> attachments = attachmentService.getAttachmentByPostId(postId);
-            postService.updatePostViewCount(postId);
+            if(Objects.equals(post.getStatus(), Post.STATUS_PUBLISHED)){
+                postService.updatePostViewCount(postId);
+            }
+
 
             List<Comment> pcs = commentService.getPCommentsByPostId(postId);
             List<CommentVO> rootComments = new ArrayList<>(); // 存放顶级评论

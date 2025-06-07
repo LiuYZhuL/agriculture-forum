@@ -329,7 +329,6 @@ function submitPasswordChange() {
 
     btn.innerHTML = '⏳ 提交中...';
     btn.disabled = true;
-
     fetch(`${baseUrl}api/user/change`, {
         method: 'POST',
         body: formData
@@ -375,3 +374,60 @@ function submitPasswordChange() {
         });
 }
 
+function searchPostPage(pageNum){
+    const params = new URLSearchParams({
+        pageNum: pageNum,
+        title: document.getElementById('title').value || '',
+        categoryId: document.getElementById('category').value || '',
+        sts: document.getElementById('sts').value || '',
+        isTop: document.getElementById('isTop').value || '',
+        isEssence: document.getElementById('isEssence').value || ''
+    });
+    console.log(params.toString());
+    fetch(`${baseUrl}api/user/post?${params.toString()}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+    })
+        .then(response => response.text())
+        .then(html => {
+            console.log('服务端响应:', html); // 查看实际返回内容
+            // 统一替换逻辑
+            const contentArea = document.querySelector('.content-area');
+
+            contentArea.innerHTML = html;
+        })
+
+}
+function postDetail(postId){
+    window.location.href = `${baseUrl}api/post/detail?postId=${postId}`;
+}
+function deletePost(postId) {
+    if (!confirm('确定要删除该帖子吗？')) return;
+
+    fetch(`${baseUrl}api/post/delete/${postId}`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+        .then(response => {
+            if (!response.ok) throw new Error('HTTP错误状态码: ' + response.status);
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                showToast(data.message, 'success');
+                // 获取当前分页并刷新
+                const currentPage = document.querySelector('.pagination .active')?.textContent || 1;
+                searchPostPage(currentPage);
+            } else {
+                throw new Error(data.message);
+            }
+        })
+        .catch(error => {
+            console.error('删除失败:', error);
+            showToast(error.message, 'error');
+        });
+}
