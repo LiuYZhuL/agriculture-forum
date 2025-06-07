@@ -20,6 +20,9 @@ function loadContent(section) {
             if(section === 'categorymgt') {
                 rebindCategoryMgtEvents();
             }
+            if(section === 'postmgt'){
+                rebindPostMgtEvents();
+            }
         });
 }
 
@@ -46,6 +49,13 @@ function handleCategorySearch(event) {
     submitCategoryMgtRequest(new FormData(form));
     return false;
 }
+function handlePostSearch(event) {
+    event.preventDefault();
+    const form = event.target;
+    submitPostMgtRequest(new FormData(form));
+    return false;
+}
+
 // 通用请求处理函数
 function submitUserMgtRequest(formData) {
     const params = new URLSearchParams(formData);
@@ -87,7 +97,29 @@ function submitCategoryMgtRequest(formData) {
             rebindCategoryMgtEvents();
         });
 }
+function submitPostMgtRequest(formData) {
+    const params = new URLSearchParams(formData);
 
+    fetch(`${baseUrl}api/admin/manage/postmgt?${params}`, {
+        method: 'GET',
+        headers: {
+            'Accept': 'text/html',
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+        .then(response => {
+            if (!response.ok) throw new Error('请求失败');
+            return response.text();
+        })
+        .then(html => {
+            document.querySelector('.content-area').innerHTML = html;
+            rebindPostMgtEvents();
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showErrorMessage('操作失败，请稍后重试');
+        });
+}
 // 重新绑定事件
 function rebindUserMgtEvents() {
     // 绑定搜索表单
@@ -96,11 +128,11 @@ function rebindUserMgtEvents() {
         searchForm.onsubmit = handleSearch;
     }
 
-    // 绑定分页按钮
+    // 统一绑定分页按钮（替换旧式表单提交）
     document.querySelectorAll('.pagination form').forEach(form => {
         form.onsubmit = function(e) {
             e.preventDefault();
-            submitUserMgtRequest(new FormData(this));
+            submitUserMgtRequest(new FormData(this)); // 使用统一请求处理
         };
     });
 }
@@ -117,6 +149,21 @@ function rebindCategoryMgtEvents() {
         form.onsubmit = function(e) {
             e.preventDefault();
             submitCategoryMgtRequest(new FormData(this));
+        };
+    });
+}
+function rebindPostMgtEvents() {
+    // 绑定搜索表单
+    const searchForm = document.getElementById('searchForm');
+    if (searchForm) {
+        searchForm.onsubmit = handlePostSearch;
+    }
+
+    // 绑定分页按钮
+    document.querySelectorAll('.pagination form').forEach(form => {
+        form.onsubmit = function(e) {
+            e.preventDefault();
+            submitPostMgtRequest(new FormData(this));
         };
     });
 }
