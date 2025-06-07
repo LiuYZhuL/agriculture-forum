@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="post-modal"  class="post-modal">
+    <div class="modal-content">
+        <span class="close" onclick="closePostModal()">&times;</span>
+        <h2>修改帖子</h2>
+
+        <!-- 表单容器 -->
+        <div id="postFormContainer">
+            <input type="hidden" id="editPostId" th:value="${post.id}">
+
+            <div class="form-group">
+                <input type="text" id="editPostTitle" class="form-input"
+                       placeholder="标题" th:value="${post.title}">
+            </div>
+
+            <div class="form-group">
+                <textarea id="editPostContent" class="form-input auto-resize"
+                    placeholder="内容" th:text="${post.content}"></textarea>
+            </div>
+
+            <!-- 附件展示区 -->
+            <div class="upload-progress" id="attachmentPreviews">
+                <label>已有附件：</label>
+                <div class="upload-progress" id="existingAttachments">
+                    <div th:each="attach : ${attachments}" class="preview-item">
+                        <th:block th:switch="${#strings.substringBefore(attach.fileType, '/')}">
+                            <!-- 图片预览 -->
+                            <img th:case="image"
+                                 th:src="@{/static/uploads/attachments/img/{path}(path=${attach.filePath})}"
+                                 class="preview-media">
+                            <!-- 视频预览 -->
+                            <video th:case="video" class="preview-media" controls>
+                                <source th:src="@{/static/uploads/attachments/video/{path}(path=${attach.filePath})}"
+                                        th:attr="type=${attach.fileType}">
+                            </video>
+                            <!-- 文件预览 -->
+                            <div th:case="*" class="file-preview">
+                                <i class="file-icon">📁</i>
+                                <div class="file-info">
+                                    <div class="file-name" th:text="${attach.filePath}"></div>
+                                    <div class="file-type" th:text="${#strings.toLowerCase(attach.fileType)}"></div>
+                                </div>
+                            </div>
+                        </th:block>
+                        <button type="button" class="remove-btn"
+                                th:onclick="|removeAttachment(postId=${post.id}, attachmentId=${attach.id})|">X</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 文件上传控件 -->
+            <div class="media-upload">
+                <label class="upload-btn">
+                    <input type="file" id="imageInput" accept="image/*" multiple hidden>
+                    <span>添加图片</span>
+                </label>
+                <label class="upload-btn">
+                    <input type="file" id="videoInput" accept="video/*" multiple hidden>
+                    <span>添加视频</span>
+                </label>
+                <label class="upload-btn">
+                    <input type="file" id="fileInput"
+                           accept=".doc,.docx,.ppt,.pptx,.xls,.xlsx,.pdf,.zip,.7z" multiple hidden>
+                    <span>添加附件</span>
+                </label>
+                <div class="upload-progress">
+                    <label>新上传的附件：</label>
+                    <div class="preview-list" id="newAttachments"></div>
+                </div>
+            </div>
+            <input type="file" id="hiddenImages" name="images" multiple hidden>
+            <input type="file" id="hiddenVideos" name="videos" multiple hidden>
+            <input type="file" id="hiddenFiles" name="files" multiple hidden>
+            <!-- 分类选择 -->
+            <div class="form-group">
+                <select id="editPostCategory" class="form-input">
+                    <option th:each="category : ${categories}"
+                            th:value="${category.id}"
+                            th:selected="${category.id == post.categoryId}"
+                            th:text="${category.name}"></option>
+                </select>
+            </div>
+
+
+            <button class="submit-btn" th:onclick="submitPostChanges()">保存修改</button>
+        </div>
+    </div>
+</div>
+</html>

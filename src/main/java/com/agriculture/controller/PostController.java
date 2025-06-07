@@ -309,7 +309,7 @@ public class PostController {
     public ModelAndView update(
             @RequestParam("postId") Integer postId){
         ModelAndView mv = new ModelAndView();
-        mv.setViewName("postUD");
+        mv.setViewName("post-modal");
         try {
             Post post = postService.getbyId(postId);
             mv.addObject("post", post);
@@ -318,138 +318,118 @@ public class PostController {
              return mv;
         } catch (RuntimeException e) {
              mv.addObject("error", e.getMessage());
-             mv.setViewName("redirect:/");
+             mv.setViewName("post-modal");
              return mv;
         }
     }
 
     @PostMapping("/update")
-    public ModelAndView update(
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> update(
             @RequestParam("postId") Integer postId,
-            @Valid AddPost addPost,
-            @RequestParam(name = "images", required = false) MultipartFile[] images,
-            @RequestParam(name = "videos", required = false) MultipartFile videos,
-            @RequestParam(name = "files", required = false) MultipartFile[] files,
-            @RequestParam(name = "deletedAttachments", required = false) String deletedAttachments,
+            @RequestParam("title") String title,
+            @RequestParam("content") String content,
+            @RequestParam("categoryId") Integer categoryId,
+            @RequestParam(name = "newAttachments", required = false) MultipartFile[] newAttachments,
+            @RequestParam(name = "deletedAttachments", required = false) String[] deletedAttachments,
             HttpSession session) {
-        ModelAndView mv = new ModelAndView();
+        Map<String, Object> response = new HashMap<>();
         User user = (User) session.getAttribute("user");
-        addPost.setUserId(user.getId());
         try {
 
             Post post = new Post();
             post.setId(postId);
-            post.setTitle(addPost.getTitle());
-            post.setContent(addPost.getContent());
-            post.setCategoryId(addPost.getCategoryId());
+            post.setTitle(title);
+            post.setContent(content);
+            post.setCategoryId(categoryId);
             if(postService.getbyId(postId).getStatus() >= Post.STATUS_KNOWLEDGE_WAITING_AUDIT){
                 post.setStatus(Post.STATUS_KNOWLEDGE_WAITING_AUDIT);
             }else{
                 post.setStatus(Post.STATUS_WAITING_AUDIT);
             }
-            postService.updatePost(post);
-            List<Attachment> attachments = new ArrayList<>();
-            if (images != null && images.length > 0){
-                for (MultipartFile image : images){
-                    if (image.isEmpty()) {
+            if (newAttachments != null && newAttachments.length > 0){
+                List<Attachment> attachments = new ArrayList<>();
+
+                for (MultipartFile file : newAttachments){
+                    if (file.isEmpty()) {
                         continue;
                     }
                     Attachment attachment = new Attachment();
                     attachment.setPostId(post.getId());
-                    Set<String> allowedExtensions = Set.of("jpg", "jpeg", "png", "gif");
-                    String extension = FilenameUtils.getExtension(image.getOriginalFilename()).toLowerCase();
-                    if (!allowedExtensions.contains(extension)) {
-                        throw new RuntimeException("仅支持JPG/PNG/GIF格式");
+                    Set<String> imgExtensions = Set.of("jpg", "jpeg", "png", "gif");
+                    Set<String> videoExtensions = Set.of("mp4", "mkv");
+                    Set<String> allowedExtensions = Set.of("pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx", "zip", "7z");
+                    String extension = FilenameUtils.getExtension(file.getOriginalFilename()).toLowerCase();
+                    if (imgExtensions.contains(extension)){
+                        attachment.setFileType("image/" + extension);
+                        String newFileName = post.getId() + "_" + System.currentTimeMillis() + "." + extension;
+                        attachment.setFilePath(newFileName);
+                        Path uploadDir = Paths.get(
+                                session.getServletContext().getRealPath("/static/uploads/attachments/img/")
+                        );
+                        attachments.add(attachment);
+                        Files.createDirectories(uploadDir);
+                        file.transferTo(uploadDir.resolve(newFileName));
+                    }else if (videoExtensions.contains(extension)){
+                        attachment.setFileType("video/" + extension);
+                        String newFileName = post.getId() + "_" + System.currentTimeMillis() + "." + extension;
+                        attachment.setFilePath(newFileName);
+                        Path uploadDir = Paths.get(
+                                session.getServletContext().getRealPath("/static/uploads/attachments/video/")
+                        );
+                        attachments.add(attachment);
+                        Files.createDirectories(uploadDir);
+                        file.transferTo(uploadDir.resolve(newFileName));
+                    }else if (allowedExtensions.contains(extension)){
+                        attachment.setFileType("application/" + extension);
+                        attachment.setFilePath(file.getOriginalFilename());
+                        Path uploadDir = Paths.get(
+                                session.getServletContext().getRealPath("/static/uploads/attachments/file/")
+                        );
+                        attachments.add(attachment);
+                        Files.createDirectories(uploadDir);
+                        file.transferTo(uploadDir.resolve(file.getOriginalFilename()));
+                    }else {
+                        throw new RuntimeException("未知文件类型");
                     }
-                    attachment.setFileType("image/" + extension);
-                    String newFileName = post.getId() + "_" + System.currentTimeMillis() + "." + extension;
-                    attachment.setFilePath(newFileName);
-                    Path uploadDir = Paths.get(
-                            session.getServletContext().getRealPath("/static/uploads/attachments/img/")
-                    );
-                    attachments.add(attachment);
-                    Files.createDirectories(uploadDir);
-                    image.transferTo(uploadDir.resolve(newFileName));
                 }
-            }
-            if (videos!= null &&!videos.isEmpty()){
-                Attachment attachment = new Attachment();
-                attachment.setPostId(post.getId());
-                Set<String> allowedExtensions = Set.of("mp4", "mkv");
-                String extension = FilenameUtils.getExtension(videos.getOriginalFilename()).toLowerCase();
-                if (!allowedExtensions.contains(extension)) {
-                    throw new RuntimeException("仅支持MP4/MKV格式");
-                }
-                attachment.setFileType("video/" + extension);
-                String newFileName = post.getId() + "_" + System.currentTimeMillis() + "." + extension;
-                attachment.setFilePath(newFileName);
-                Path uploadDir = Paths.get(
-                        session.getServletContext().getRealPath("/static/uploads/attachments/video/")
-                );
-                attachments.add(attachment);
-                Files.createDirectories(uploadDir);
-                videos.transferTo(uploadDir.resolve(newFileName));
-            }
-            for (MultipartFile file : files){
-                if (file.isEmpty()) {
-                    continue;
-                }
-                Attachment attachment = new Attachment();
-                attachment.setPostId(post.getId());
-                Set<String> allowedExtensions = Set.of("pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx", "zip", "7z");
-                String extension = FilenameUtils.getExtension(file.getOriginalFilename()).toLowerCase();
-                if (!allowedExtensions.contains(extension)) {
-                    throw new RuntimeException("仅支持PDF/DOC/DOCX/XLS/XLSX/PPT/PPTX/ZIP/7Z格式");
-                }
-                attachment.setFileType("application/" + extension);
-                attachment.setFilePath(file.getOriginalFilename());
-                Path uploadDir = Paths.get(
-                        session.getServletContext().getRealPath("/static/uploads/attachments/file/")
-                );
-                attachments.add(attachment);
-                Files.createDirectories(uploadDir);
-                file.transferTo(uploadDir.resolve(file.getOriginalFilename()));
-            }
-            if (!attachments.isEmpty()){
                 attachmentService.postAttachment(attachments);
             }
-            for (String attachmentId : deletedAttachments.split(",")){
-                if (attachmentId != null && !attachmentId.isEmpty()){
-                    Attachment attachment = attachmentService.getAttachmentById(Integer.parseInt(attachmentId));
-                    attachmentService.deleteAttachmentById(Integer.parseInt(attachmentId));
-                    if (attachment.getFileType().startsWith("image")) {
-                        Path filePath = Paths.get(
-                                session.getServletContext().getRealPath("/static/uploads/attachments/img/" + attachment.getFilePath())
-                        );
-                        Files.delete(filePath);
-                    }
-                    if ( attachment.getFileType().startsWith("video")){
-                        Path filePath = Paths.get(
-                                session.getServletContext().getRealPath("/static/uploads/attachments/video/" + attachment.getFilePath())
-                        );
-                        Files.delete(filePath);
-                    }
-                    if (attachment.getFileType().startsWith("application")){
-                        Path filePath = Paths.get(
-                                session.getServletContext().getRealPath("/static/uploads/attachments/file/" + attachment.getFilePath())
-                        );
-                        Files.delete(filePath);
+
+            postService.updatePost(post);
+            if (deletedAttachments != null){
+                for (String attachmentId : deletedAttachments){
+                    if (attachmentId != null && !attachmentId.isEmpty()){
+                        Attachment attachment = attachmentService.getAttachmentById(Integer.parseInt(attachmentId));
+                        attachmentService.deleteAttachmentById(Integer.parseInt(attachmentId));
+                        if (attachment.getFileType().startsWith("image")) {
+                            Path filePath = Paths.get(
+                                    session.getServletContext().getRealPath("/static/uploads/attachments/img/" + attachment.getFilePath())
+                            );
+                            Files.delete(filePath);
+                        }
+                        if ( attachment.getFileType().startsWith("video")){
+                            Path filePath = Paths.get(
+                                    session.getServletContext().getRealPath("/static/uploads/attachments/video/" + attachment.getFilePath())
+                            );
+                            Files.delete(filePath);
+                        }
+                        if (attachment.getFileType().startsWith("application")){
+                            Path filePath = Paths.get(
+                                    session.getServletContext().getRealPath("/static/uploads/attachments/file/" + attachment.getFilePath())
+                            );
+                            Files.delete(filePath);
+                        }
                     }
                 }
             }
-
-            mv.setViewName("redirect:/");
-            return mv;
-        }catch (RuntimeException e) {
-            mv.setViewName("dashboard");
-            mv.addObject("errorMsg", "发布失败，请检查输入内容");
-            mv.addObject("error", e.getMessage());
-            mv.setViewName("redirect:/");
-            return mv;
-        } catch (IOException e) {
-            mv.addObject("errorMsg", "上传文件失败");
-            mv.setViewName("redirect:/");
-            return mv;
+            response.put("success", true);
+            response.put("msg", "更新成功");
+            return ResponseEntity.ok(response);
+        }catch (RuntimeException | IOException e) {
+            response.put("success", false);
+            response.put("msg", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
     @PostMapping("/like")

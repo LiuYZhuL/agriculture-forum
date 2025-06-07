@@ -431,3 +431,289 @@ function deletePost(postId) {
             showToast(error.message, 'error');
         });
 }
+
+function editPost(postId) {
+    // 显示加载状态
+    const modalContainer = document.querySelector('#postEditModal');
+
+    // 发起请求获取模态框内容
+    fetch(`${baseUrl}api/post/update?postId=${postId}`)
+        .then(response => response.text())
+        .then(html => {
+            // 插入模态框内容
+            modalContainer.innerHTML = html;
+            // 初始化模态框事件
+
+            // 初始化删除附件数组
+            deletedAttachments = [];
+            initFileUploadEvents()
+
+
+            // 显示模态框
+            modalContainer.querySelector('.post-modal').style.display = 'block';
+
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            modalContainer.innerHTML = '<div class="error">加载失败</div>';
+        });
+}
+function closePostModal(){
+    const modalContainer = document.querySelector('#postEditModal');
+    modalContainer.innerHTML = '';
+    deletedAttachments = []; // 清空删除记录
+    newAttachments = [];
+    //清空附件上传
+}
+
+// 全局变量
+let deletedAttachments = [];
+let newAttachments = [];
+
+
+// 初始化文件上传事件
+function initFileUploadEvents() {
+    document.getElementById('imageInput').addEventListener('change', handleFileSelect);
+    document.getElementById('videoInput').addEventListener('change', handleFileSelect);
+    document.getElementById('fileInput').addEventListener('change', handleFileSelect);
+}
+
+// 处理文件选择
+function handleFileSelect(event) {
+    const files = event.target.files;
+    const container = document.getElementById('newAttachments');
+    console.log(files);
+    for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const fileType = file.type.split('/')[0];
+
+        // 创建预览元素
+        const previewItem = document.createElement('div');
+        previewItem.className = 'preview-item';
+        previewItem.dataset.fileId = Date.now() + i;
+
+        // 根据文件类型创建预览
+        if (fileType === 'image') {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = document.createElement('img');
+                img.className = 'preview-media';
+                img.src = e.target.result;
+                previewItem.appendChild(img);
+
+                // 添加删除按钮
+                const removeBtn = createRemoveButton(file, previewItem);
+                previewItem.appendChild(removeBtn);
+
+                container.appendChild(previewItem);
+            };
+            reader.readAsDataURL(file);
+        }
+        else if (fileType === 'video') {
+            const video = document.createElement('video');
+            video.className = 'preview-media';
+            video.controls = true;
+
+            const source = document.createElement('source');
+            source.src = URL.createObjectURL(file);
+            source.type = file.type;
+            video.appendChild(source);
+
+            previewItem.appendChild(video);
+
+            // 添加删除按钮
+            const removeBtn = createRemoveButton(file, previewItem);
+            previewItem.appendChild(removeBtn);
+
+            container.appendChild(previewItem);
+        }
+        else {
+            const filePreview = document.createElement('div');
+            filePreview.className = 'file-preview';
+
+            const fileIcon = document.createElement('i');
+            fileIcon.className = 'file-icon';
+            fileIcon.textContent = '📁';
+
+            const fileInfo = document.createElement('div');
+            fileInfo.className = 'file-info';
+
+            const fileName = document.createElement('div');
+            fileName.className = 'file-name';
+            fileName.textContent = file.name;
+
+            const fileType = document.createElement('div');
+            fileType.className = 'file-type';
+            fileType.textContent = file.type || '文件';
+
+            fileInfo.appendChild(fileName);
+            fileInfo.appendChild(fileType);
+            filePreview.appendChild(fileIcon);
+            filePreview.appendChild(fileInfo);
+            previewItem.appendChild(filePreview);
+
+            // 添加删除按钮
+            const removeBtn = createRemoveButton(file, previewItem);
+            previewItem.appendChild(removeBtn);
+
+            container.appendChild(previewItem);
+        }
+
+        // 保存文件到新附件数组
+        newAttachments.push({
+            id: previewItem.dataset.fileId,
+            file: file
+        });
+    }
+
+    // 重置输入框以允许再次选择相同的文件
+    event.target.value = '';
+}
+
+// 创建删除按钮
+function createRemoveButton(file, previewItem) {
+    const removeBtn = document.createElement('button');
+    removeBtn.type = 'button';
+    removeBtn.className = 'remove-btn';
+    removeBtn.textContent = 'X';
+    removeBtn.onclick = function() {
+        // 从DOM中移除预览
+        previewItem.remove();
+
+        // 从新附件数组中移除
+        const index = newAttachments.findIndex(a => a.id === previewItem.dataset.fileId);
+        if (index !== -1) {
+            newAttachments.splice(index, 1);
+        }
+    };
+    return removeBtn;
+}
+
+// 移除已有附件
+function removeAttachment(postId, attachmentId) {
+    // 添加到删除列表
+    deletedAttachments.push(attachmentId);
+
+    // 找到对应的DOM元素并移除
+    const attachments = document.getElementById('existingAttachments');
+    const attachmentElements = attachments.querySelectorAll('.preview-item');
+
+    for (let i = 0; i < attachmentElements.length; i++) {
+        const btn = attachmentElements[i].querySelector('.remove-btn');
+        if (btn && btn.onclick.toString().includes(attachmentId)) {
+            attachmentElements[i].remove();
+            break;
+        }
+    }
+
+    // 显示提示信息
+    showToast('附件已标记为删除，保存后生效', 'success');
+}
+
+// 提交帖子修改
+function submitPostChanges() {
+    const postId = document.getElementById('editPostId').value;
+    const title = document.getElementById('editPostTitle').value;
+    const content = document.getElementById('editPostContent').value;
+    const categoryId = document.getElementById('editPostCategory').value;
+
+    // 验证表单
+    if (!title.trim() || !content.trim()) {
+        showToast('标题和内容不能为空', 'error');
+        return;
+    }
+
+    // 创建FormData对象
+    const formData = new FormData();
+    formData.append('postId', postId);
+    formData.append('title', title);
+    formData.append('content', content);
+    formData.append('categoryId', categoryId);
+
+    // 添加删除的附件ID
+    deletedAttachments.forEach(id => {
+        formData.append('deletedAttachments', id);
+    });
+
+    // 添加新上传的文件
+    newAttachments.forEach(attachment => {
+        formData.append('newAttachments', attachment.file);
+    });
+
+    // 显示加载状态
+    const submitBtn = document.querySelector('.submit-btn');
+    const originalText = submitBtn.textContent;
+    submitBtn.textContent = '保存中...';
+    submitBtn.disabled = true;
+
+    // 实际代码应该使用fetch API
+
+    fetch(`${baseUrl}api/post/update`, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showToast('帖子修改成功', 'success');
+            closePostModal();
+
+            // 刷新内容
+            const currentPage = document.querySelector('.pagination .active')?.textContent || 1;
+            searchPostPage(currentPage);
+        } else {
+            throw new Error(data.message);
+        }
+    })
+    .catch(error => {
+        console.error('保存失败:', error);
+        showToast(`保存失败: ${error.message}`, 'error');
+    })
+    .finally(() => {
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+    });
+}
+
+// 删除帖子
+function deletePost(postId) {
+    if (!confirm('确定要删除该帖子吗？此操作不可恢复！')) return;
+
+    fetch(`${baseUrl}api/post/delete/${postId}`, {
+        method: 'DELETE'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showToast(data.message, 'success');
+            const currentPage = document.querySelector('.pagination .active')?.textContent || 1;
+            searchPostPage(currentPage);
+        } else {
+            throw new Error(data.message);
+        }
+    })
+    .catch(error => {
+        console.error('删除失败:', error);
+        showToast(error.message, 'error');
+    });
+}
+
+// 显示Toast消息
+function showToast(message, type) {
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    toast.textContent = message;
+    document.body.appendChild(toast);
+
+    setTimeout(() => {
+        toast.classList.add('show');
+    }, 10);
+
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => {
+            toast.remove();
+        }, 300);
+    }, 3000);
+}
+
