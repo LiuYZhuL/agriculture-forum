@@ -23,6 +23,9 @@ function loadContent(section) {
             if(section === 'postmgt'){
                 rebindPostMgtEvents();
             }
+            if(section === 'knowledgemgt') {
+                rebindKnowledgeMgtEvents();
+            }
         });
 }
 
@@ -53,6 +56,12 @@ function handlePostSearch(event) {
     event.preventDefault();
     const form = event.target;
     submitPostMgtRequest(new FormData(form));
+    return false;
+}
+function handleKnowledgeSearch(event) {
+    event.preventDefault();
+    const form = event.target;
+    submitKnowledgeMgtRequest(new FormData(form));
     return false;
 }
 
@@ -95,7 +104,12 @@ function submitCategoryMgtRequest(formData) {
         .then(html => {
             document.querySelector('.content-area').innerHTML = html;
             rebindCategoryMgtEvents();
-        });
+        })
+        .catch(error => {
+            console.error('请求失败:', error);
+            showErrorMessage('操作失败，请稍后重试');
+        })
+    ;
 }
 function submitPostMgtRequest(formData) {
     const params = new URLSearchParams(formData);
@@ -117,6 +131,28 @@ function submitPostMgtRequest(formData) {
         })
         .catch(error => {
             console.error('Error:', error);
+            showErrorMessage('操作失败，请稍后重试');
+        });
+}
+function submitKnowledgeMgtRequest(formData) {
+    const params = new URLSearchParams(formData);
+
+    fetch(`${baseUrl}api/admin/manage/knowledgemgt?${params}`, {
+        method: 'GET',
+        headers: {
+            'Accept': 'text/html',
+            'X-Requested-With': 'XMLHttpRequest' }
+    })
+        .then(response => {
+            if (!response.ok) throw new Error('知识列表加载失败');
+            return response.text();
+        })
+        .then(html => {
+            document.querySelector('.content-area').innerHTML = html;
+            rebindKnowledgeMgtEvents();
+        })
+        .catch(error => {
+            console.error('知识请求失败:', error);
             showErrorMessage('操作失败，请稍后重试');
         });
 }
@@ -154,12 +190,28 @@ function rebindCategoryMgtEvents() {
 }
 function rebindPostMgtEvents() {
     // 绑定搜索表单
-    const searchForm = document.getElementById('searchForm');
+    const searchForm = document.getElementById('postSearchForm');
     if (searchForm) {
         searchForm.onsubmit = handlePostSearch;
     }
 
     // 绑定分页按钮
+    document.querySelectorAll('.pagination form').forEach(form => {
+        form.onsubmit = function(e) {
+            e.preventDefault();
+            submitPostMgtRequest(new FormData(this));
+        };
+    });
+}
+function rebindKnowledgeMgtEvents() {
+    // 绑定搜索表单
+    const searchForm = document.getElementById('knowledgeSearchForm');
+    if (searchForm) {
+        searchForm.onsubmit = handleKnowledgeSearch;
+
+    }
+
+    // 分页按钮事件委托
     document.querySelectorAll('.pagination form').forEach(form => {
         form.onsubmit = function(e) {
             e.preventDefault();

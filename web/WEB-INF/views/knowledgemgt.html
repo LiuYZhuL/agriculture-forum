@@ -1,4 +1,200 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<a>aawdawdwww</a>
+<div th:if="${knowledgeMsg}"
+     th:style="'color:' + (${knowledgeSuccess} ? 'green' : 'red') + '; margin-bottom: 15px;'"
+     th:text="${knowledgeMsg}"></div>
+
+<!-- 搜索表单 -->
+<form id="knowledgeSearchForm" onsubmit="return handleKnowledgeSearch(event)">
+    <div class="form-group">
+        <label for="ktitle">标题:</label>
+        <input type="text" id="ktitle" name="ktitle" th:value="${selectK.title}">
+
+        <label for="ksts">状态:</label>
+        <select id="ksts" name="ksts">
+            <option value="">全部</option>
+            <option value="3" th:selected="${selectK.sts == 3}">未审核</option>
+            <option value="4" th:selected="${selectK.sts == 4}">已审核</option>
+            <option value="5" th:selected="${selectK.sts == 5}">待修改</option>
+        </select>
+
+        <label for="kcategory">分类:</label>
+        <select id="kcategory" name="kcategoryId">
+            <option value="">全部</option>
+            <option th:each="category : ${categories}"
+                    th:value="${category.id}"
+                    th:selected="${selectK.categoryId == category.id}"
+                    th:text="${category.name}"></option>
+        </select>
+
+        <label for="kisTop">置顶:</label>
+        <select id="kisTop" name="kisTop">
+            <option value="">全部</option>
+            <option value="0" th:selected="${selectK.isTop == 0}">否</option>
+            <option value="1" th:selected="${selectK.isTop == 1}">是</option>
+        </select>
+
+        <label for="kisEssence">精华:</label>
+        <select id="kisEssence" name="kisEssence">
+            <option value="">全部</option>
+            <option value="0" th:selected="${selectK.isEssence == 0}">否</option>
+            <option value="1" th:selected="${selectK.isEssence == 1}">是</option>
+        </select>
+
+        <button type="submit" class="btn btn-primary">搜索</button>
+    </div>
+</form>
+
+<!-- 知识表格 -->
+<table class="table">
+    <thead>
+    <tr>
+        <th>标题</th>
+        <th>作者</th>
+        <th>分类</th>
+        <th>状态</th>
+        <th>状态操作</th>
+        <th>置顶</th>
+        <th>置顶操作</th>
+        <th>精华</th>
+        <th>精华操作</th>
+        <th>发布时间</th>
+        <th>浏览量</th>
+        <th>操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="k : ${pageK.list}">
+        <td th:text="${k.title}"></td>
+        <td th:text="${k.username}"></td>
+        <td th:text="${k.category}"></td>
+
+        <td>
+            <span th:if="${k.status == 3}" style="color: red;">未审核</span>
+            <span th:if="${k.status == 4}" style="color: green;">已审核</span>
+            <span th:if="${k.status == 5}" style="color: gray;">待修改</span>
+        </td>
+
+        <td>
+            <a th:if="${k.status != 4}"
+               th:href="@{/api/knowledge/status(postId=${k.id}, status=4)}">通过</a>
+            <a th:if="${k.status != 5}"
+               th:href="@{/api/knowledge/status(postId=${k.id}, status=5)}">不通过</a>
+        </td>
+
+        <td>
+            <span th:if="${k.isTop == 0}" style="color: red;">否</span>
+            <span th:if="${k.isTop == 1}" style="color: green;">是</span>
+        </td>
+
+        <td>
+            <a th:if="${k.isTop != 1}"
+               th:href="@{/api/knowledge/top(postId=${k.id}, isTop=1)}">置顶</a>
+            <a th:if="${k.isTop != 0}"
+               th:href="@{/api/knowledge/top(postId=${k.id}, isTop=0)}">取消置顶</a>
+        </td>
+
+        <td>
+            <span th:if="${k.isEssence == 0}" style="color: red;">否</span>
+            <span th:if="${k.isEssence == 1}" style="color: green;">是</span>
+        </td>
+
+        <td>
+            <a th:if="${k.isEssence != 1}"
+               th:href="@{/api/knowledge/essence(postId=${k.id}, isEssence=1)}">精华</a>
+            <a th:if="${k.isEssence != 0}"
+               th:href="@{/api/knowledge/essence(postId=${k.id}, isEssence=0)}">取消精华</a>
+        </td>
+
+        <td th:text="${#dates.format(k.createTime, 'yyyy-MM-dd HH:mm')}"></td>
+        <td th:text="${k.viewCount}"></td>
+
+        <td>
+            <a th:href="@{/api/post/show(postId=${k.id})}">详情</a>
+            <a th:href="@{/api/knowledge/delete(postId=${k.id})}">删除</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<!-- 分页导航 -->
+<div class="table-container">
+    <div style="line-height: 30px;">
+        当前第<span class="pageStyle" th:text="${pageK.pageNum}"></span>页
+        共<span class="pageStyle" th:text="${pageK.pages}"></span>页
+        总计<span class="pageStyle" th:text="${pageK.total}"></span>条
+    </div>
+
+    <div>
+        <nav aria-label="Page navigation">
+            <ul class="pagination pagination-sm">
+                <!-- 首页 -->
+                <li>
+                    <form onsubmit="return handleKnowledgeSearch(event)">
+                        <input type="hidden" name="ktitle" th:value="${selectK.title}">
+                        <input type="hidden" name="ksts" th:value="${selectK.sts}">
+                        <input type="hidden" name="kcategoryId" th:value="${selectK.categoryId}">
+                        <input type="hidden" name="kisTop" th:value="${selectK.isTop}">
+                        <input type="hidden" name="kisEssence" th:value="${selectK.isEssence}">
+                        <input type="hidden" name="pageNum" value="1">
+                        <input type="submit" value="首页">
+                    </form>
+                </li>
+
+                <!-- 上一页 -->
+                <li th:if="${pageK.pageNum != 1}">
+                    <form onsubmit="return handleKnowledgeSearch(event)">
+                        <input type="hidden" name="ktitle" th:value="${selectK.title}">
+                        <input type="hidden" name="ksts" th:value="${selectK.sts}">
+                        <input type="hidden" name="kcategoryId" th:value="${selectK.categoryId}">
+                        <input type="hidden" name="kisTop" th:value="${selectK.isTop}">
+                        <input type="hidden" name="kisEssence" th:value="${selectK.isEssence}">
+                        <input type="hidden" name="pageNum" th:value="${pageK.pageNum - 1}">
+                        <input type="submit" value="上一页">
+                    </form>
+                </li>
+
+                <!-- 页码 -->
+                <li th:each="itemPage : ${#numbers.sequence(1, pageK.pages)}"
+                    th:class="${pageK.pageNum == itemPage} ? 'active'">
+                    <form onsubmit="return handleKnowledgeSearch(event)">
+                        <input type="hidden" name="ktitle" th:value="${selectK.title}">
+                        <input type="hidden" name="ksts" th:value="${selectK.sts}">
+                        <input type="hidden" name="kcategoryId" th:value="${selectK.categoryId}">
+                        <input type="hidden" name="kisTop" th:value="${selectK.isTop}">
+                        <input type="hidden" name="kisEssence" th:value="${selectK.isEssence}">
+                        <input type="hidden" name="pageNum" th:value="${itemPage}">
+                        <input type="submit" th:value="${itemPage}">
+                    </form>
+                </li>
+
+                <!-- 下一页 -->
+                <li th:if="${pageK.pageNum != pageK.pages}">
+                    <form onsubmit="return handleKnowledgeSearch(event)">
+                        <input type="hidden" name="ktitle" th:value="${selectK.title}">
+                        <input type="hidden" name="ksts" th:value="${selectK.sts}">
+                        <input type="hidden" name="kcategoryId" th:value="${selectK.categoryId}">
+                        <input type="hidden" name="kisTop" th:value="${selectK.isTop}">
+                        <input type="hidden" name="kisEssence" th:value="${selectK.isEssence}">
+                        <input type="hidden" name="pageNum" th:value="${pageK.pageNum + 1}">
+                        <input type="submit" value="下一页">
+                    </form>
+                </li>
+
+                <!-- 尾页 -->
+                <li>
+                    <form onsubmit="return handleKnowledgeSearch(event)">
+                        <input type="hidden" name="ktitle" th:value="${selectK.title}">
+                        <input type="hidden" name="ksts" th:value="${selectK.sts}">
+                        <input type="hidden" name="kcategoryId" th:value="${selectK.categoryId}">
+                        <input type="hidden" name="kisTop" th:value="${selectK.isTop}">
+                        <input type="hidden" name="kisEssence" th:value="${selectK.isEssence}">
+                        <input type="hidden" name="pageNum" th:value="${pageK.pages}">
+                        <input type="submit" value="尾页">
+                    </form>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
 </html>
