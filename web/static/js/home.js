@@ -280,19 +280,6 @@ function submitInfoChange() {
 }
 
 
-// 通用Toast提示
-function showToast(message, type) {
-    const toast = document.createElement('div');
-    toast.className = `toast toast-${type}`;
-    toast.textContent = message;
-    document.body.appendChild(toast);
-
-    setTimeout(() => {
-        toast.remove();
-    }, 3000);
-}
-
-
 
 // 提交密码修改
 function submitPasswordChange() {
@@ -660,7 +647,7 @@ function submitPostChanges() {
 
             // 刷新内容
             const currentPage = document.querySelector('.pagination .active')?.textContent || 1;
-            searchPostPage(currentPage);
+            searchKnowledgePage(currentPage);
         } else {
             throw new Error(data.message);
         }
@@ -675,28 +662,7 @@ function submitPostChanges() {
     });
 }
 
-// 删除帖子
-function deletePost(postId) {
-    if (!confirm('确定要删除该帖子吗？此操作不可恢复！')) return;
 
-    fetch(`${baseUrl}api/post/delete/${postId}`, {
-        method: 'DELETE'
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            showToast(data.message, 'success');
-            const currentPage = document.querySelector('.pagination .active')?.textContent || 1;
-            searchPostPage(currentPage);
-        } else {
-            throw new Error(data.message);
-        }
-    })
-    .catch(error => {
-        console.error('删除失败:', error);
-        showToast(error.message, 'error');
-    });
-}
 
 // 显示Toast消息
 function showToast(message, type) {
@@ -717,3 +683,154 @@ function showToast(message, type) {
     }, 3000);
 }
 
+function knowledgeDetail(postId){
+    window.location.href = `${baseUrl}api/knowledge/detail?postId=${postId}`;
+}
+function editKnowledge(postId) {
+    // 显示加载状态
+    const modalContainer = document.querySelector('#knowledgeEditModal');
+
+    // 发起请求获取模态框内容
+    fetch(`${baseUrl}api/knowledge/update?postId=${postId}`)
+        .then(response => response.text())
+        .then(html => {
+            // 插入模态框内容
+            modalContainer.innerHTML = html;
+            // 初始化模态框事件
+
+            // 初始化删除附件数组
+            deletedAttachments = [];
+            initFileUploadEvents()
+
+
+            // 显示模态框
+            modalContainer.querySelector('.knowledge-modal').style.display = 'block';
+
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            modalContainer.innerHTML = '<div class="error">加载失败</div>';
+        });
+}
+function closeKnowledgeModal(){
+    const modalContainer = document.querySelector('#knowledgeEditModal');
+    modalContainer.innerHTML = '';
+    deletedAttachments = []; // 清空删除记录
+    newAttachments = [];
+    //清空附件上传
+}
+
+
+// 提交帖子修改
+function submitKnowledgeChanges() {
+    const postId = document.getElementById('editKnowledgeId').value;
+    const title = document.getElementById('editKnowledgeTitle').value;
+    const content = document.getElementById('editKnowledgeContent').value;
+    const categoryId = document.getElementById('editKnowledgeCategory').value;
+
+    // 验证表单
+    if (!title.trim() || !content.trim()) {
+        showToast('标题和内容不能为空', 'error');
+        return;
+    }
+
+    // 创建FormData对象
+    const formData = new FormData();
+    formData.append('postId', postId);
+    formData.append('title', title);
+    formData.append('content', content);
+    formData.append('categoryId', categoryId);
+
+    // 添加删除的附件ID
+    deletedAttachments.forEach(id => {
+        formData.append('deletedAttachments', id);
+    });
+
+    // 添加新上传的文件
+    newAttachments.forEach(attachment => {
+        formData.append('newAttachments', attachment.file);
+    });
+
+    // 显示加载状态
+    const submitBtn = document.querySelector('.submit-btn');
+    const originalText = submitBtn.textContent;
+    submitBtn.textContent = '保存中...';
+    submitBtn.disabled = true;
+
+    // 实际代码应该使用fetch API
+
+    fetch(`${baseUrl}api/post/update`, {
+        method: 'POST',
+        body: formData
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showToast('帖子修改成功', 'success');
+                closeKnowledgeModal();
+
+                // 刷新内容
+                const currentPage = document.querySelector('.pagination .active')?.textContent || 1;
+                searchKnowledgePage(currentPage);
+            } else {
+                throw new Error(data.message);
+            }
+        })
+        .catch(error => {
+            console.error('保存失败:', error);
+            showToast(`保存失败: ${error.message}`, 'error');
+        })
+        .finally(() => {
+            submitBtn.textContent = originalText;
+            submitBtn.disabled = false;
+        });
+}
+
+// 删除帖子
+function deleteKnowledge(postId) {
+    if (!confirm('确定要删除该知识吗？此操作不可恢复！')) return;
+
+    fetch(`${baseUrl}api/post/delete/${postId}`, {
+        method: 'DELETE'
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showToast(data.message, 'success');
+                const currentPage = document.querySelector('.pagination .active')?.textContent || 1;
+                searchKnowledgePage(currentPage);
+            } else {
+                throw new Error(data.message);
+            }
+        })
+        .catch(error => {
+            console.error('删除失败:', error);
+            showToast(error.message, 'error');
+        });
+}
+function searchKnowledgePage(pageNum){
+    const params = new URLSearchParams({
+        pageNum: pageNum,
+        ktitle: document.getElementById('ktitle').value || '',
+        kcategory: document.getElementById('kcategory').value || '',
+        ksts: document.getElementById('ksts').value || '',
+        kisTop: document.getElementById('kisTop').value || '',
+        kisEssence: document.getElementById('kisEssence').value || ''
+    });
+    console.log(params.toString());
+    fetch(`${baseUrl}api/user/knowledge?${params.toString()}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+    })
+        .then(response => response.text())
+        .then(html => {
+            console.log('服务端响应:', html); // 查看实际返回内容
+            // 统一替换逻辑
+            const contentArea = document.querySelector('.content-area');
+
+            contentArea.innerHTML = html;
+        })
+
+}

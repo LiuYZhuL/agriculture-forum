@@ -449,13 +449,13 @@ public class UserController {
             mv.addObject("knowledgeSuccess", true);
             mv.addObject("knowledgeMsg", "知识列表获取成功");
             mv.addObject("pageK", pageK);
-            mv.setViewName("home");
+            mv.setViewName("home-knowledge-list");
             return mv;
         } catch (RuntimeException e) {
             e.printStackTrace();
             mv.addObject("knowledgeSuccess", false);
             mv.addObject("knowledgeMsg", e.getMessage());
-            mv.setViewName("home");
+            mv.setViewName("home-knowledge-list");
             return mv;
         }
     }

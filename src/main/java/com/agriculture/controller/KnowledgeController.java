@@ -9,11 +9,10 @@ import com.github.pagehelper.PageInfo;
 import jakarta.servlet.http.HttpSession;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -22,9 +21,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Controller
 @RequestMapping("/api/knowledge")
@@ -185,6 +182,23 @@ public class KnowledgeController {
         }
         return mv;
     }
+    @GetMapping("/update")
+    public ModelAndView update(
+            @RequestParam("postId") Integer postId){
+        ModelAndView mv = new ModelAndView();
+        mv.setViewName("knowledge-modal");
+        try {
+            Post post = postService.getbyId(postId);
+            mv.addObject("post", post);
+            mv.addObject("attachments", attachmentService.getAttachmentByPostId(postId));
+            mv.addObject("categories", categoryService.listCategories());
+            return mv;
+        } catch (RuntimeException e) {
+            mv.addObject("error", e.getMessage());
+            mv.setViewName("knowledge-modal");
+            return mv;
+        }
+    }
     @GetMapping("/more")
     public ModelAndView more(
             HttpSession session) {
@@ -228,57 +242,6 @@ public class KnowledgeController {
         model.addObject("hasMore", postList.isHasNextPage());
         return model;
 
-    }
-
-    @GetMapping("/delete")
-    public ModelAndView delete(
-            @RequestParam("postId") Integer postId,
-            HttpSession session) {
-        ModelAndView mv = new ModelAndView();
-        mv.addObject("activeSection", "knowledge");
-        mv.setViewName("home");
-        Post post = null;
-        try {
-            post = postService.getbyId(postId);
-            List<Attachment> attachments = attachmentService.getAttachmentByPostId(postId);
-            if (attachments != null && !attachments.isEmpty()) {
-                attachmentService.deleteAttachmentByPostId(postId);
-                for (Attachment attachment : attachments) {
-                    if (attachment.getFileType().startsWith("image")) {
-                        Path filePath = Paths.get(
-                                session.getServletContext().getRealPath("/static/uploads/attachments/img/" + attachment.getFilePath())
-                        );
-                        Files.delete(filePath);
-                    } else if (attachment.getFileType().startsWith("video")) {
-                        Path filePath = Paths.get(
-                                session.getServletContext().getRealPath("/static/uploads/attachments/video/" + attachment.getFilePath())
-                        );
-                        Files.delete(filePath);
-                    } else if (attachment.getFileType().startsWith("application")){
-                        Path filePath = Paths.get(
-                                session.getServletContext().getRealPath("/static/uploads/attachments/file/" + attachment.getFilePath())
-                        );
-                        Files.delete(filePath);
-                    }
-                }
-            }
-            if (commentService.getCommentCountByPostId(postId) > 0) {
-                commentService.deleteCommentsByPostId(postId);
-            }
-            if (interactionService.getLikeCount(postId) > 0 || interactionService.getCollectionCount(postId) > 0){
-                interactionService.deletePostInteraction(postId);
-            }
-            postService.deletePost(postId);
-            mv.addObject("knowledgeSuccess", true);
-            mv.addObject("knowledgeMsg", "删除[" + post.getTitle() + "]成功");
-            return mv;
-        }catch (RuntimeException e){
-            mv.addObject("knowledgeSuccess", false);
-            mv.addObject("knowledgeMsg", e.getMessage());
-            return mv;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
     @GetMapping("/status")
     public ModelAndView status(
