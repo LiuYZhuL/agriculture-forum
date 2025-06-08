@@ -45,8 +45,11 @@
         <td th:text="${category.name}"></td>
         <td th:text="${category.description}"></td>
         <td>
-            <a >修改
-            </a>
+            <a href="javascript:void(0)"
+               th:data-id="${category.id}"
+               th:data-name="${category.name}"
+               th:data-desc="${category.description}"
+               onclick="showEditModal(this)">修改</a>
             <a th:href="@{/api/admin/category/delete/{categoryId}(categoryId=${category.id})}">删除</a>
 
         </td>
@@ -112,5 +115,38 @@
             </ul>
         </nav>
     </div>
+</div>
+
+<!-- 修改弹窗 -->
+<div id="editModal" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;padding:20px;z-index:1000;box-shadow:0 2px 8px rgba(0,0,0,0.3);border-radius:5px;">
+    <div style="margin-bottom:15px;border-bottom:1px solid #eee;padding-bottom:10px;">
+        <h3 style="margin:0;">修改分类</h3>
+        <span style="position:absolute;top:10px;right:15px;cursor:pointer;" onclick="closeEditModal()">×</span>
+    </div>
+    <form id="categoryForm" onsubmit="return handleCategoryUpdate(event)">
+        <input type="hidden" name="id" id="editId">
+        <input type="hidden" name="pageNum" th:value="${pageCategory?.pageNum ?: 1}">
+        <input type="hidden" name="searchCategory" th:value="${searchCategory ?: ''}">
+        <div style="margin-bottom:15px;">
+            <label>分类名称：</label>
+            <input type="text" name="name" id="editName" required
+                   style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;">
+        </div>
+        <div style="margin-bottom:20px;">
+            <label>分类描述：</label>
+            <input type="text" name="description" id="editDesc"
+                   style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;">
+        </div>
+        <div style="text-align:right;">
+            <button type="button" onclick="closeEditModal()"
+                    style="padding:6px 12px;background:#95a5a6;color:#fff;border:none;border-radius:3px;margin-right:10px;">
+                取消
+            </button>
+            <button type="submit"
+                    style="padding:6px 12px;background:#3498db;color:#fff;border:none;border-radius:3px;">
+                保存
+            </button>
+        </div>
+    </form>
 </div>
 </html>

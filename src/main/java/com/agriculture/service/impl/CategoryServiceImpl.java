@@ -7,7 +7,9 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -93,17 +95,30 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public PageInfo<Category> searchCategories(String searchText, int pageNum, int pageSize) {
+        PageHelper.startPage(pageNum, pageSize);
+        List<Category> categories;
+
         try {
-            PageHelper.startPage(pageNum, pageSize);
-            // 添加空值判断
-            if(searchText == null || searchText.trim().isEmpty()) {
-                return new PageInfo<>(categoryMapper.selectAllCategory(), pageSize);
+            if (StringUtils.hasText(searchText)) {
+                categories = categoryMapper.searchCategoryByName(searchText.trim());
+            } else {
+                categories = categoryMapper.selectAllCategory();
             }
-            List<Category> categories = categoryMapper.searchCategoryByName(searchText.trim());
+
+            // 空数据保护
+            if (categories == null) {
+                categories = new ArrayList<>();
+            }
+
+            // 分页保护
+            if (categories.isEmpty() && pageNum > 1) {
+                PageHelper.startPage(pageNum - 1, pageSize);
+                categories = categoryMapper.selectAllCategory();
+            }
+
             return new PageInfo<>(categories, pageSize);
         } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("搜索分类失败：" + e.getMessage());
+            throw new RuntimeException("数据查询失败: " + e.getMessage());
         }
     }
 

@@ -12,6 +12,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
@@ -219,22 +220,57 @@ public class AdminController {
     public ModelAndView updateCategory(
             @RequestParam("id") Integer id,
             @RequestParam("name") String name,
+            @RequestParam("pageNum") Integer pageNum,
+            @RequestParam("searchCategory") String searchCategory,
             @RequestParam(name = "description", required = false) String description) {
 
-        ModelAndView mv = new ModelAndView("manage");
+
+        ModelAndView mv = new ModelAndView("categorymgt");
         mv.addObject("activeSection","categoryMgt");
         try {
+            // 参数校验
+            if (id == null || id < 1) {
+                throw new RuntimeException("无效的分类ID");
+            }
+            if (!StringUtils.hasText(name)) {
+                throw new RuntimeException("分类名称不能为空");
+            }
+
+            // 构建分类对象
             Category category = new Category();
             category.setId(id);
-            category.setName(name);
-            category.setDescription(description);
+            category.setName(name.trim());
+            category.setDescription(description != null ? description.trim() : null);
+
+            // 执行更新
             categoryService.updateCategory(category);
 
+            // 重新加载数据
+            PageInfo<Category> pageCategory;
+            if (StringUtils.hasText(searchCategory)) {
+                pageCategory = categoryService.searchCategories(searchCategory.trim(), pageNum, 5);
+            } else {
+                pageCategory = categoryService.listCategories(pageNum, 5);
+            }
+
+            // 添加视图参数
+            mv.addObject("pageCategory", pageCategory);
+            mv.addObject("searchCategory", searchCategory);
             mv.addObject("categorySuccess", true);
-            mv.addObject("categoryMsg", "分类修改成功");
+            mv.addObject("categoryMsg", "分类[" + name + "]修改成功");
+
         } catch (RuntimeException e) {
+            // 异常处理
             mv.addObject("categorySuccess", false);
             mv.addObject("categoryMsg", e.getMessage());
+
+            // 尝试重新加载原始数据
+            try {
+                PageInfo<Category> pageCategory = categoryService.listCategories(1, 5);
+                mv.addObject("pageCategory", pageCategory);
+            } catch (Exception ex) {
+                mv.addObject("categoryMsg", "数据加载失败: " + ex.getMessage());
+            }
         }
         return mv;
     }

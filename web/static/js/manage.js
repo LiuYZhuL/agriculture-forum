@@ -283,3 +283,44 @@ function handleAddCategory(event) {
             showErrorMessage('分类添加失败：' + error.message);
         });
 }
+function handleCategoryUpdate(event) {
+    event.preventDefault();
+
+    const formData = new URLSearchParams(new FormData(event.target));
+
+    fetch(`${baseUrl}api/admin/category/update`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: formData
+    })
+        .then(response => response.text())
+        .then(html => {
+            document.querySelector('.content-area').innerHTML = html;
+            rebindCategoryMgtEvents();
+            closeEditModal(); // 新增关闭弹窗
+        })
+        .catch(error => {
+            console.error('更新失败:', error);
+            showErrorMessage('分类更新失败');
+        });
+
+    return false;
+}
+function showEditModal(linkElement) {
+    const id = linkElement.getAttribute('data-id');
+    const name = linkElement.getAttribute('data-name');
+    const desc = linkElement.getAttribute('data-desc') || '';
+
+    document.getElementById('editId').value = id;
+    document.getElementById('editName').value = name;
+    document.getElementById('editDesc').value = desc;
+    document.getElementById('editModal').style.display = 'block';
+}
+
+function closeEditModal() {
+    document.getElementById('modalOverlay').style.display = 'none';
+    document.getElementById('editModal').style.display = 'none';
+    document.getElementById('categoryForm').reset();
+}
