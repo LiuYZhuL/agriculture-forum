@@ -323,3 +323,38 @@ function closeEditModal() {
     document.getElementById('editModal').style.display = 'none';
     document.getElementById('categoryForm').reset();
 }
+function deleteCategory(linkElement) {
+    // 自动获取参数（与resetPassword完全一致的实现方式）
+    const categoryId = linkElement.getAttribute('data-categoryid');
+    const pageNum = linkElement.getAttribute('data-pagenum') || 1;
+
+    // 自动收集搜索参数（与resetPassword相同）
+    const params = new URLSearchParams();
+    const searchForm = document.getElementById('categorySearchForm');
+    if (searchForm) {
+        new FormData(searchForm).forEach((value, key) => {
+            params.append(key, value);
+        });
+    }
+    params.append('pageNum', pageNum);
+
+    fetch(`${baseUrl}api/admin/category/delete/${categoryId}?${params.toString()}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+        .then(response => {
+            if (!response.ok) throw new Error(`HTTP错误! 状态码: ${response.status}`);
+            return response.text();
+        })
+        .then(html => {
+            document.querySelector('.content-area').innerHTML = html;
+            // 无需特殊绑定，依赖现有rebind机制
+        })
+        .catch(error => {
+            console.error('删除失败:', error);
+            showErrorMessage('操作失败: ' + error.message);
+        });
+}

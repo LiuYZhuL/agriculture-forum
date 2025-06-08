@@ -173,25 +173,42 @@ public class AdminController {
         return mv;
     }
 
-    @GetMapping("/category/delete")
+    // 修改请求方法为POST
+    @PostMapping("/category/delete/{categoryId}")
     public ModelAndView deleteCategory(
-            @RequestParam("categoryId") Integer categoryId){
-        ModelAndView mv = new ModelAndView();
+            @PathVariable("categoryId") Integer categoryId,
+            @RequestParam("pageNum") Integer pageNum,
+            @RequestParam(name = "searchCategory", required = false) String searchCategory) { // 接收页码参数
+
+        ModelAndView mv = new ModelAndView("categorymgt");
+        mv.addObject("activeSection","categoryMgt");
+
         try {
             String categoryName = categoryService.getCategoryById(categoryId).getName();
             categoryService.deleteCategory(categoryId);
+
+            // 保持当前分页状态
+            PageInfo<Category> pageCategory;
+            if (StringUtils.hasText(searchCategory)) {
+                pageCategory = categoryService.searchCategories(searchCategory.trim(), pageNum, 5);
+            } else {
+                pageCategory = categoryService.listCategories(pageNum, 5);
+            }
+
+            // 添加所有必要参数
+            mv.addObject("pageCategory", pageCategory);
+            mv.addObject("searchCategory", searchCategory);
             mv.addObject("categorySuccess", true);
             mv.addObject("categoryMsg", "分类[" + categoryName + "]删除成功");
         } catch (RuntimeException e) {
             mv.addObject("categorySuccess", false);
             mv.addObject("categoryMsg", e.getMessage());
         }
-        mv.addObject("activeSection","categoryMgt");
-        PageInfo<Category> pageCategory = categoryService.listCategories(1, 5);
-        mv.addObject("pageCategory", pageCategory);
-        mv.setViewName("categorymgt");
         return mv;
     }
+
+
+
     @PostMapping("/category/add")
     public ModelAndView addCategory(
             @RequestParam("categoryName") String categoryName,

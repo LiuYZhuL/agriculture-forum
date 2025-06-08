@@ -50,7 +50,10 @@
                th:data-name="${category.name}"
                th:data-desc="${category.description}"
                onclick="showEditModal(this)">修改</a>
-            <a th:href="@{/api/admin/category/delete/{categoryId}(categoryId=${category.id})}">删除</a>
+            <a href="javascript:void(0)"
+               th:data-categoryid="${category.id}"
+               th:data-pagenum="${pageCategory.pageNum}"
+               onclick="deleteCategory(this)">删除</a>
 
         </td>
     </tr>
