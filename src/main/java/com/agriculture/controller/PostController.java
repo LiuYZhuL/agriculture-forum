@@ -93,13 +93,14 @@ public class PostController {
                         file.transferTo(uploadDir.resolve(newFileName));
                     }else if (allowedExtensions.contains(extension)){
                         attachment.setFileType("application/" + extension);
-                        attachment.setFilePath(file.getOriginalFilename());
+                        String newFileName = post.getId() + "_" + System.currentTimeMillis() + "_" + file.getOriginalFilename() + "." + extension;
+                        attachment.setFilePath(newFileName);
                         Path uploadDir = Paths.get(
                                 session.getServletContext().getRealPath("/static/uploads/attachments/file/")
                         );
                         attachments.add(attachment);
                         Files.createDirectories(uploadDir);
-                        file.transferTo(uploadDir.resolve(file.getOriginalFilename()));
+                        file.transferTo(uploadDir.resolve(newFileName));
                     }else {
                         throw new RuntimeException("未知文件类型");
                     }
@@ -369,13 +370,14 @@ public class PostController {
                         file.transferTo(uploadDir.resolve(newFileName));
                     }else if (allowedExtensions.contains(extension)){
                         attachment.setFileType("application/" + extension);
-                        attachment.setFilePath(file.getOriginalFilename());
+                        String newFileName = post.getId() + "_" + System.currentTimeMillis() + "_" + file.getOriginalFilename() + "." + extension;
+                        attachment.setFilePath(newFileName);
                         Path uploadDir = Paths.get(
                                 session.getServletContext().getRealPath("/static/uploads/attachments/file/")
                         );
                         attachments.add(attachment);
                         Files.createDirectories(uploadDir);
-                        file.transferTo(uploadDir.resolve(file.getOriginalFilename()));
+                        file.transferTo(uploadDir.resolve(newFileName));
                     }else {
                         throw new RuntimeException("未知文件类型");
                     }
