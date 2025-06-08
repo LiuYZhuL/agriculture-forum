@@ -320,7 +320,6 @@ function showEditModal(linkElement) {
 }
 
 function closeEditModal() {
-    document.getElementById('modalOverlay').style.display = 'none';
     document.getElementById('editModal').style.display = 'none';
     document.getElementById('categoryForm').reset();
 }
