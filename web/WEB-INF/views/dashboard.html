@@ -5,6 +5,9 @@
     <link rel="stylesheet" th:href="@{/static/css/dashboard.css}">
     <script th:src="@{/static/js/dashboard.js}"></script>
     <script th:src="@{/static/js/reload.js}"></script>
+    <script>
+        let baseUrl = "[[@{/}]]";
+    </script>
 </head>
 <body>
 <div th:insert="~{header :: user-header(user=${session.user}, logo='首页')}">
@@ -96,7 +99,72 @@
         </div>
     </div>
 </div>
+<!-- 在dashboard.html的body末尾添加 -->
+<div class="fixed-buttons">
+    <div th:onclick="|openAddModal()|" class="side-btn">
+        <span class="icon">📝</span>
+        <span class="text">发表内容</span>
+    </div>
+</div>
+<div id="addPostModal" class="post-modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeAddModal()">&times;</span>
+        <h2>发表</h2>
+        <span>类型：</span>
+        <div class="form-group">
+            <select id="addPostStatus" class="form-input">
+                <option value="0">帖子</option>
+                <option value="3">知识</option>
+            </select>
+        </div>
+        <!-- 新增表单容器 -->
+        <div id="addFormContainer">
+            <div class="form-group">
+                <input type="text" id="addPostTitle" class="form-input"
+                       placeholder="请输入标题（必填）" required>
+            </div>
+
+            <div class="form-group">
+                <textarea id="addPostContent" class="form-input auto-resize"
+                          placeholder="请输入内容（必填）" required></textarea>
+            </div>
+
+            <!-- 文件上传区域 -->
+            <div class="media-upload">
+                <label class="upload-btn">
+                    <input type="file" id="addImageInput" accept="image/*" multiple hidden>
+                    <span>添加图片</span>
+                </label>
+                <label class="upload-btn">
+                    <input type="file" id="addVideoInput" accept="video/*" multiple hidden>
+                    <span>添加视频</span>
+                </label>
+                <label class="upload-btn">
+                    <input type="file" id="addFileInput"
+                           accept=".doc,.docx,.ppt,.pptx,.xls,.xlsx,.pdf,.zip,.7z" multiple hidden>
+                    <span>添加附件</span>
+                </label>
+
+                <!-- 新增附件预览 -->
+                <div class="upload-progress">
+                    <div class="preview-list" id="addNewAttachments"></div>
+                </div>
+            </div>
+
+            <!-- 分类选择 -->
+            <span>分类：</span>
+            <div class="form-group">
+                <select id="addPostCategory" class="form-input">
+                    <option th:each="category : ${categories}"
+                            th:value="${category.id}"
+                            th:text="${category.name}"></option>
+                </select>
+            </div>
 
 
+            <button class="submit-btn" onclick="submitPostAdd()">立即发布</button>
+        </div>
+    </div>
+</div>
 </body>
 </html>

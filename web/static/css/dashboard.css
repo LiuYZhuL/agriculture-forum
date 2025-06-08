@@ -1,3 +1,212 @@
+.fixed-buttons { position: fixed; left: 10%; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 20px; z-index: 1000; }
+.side-btn { background: #2c3e50; color: white; padding: 15px 20px; border-radius: 30px; text-decoration: none; display: flex; align-items: center; gap: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: all 0.3s; width: 60px; overflow: hidden; }
+.side-btn:hover { width: 160px; background: #34495e; }
+.side-btn .icon { font-size: 24px; flex-shrink: 0; }
+.side-btn .text { white-space: nowrap; opacity: 0; transition: opacity 0.3s; }
+.side-btn:hover .text { opacity: 1; }
+@media (max-width: 1200px) { .fixed-buttons { left: 5%; } }
+@media (max-width: 768px) {
+    .fixed-buttons {
+        bottom: 20px;
+        top: auto;
+        left: 50%;
+        transform: translateX(-50%);
+        flex-direction: row;
+    }
+
+    .side-btn {
+        width: auto;
+        padding: 10px 15px;
+    }
+
+    .side-btn .text {
+        opacity: 1;
+    }
+}
+.post-modal,
+.knowledge-modal {
+    display: none; /* 默认隐藏 */
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    z-index: 1050;
+    background: rgba(0,0,0,0.5);
+}
+
+.post-modal .modal-content,
+.knowledge-modal .modal-content{
+    width: 90%;
+    max-width: 800px;
+    margin: 2% auto;
+    padding: 30px;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+/* 标题区域 */
+.post-modal h2,
+.knowledge-modal h2 {
+    font-size: 24px;
+    color: #2c3e50;
+    margin-bottom: 25px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+/* 输入框样式 */
+.post-modal .form-input,
+.knowledge-modal .form-input {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-bottom: 1px solid #ddd;
+    background: transparent;
+    transition: border-color 0.3s;
+}
+
+.post-modal .form-input:focus,
+.knowledge-modal .form-input:focus {
+    outline: none;
+    border-color: #2c3e50;
+}
+
+/* 自适应文本域 */
+.post-modal .auto-resize,
+.knowledge-modal .auto-resize {
+    min-height: 120px;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+/* 附件预览区 */
+.post-modal .upload-progress,
+.knowledge-modal .upload-progress {
+    border: 2px dashed #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    margin: 20px 0;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.post-modal .preview-item,
+.knowledge-modal .preview-item {
+    position: relative;
+    height: 100px;
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 5px;
+    display: inline-flex;
+    align-items: center;
+    background: #f8f8f8;
+}
+
+.post-modal .preview-media,
+.knowledge-modal .preview-media {
+    width: auto;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* 文件类型标签 */
+.post-modal .file-preview,
+.knowledge-modal .file-preview {
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    width: 180px;
+}
+.post-modal .file-icon,
+.knowledge-modal .file-icon {
+    font-size: 24px;
+    margin-right: 8px;
+}
+.post-modal .file-info,
+.knowledge-modal .file-info {
+    flex: 1;
+    overflow: hidden;
+}
+.post-modal .file-name,
+.knowledge-modal .file-name {
+    font-size: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* 上传按钮区域 */
+.post-modal .media-upload,
+.knowledge-modal .media-upload {
+    display: flex;
+    gap: 10px;
+    margin: 15px 0;
+}
+.post-modal .upload-btn,
+.knowledge-modal .upload-btn {
+    cursor: pointer;
+    padding: 8px 15px;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    transition: all 0.3s;
+    height: 36px;
+}
+.post-modal .upload-btn:hover,
+.knowledge-modal .upload-btn:hover {
+    background: #f0f0f0;
+}
+
+/* 提交按钮 */
+.post-modal .submit-btn,
+.knowledge-modal .submit-btn {
+    width: 100%;
+    padding: 12px;
+    background: #2c3e50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+.post-modal .submit-btn:hover,
+.knowledge-modal .submit-btn:hover {
+    background: #34495e;
+}
+
+/* 移除按钮 */
+.post-modal .remove-btn,
+.knowledge-modal .remove-btn {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    background: rgba(255,0,0,0.7);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .post-modal .modal-content,
+    .knowledge-modal .modal-content{
+        width: 95%;
+        padding: 20px;
+    }
+    .post-modal .media-upload,
+    .knowledge-modal .media-upload {
+        flex-wrap: wrap;
+    }
+}
 .header {
     background: #2c3e50;
     color: white;
