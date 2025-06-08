@@ -10,7 +10,7 @@
     </div>
     <button type="button" class="btn btn-primary"
             th:onclick="|openCategoryAddModal()|">新增</button>
-    <h2>用户列表</h2>
+    <h2>分类列表</h2>
     <table class="user-table">
         <thead>
         <tr>
@@ -28,6 +28,8 @@
             <td>
                 <button  type="button" class="btn btn-primary"
                          th:onclick="|editCategory(${c.id})|">编辑</button>
+                <button  type="button" class="btn btn-primary"
+                         th:onclick="|deleteCategory(${c.id})|">删除</button>
             </td>
         </tr>
         </tbody>

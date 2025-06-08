@@ -108,7 +108,6 @@ function handleAvatarPreview(event) {
     }
 }
 
-// manage.js
 // 全局状态管理
 let userAvatarFile = null; // 存储新上传的头像文件
 
@@ -187,17 +186,15 @@ function submitUserChanges() {
             return response.json();
         })
         .then(data => {
-            if (data.success) {
-                showToast('用户信息更新成功', 'success');
-                closeUserModal();
-                // 刷新当前分页
-                const currentPage = document.querySelector('.pagination .active')?.textContent || 1;
-                searchUserPage(currentPage);
-                // 更新全局头部
-                refreshHeaderComponent();
-            } else {
-                throw new Error(data.message || '未知错误');
-            }
+
+            showToast('用户信息更新成功', 'success');
+            closeUserModal();
+            // 刷新当前分页
+            const currentPage = document.querySelector('.pagination .active')?.textContent || 1;
+            searchUserPage(currentPage);
+            // 更新全局头部
+            refreshHeaderComponent();
+
         })
         .catch(error => {
             console.error('更新失败:', error);
@@ -370,6 +367,17 @@ function submitCategoryChanges() {
             console.error('更新失败:', error);
             showToast(error.message || '更新失败', 'error');
         });
+}
+function deleteCategory(categoryId){
+    if (!confirm('确定要删除该分类吗？')) return;
+    fetch(`${baseUrl}api/admin/category/delete?categoryId=${categoryId}`, {
+        method: 'DELETE',
+    }).then(() => {
+        showToast('删除成功', 'success');
+        const currentPage = document.querySelector('.pagination .active')?.textContent || 1;
+        searchCategoryPage(currentPage); // 刷新当前页
+
+    });
 }
 
 // 新增分类

@@ -11,7 +11,7 @@
     overflow: auto;
     background-color: rgba(0,0,0,0.4);
 }
-.modal-content {
+#categoryMgt .modal-content {
     position: relative;
     background-color: #fefefe;
     margin: 15% auto;
@@ -54,7 +54,6 @@
     box-shadow: 0 3px 6px rgba(44,62,80,0.1);
     background: white;
 }
-
 /* 下拉菜单现代风格 */
 .user-form .form-select {
     appearance: none;
@@ -65,7 +64,7 @@
 
 /* 操作按钮交互优化 */
 .form-actions .btn-submit {
-    background: #2c3e50;
+    background: #007bff;
     padding: 12px 24px;
     border-radius: 8px;
     transition: transform 0.2s, box-shadow 0.2s;

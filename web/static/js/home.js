@@ -647,7 +647,7 @@ function submitPostChanges() {
 
             // 刷新内容
             const currentPage = document.querySelector('.pagination .active')?.textContent || 1;
-            searchKnowledgePage(currentPage);
+            searchPostPage(currentPage);
         } else {
             throw new Error(data.message);
         }

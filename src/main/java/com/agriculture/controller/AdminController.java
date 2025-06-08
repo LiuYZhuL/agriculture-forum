@@ -154,24 +154,22 @@ public class AdminController {
         return mv;
     }
 
-    @GetMapping("/category/delete")
-    public ModelAndView deleteCategory(
+    @DeleteMapping("/category/delete")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> deleteCategory(
             @RequestParam("categoryId") Integer categoryId){
-        ModelAndView mv = new ModelAndView();
+        Map<String, Object> response = new HashMap<>();
         try {
             String categoryName = categoryService.getCategoryById(categoryId).getName();
             categoryService.deleteCategory(categoryId);
-            mv.addObject("categorySuccess", true);
-            mv.addObject("categoryMsg", "分类[" + categoryName + "]删除成功");
+            response.put("success", true);
+            response.put("msg", "分类[" + categoryName + "]删除成功");
+            return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
-            mv.addObject("categorySuccess", false);
-            mv.addObject("categoryMsg", e.getMessage());
+            response.put("success", false);
+            response.put("msg", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
-        mv.addObject("activeSection","categoryMgt");
-        PageInfo<Category> pageCategory = categoryService.listCategories(1, 5);
-        mv.addObject("pageCategory", pageCategory);
-        mv.setViewName("manage");
-        return mv;
     }
     @PostMapping("/category/add")
     @ResponseBody
