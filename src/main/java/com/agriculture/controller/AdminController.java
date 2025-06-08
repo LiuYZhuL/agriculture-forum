@@ -10,6 +10,8 @@ import com.agriculture.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -44,16 +46,14 @@ public class AdminController {
     public ModelAndView updateUser(
             @RequestParam("userId") Integer userId){
         ModelAndView mv = new ModelAndView();
-        mv.setViewName("userUD");
+        mv.setViewName("user-modal");
         try {
-            User updateUser = userService.getUserById(userId);
-            mv.addObject("updateUser", updateUser);
+            User user = userService.getUserById(userId);
+            mv.addObject("user", user);
             return mv;
         }catch (RuntimeException e) {
-            mv.addObject("activeSection","userMgt");
             mv.addObject("userSuccess", false);
             mv.addObject("userMsg", e.getMessage());
-            mv.setViewName("manage");
             return mv;
         }
     }
@@ -69,33 +69,31 @@ public class AdminController {
      * @return ModelAndView
      */
     @PostMapping("/user/update")
-    public ModelAndView updateUserInfo(
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> updateUserInfo(
             @RequestParam("id") Integer id,
-            @RequestParam("avatar") MultipartFile avatar,
+            @RequestParam(name = "avatar",  required = false) MultipartFile avatar,
             @RequestParam("username") String username,
             @RequestParam("email") String email,
             @RequestParam("roleId") Integer roleId,
             @RequestParam("status") Integer status,
             HttpSession session){
-        ModelAndView mv = new ModelAndView();
-        mv.setViewName("redirect:/api/admin/user/update?userId=" + id);
+        Map<String, Object> response = new HashMap<>();
         try{
             UpdateUser updateUser = new UpdateUser();
             updateUser.setId(id);
             updateUser.setUsername(username);
             updateUser.setEmail(email);
             userService.updateUserInfo(updateUser);
-            if (!avatar.isEmpty()){
+            if (avatar!= null && !avatar.isEmpty()){
                 if (avatar.getSize() > 10 * 1024 * 1024) {
-                    mv.addObject("msg", "文件大小超过10MB限制");
-                    return mv;
+                    throw new RuntimeException("图片大小不能超过10M");
                 }
                 Set<String> allowedExtensions = Set.of("jpg", "jpeg", "png", "gif");
                 String extension = FilenameUtils.getExtension(avatar.getOriginalFilename()).toLowerCase();
 
                 if (!allowedExtensions.contains(extension)) {
-                    mv.addObject("msg", "仅支持JPG/PNG/GIF格式");
-                    return mv;
+                    throw new RuntimeException("图片格式不支持");
                 }
                 // 3. 生成唯一文件名
                 String newFileName = id + "_" + System.currentTimeMillis() + "." + extension;
@@ -123,15 +121,13 @@ public class AdminController {
 
             userService.updateUserStatus(id, status);
             userService.updateUserRole(id, roleId);
-            mv.addObject("success", true);
-            mv.addObject("msg", "更新成功");
-            return mv;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (RuntimeException e) {
-            mv.addObject("success", false);
-            mv.addObject("msg", e.getMessage());
-            return mv;
+            response.put("success", true);
+            response.put("msg", "用户信息更新成功");
+            return ResponseEntity.ok(response);
+        } catch (IOException | RuntimeException e) {
+            response.put("success", false);
+            response.put("msg", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
     /**
@@ -178,36 +174,49 @@ public class AdminController {
         return mv;
     }
     @PostMapping("/category/add")
-    public ModelAndView addCategory(
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> addCategory(
             @RequestParam("categoryName") String categoryName,
             @RequestParam("categoryDesc") String categoryDesc){
-        ModelAndView mv = new ModelAndView();
+        Map<String, Object> response = new HashMap<>();
         try {
             Category category = new Category();
             category.setName(categoryName);
             category.setDescription(categoryDesc);
             categoryService.addCategory(category);
-            mv.addObject("categorySuccess", true);
-            mv.addObject("categoryMsg", "分类[" + categoryName + "]添加成功");
+            response.put("success", true);
+            response.put("msg", "添加成功");
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            response.put("success", false);
+            response.put("msg", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    @GetMapping("/category/update")
+    public ModelAndView Category(
+            @RequestParam("categoryId") Integer categoryId){
+        ModelAndView mv = new ModelAndView();
+        mv.setViewName("category-modal");
+        try {
+            Category category = categoryService.getCategoryById(categoryId);
+            mv.addObject("category", category);
+            return mv;
         } catch (RuntimeException e) {
             mv.addObject("categorySuccess", false);
             mv.addObject("categoryMsg", e.getMessage());
+            return mv;
         }
-        mv.addObject("activeSection","categoryMgt");
-        PageInfo<Category> pageCategory = categoryService.listCategories(1, 5);
-        mv.addObject("pageCategory", pageCategory);
-        mv.setViewName("manage");
-        return mv;
     }
-
     @PostMapping("/category/update")
-    public ModelAndView updateCategory(
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> updateCategory(
             @RequestParam("id") Integer id,
             @RequestParam("name") String name,
             @RequestParam(name = "description", required = false) String description) {
 
-        ModelAndView mv = new ModelAndView("manage");
-        mv.addObject("activeSection","categoryMgt");
+        Map<String, Object> response = new HashMap<>();
         try {
             Category category = new Category();
             category.setId(id);
@@ -215,13 +224,14 @@ public class AdminController {
             category.setDescription(description);
             categoryService.updateCategory(category);
 
-            mv.addObject("categorySuccess", true);
-            mv.addObject("categoryMsg", "分类修改成功");
+            response.put("success", true);
+            response.put("msg", "分类信息更新成功");
+            return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
-            mv.addObject("categorySuccess", false);
-            mv.addObject("categoryMsg", e.getMessage());
+            response.put("success", false);
+            response.put("msg", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
-        return mv;
     }
 
 

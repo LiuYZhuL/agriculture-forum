@@ -1,4 +1,96 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<a>aawdawdccc</a>
+<div id="categoryMgt" class="content-section">
+    <div class="form-group">
+        <label for="category">用户名:</label>
+        <input type="text" id="category" name="category"
+               th:value="${searchCategory}">
+        <button type="submit" class="btn btn-primary"
+                th:onclick="|searchCategoryPage(1)|">搜索</button>
+    </div>
+    <button type="button" class="btn btn-primary"
+            th:onclick="|openCategoryAddModal()|">新增</button>
+    <h2>用户列表</h2>
+    <table class="user-table">
+        <thead>
+        <tr>
+            <th>分类ID</th>
+            <th>分类名称</th>
+            <th>分类描述</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="c : ${pageCategory.list}">
+            <td th:text="${c.id}"></td>
+            <td th:text="${c.name}"></td>
+            <td th:text="${c.description}"></td>
+            <td>
+                <button  type="button" class="btn btn-primary"
+                         th:onclick="|editCategory(${c.id})|">编辑</button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <div class="table-container">
+        <div style="line-height: 30px;">
+            当前第<span class="pageStyle" th:text="${pageCategory.pageNum}"></span>页
+            共<span class="pageStyle" th:text="${pageCategory.pages}"></span>页
+            总计<span class="pageStyle" th:text="${pageCategory.total}"></span>条
+        </div>
+        <div>
+            <nav aria-label="Page navigation">
+                <ul class="pagination pagination-sm">
+                    <li>
+                        <button type="button" th:onclick="|searchCategoryPage(1)|">首页</button>
+                    </li>
+                    <li th:if="${pageCategory.pageNum != 1}">
+                        <button type="button"
+                                th:onclick="|searchCategoryPage(${pageCategory.pageNum - 1})|">
+                            上一页
+                        </button>
+                    </li>
+                    <li th:each="i : ${#numbers.sequence(1, pageCategory.pages)}">
+                        <button type="button"
+                                th:onclick="|searchCategoryPage(${i})|"
+                                th:classappend="${pageCategory.pageNum == i} ? 'active' : ''">
+                            <span th:text="${i}"></span>
+                        </button>
+                    </li>
+                    <li th:if="${pageCategory.pageNum != pageCategory.pages}">
+                        <button type="button"
+                                th:onclick="|searchCategoryPage(${pageCategory.pageNum + 1})|">
+                            下一页
+                        </button>
+                    </li>
+                    <li>
+                        <button type="button"
+                                th:onclick="|searchCategoryPage(${pageCategory.pages})|">
+                            尾页
+                        </button>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+    <div id="categoryAddModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeCategoryAddModal()">&times;</span>
+            <h2>新增分类</h2>
+            <div class="form-group">
+                <label for="name">分类名称:</label>
+                <input type="text" id="name"
+                       required>
+            </div>
+            <div class="form-group">
+                <label for="description">分类描述:</label>
+                <input type="text" id="description"
+                       required>
+            </div>
+            <button class="btn-save" onclick="submitCategoryAdd()">确认修改</button>
+        </div>
+    </div>
+    <div id="categoryEditModal">
+    </div>
+</div>
 </html>

@@ -73,7 +73,7 @@
                         <span class="post-category" th:text="${postvo.category}"></span>
                     </div>
                     <div class="post-summary">
-                        <span th:text="${#strings.substring(postvo.post.content?.toString(), 0, 10)} + '...'"></span>
+                        <span th:text="${#strings.abbreviate(postvo.post.content?.toString(), 100)}"></span>
                     </div>
                     <div class="post-stats">
                         <span>👁️ <span th:text="${postvo.viewCount}"></span></span>
@@ -83,7 +83,7 @@
                     </div>
                 </div>
                 <div class="post-right">
-                    <div th:if="${postvo.attachment != null}">
+                    <div th:if="${postvo.attachment != null and !#strings.startsWith(postvo?.attachment?.fileType, 'application/')}">
                         <img th:if="${#strings.startsWith(postvo.attachment.fileType, 'image/')}"
                              th:src="@{/static/uploads/attachments/img/{filePath}(filePath=${postvo.attachment.filePath})}"
                              class="post-media"

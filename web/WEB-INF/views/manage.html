@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>个人中心</title>
+    <title>管理员中心</title>
     <link rel="stylesheet" th:href="@{/static/css/manage.css}">
     <!-- 定义基础 URL -->
     <script>
         const baseUrl = "[[@{/}]]";
+        let currentContent = "[[${section ?: ''}]]";
     </script>
     <script th:src="@{/static/js/manage.js}" defer></script>
 <script th:src="@{/static/js/reload.js}"></script>
@@ -16,10 +17,10 @@
 </div>
 <div class="sidebar">
     <ul class="nav-menu">
-        <li class="nav-item" data-section="userMgt" onclick="loadContent('usermgt')">用户列表</li>
-        <li class="nav-item" data-section="categoryMgt" onclick="loadContent('categorymgt')">分类列表</li>
-        <li class="nav-item" data-section="postMgt" onclick="loadContent('postmgt')">帖子列表</li>
-        <li class="nav-item" data-section="knowledgeMgt"onclick="loadContent('knowledgemgt')">知识列表</li>
+        <li class="nav-item" data-section="userMgt" onclick="setHome('usermgt')">用户列表</li>
+        <li class="nav-item" data-section="categoryMgt" onclick="setHome('categorymgt')">分类列表</li>
+        <li class="nav-item" data-section="postMgt" onclick="setHome('postmgt')">帖子列表</li>
+        <li class="nav-item" data-section="knowledgeMgt"onclick="setHome('knowledgemgt')">知识列表</li>
     </ul>
 </div>
 <div class="content-area">

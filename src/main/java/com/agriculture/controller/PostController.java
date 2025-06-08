@@ -241,56 +241,56 @@ public class PostController {
         }
         return mv;
     }
-    @GetMapping("/status")
-    public ModelAndView status(
+    @PostMapping("/status")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> status(
             @RequestParam("postId") Integer postId,
             @RequestParam("status") Integer status) {
-        ModelAndView mv = new ModelAndView();
-        mv.setViewName("manage");
-        mv.addObject("activeSection", "postMgt");
+        Map<String, Object> response = new HashMap<>();
         try {
             postService.updatePostStatus(postId, status);
-            mv.addObject("postSuccess", true);
-            mv.addObject("postMsg", "更新帖子[" + postId + "]状态成功");
+            response.put("success", true);
+            response.put("message", "更新帖子[" + postId + "]状态成功");
+            return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
-            mv.addObject("postSuccess", false);
-            mv.addObject("postMsg", e.getMessage());
+            response.put("success", false);
+            response.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
-        return mv;
     }
-    @GetMapping("/top")
-    public ModelAndView top(
+    @PostMapping("/top")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> top(
             @RequestParam("postId") Integer postId,
             @RequestParam("isTop") Integer top) {
-        ModelAndView mv = new ModelAndView();
-        mv.setViewName("manage");
-        mv.addObject("activeSection", "postMgt");
+        Map<String, Object> response = new HashMap<>();
         try {
             postService.updatePostTop(postId, top);
-            mv.addObject("postSuccess", true);
-            mv.addObject("postMsg", "更新帖子[" + postId + "]置顶成功");
+            response.put("success", true);
+            response.put("message", "更新帖子[" + postId + "]置顶成功");
+            return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
-            mv.addObject("postSuccess", false);
-            mv.addObject("postMsg", e.getMessage());
+            response.put("success", false);
+            response.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
-        return mv;
     }
-    @GetMapping("/essence")
-    public ModelAndView essence(
+    @PostMapping("/essence")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> essence(
             @RequestParam("postId") Integer postId,
             @RequestParam("isEssence") Integer essence) {
-        ModelAndView mv = new ModelAndView();
-        mv.setViewName("manage");
-        mv.addObject("activeSection", "postMgt");
+        Map<String, Object> response = new HashMap<>();
         try {
             postService.updatePostEssence(postId, essence);
-            mv.addObject("postSuccess", true);
-            mv.addObject("postMsg", "更新帖子[" + postId + "]精华成功");
+            response.put("success", true);
+            response.put("message", "更新帖子[" + postId + "]精华成功");
+            return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
-            mv.addObject("postSuccess", false);
-            mv.addObject("postMsg", e.getMessage());
+            response.put("success", false);
+            response.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
-        return mv;
     }
     @GetMapping("/update")
     public ModelAndView update(

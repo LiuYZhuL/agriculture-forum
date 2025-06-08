@@ -1,4 +1,180 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<a>aawdawdwww</a>
+<!-- manage.jsp 帖子管理片段 -->
+<div id="knowledgeMgt" class="content-section">
+
+    <!-- 搜索表单 -->
+    <div class="form-group">
+        <label for="kuser">用户名:</label>
+        <input type="text" id="kuser" th:value="${selectK.user}">
+
+        <label for="ktitle">标题:</label>
+        <input type="text" id="ktitle" th:value="${selectK.title}">
+
+        <label for="ksts">状态:</label>
+        <select id="ksts">
+            <option value="">全部</option>
+            <option th:value="0" th:selected="${selectK.sts == 0}">未审核</option>
+            <option th:value="1" th:selected="${selectK.sts == 1}">已审核</option>
+            <option th:value="2" th:selected="${selectK.sts == 2}">待修改</option>
+        </select>
+        <label for="kisTop">置顶:</label>
+        <select id="kisTop">
+            <option value="">全部</option>
+            <option th:value="1" th:selected="${selectK.isTop == 1}">是</option>
+            <option th:value="0" th:selected="${selectK.isTop == 0}">否</option>
+        </select>
+        <label for="kisEssence">精华:</label>
+        <select id="kisEssence">
+            <option value="">全部</option>
+            <option th:value="1" th:selected="${selectK.isEssence == 1}">是</option>
+            <option th:value="0" th:selected="${selectK.isEssence == 0}">否</option>
+        </select>
+        <label for="kcategory">分类:</label>
+        <select id="kcategory">
+            <option value="">全部</option>
+            <option th:each="category : ${categories}"
+                    th:value="${category.id}"
+                    th:selected="${selectK.categoryId == category.id}"
+                    th:text="${category.name}"></option>
+        </select>
+
+        <button class="btn btn-primary"
+                th:onclick="|searchKnowledgePage(1)|">搜索</button>
+    </div>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>标题</th>
+            <th>作者</th>
+            <th>分类</th>
+            <th>状态</th>
+            <th>状态操作</th>
+            <th>置顶</th>
+            <th>置顶操作</th>
+            <th>精华</th>
+            <th>精华操作</th>
+            <th>发布时间</th>
+            <th>浏览量</th>
+            <th>帖子操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="k : ${pageK.list}">
+            <td th:text="${k.id}"></td>
+            <td th:text="${k.title}"></td>
+            <td th:text="${k.username}"></td>
+            <td th:text="${k.category}"></td>
+            <td>
+                    <span th:switch="${k.status}">
+                        <span th:case="3" style="color:red">未审核</span>
+                        <span th:case="4" style="color:green">已审核</span>
+                        <span th:case="5" style="color:gray">待修改</span>
+                    </span>
+            </td>
+            <td>
+                <span th:switch="${k.status}">
+                    <span th:case="3">
+                        <button class="btn-action"
+                                th:onclick="|toggleKStatus(${k.id},4)|">通过</button>
+                        <button class="btn-action"
+                                th:onclick="|toggleKStatus(${k.id},5)|">打回</button>
+                    </span>
+                    <span th:case="4">
+                        <button class="btn-action"
+                                th:onclick="|toggleKStatus(${k.id},5)|">打回</button>
+                    </span>
+                </span>
+            </td>
+            <td>
+                <span th:if="${k.isTop == 1}" style="color:green">✓</span>
+                <span th:if="${k.isTop == 0}" style="color:red">✗</span>
+            </td>
+            <td>
+                <span th:switch="${k.isTop}">
+                    <span th:case="0">
+                        <button class="btn-action"
+                                th:onclick="|toggleKTop(${k.id},1)|">设为置顶</button>
+                    </span>
+                    <span th:case="1">
+                        <button class="btn-action"
+                                th:onclick="|toggleKTop(${k.id},0)|">取消置顶</button>
+                    </span>
+                </span>
+            </td>
+            <td>
+                <span th:if="${k.isEssence == 1}" style="color:green">✓</span>
+                <span th:if="${k.isEssence == 0}" style="color:red">✗</span>
+            </td>
+            <td>
+                <span th:switch="${k.isEssence}">
+                    <span th:case="0">
+                        <button class="btn-action"
+                                th:onclick="|toggleKEssence(${k.id},1)|">设为精华</button>
+                    </span>
+                    <span th:case="1">
+                        <button class="btn-action"
+                                th:onclick="|toggleKEssence(${k.id},0)|">取消精华</button>
+                    </span>
+                </span>
+            </td>
+            <td>
+                <span th:text="${#dates.format(k.createTime,'yyyy-MM-dd HH:mm:ss')}"></span>
+            </td>
+            <td>
+                <span th:text="${k.viewCount}"></span>
+            </td>
+            <td>
+                <button type="button" class="btn btn-primary"
+                        th:onclick="|knowledgeDetail(${k.id})|">详情</button>
+                <button type="button" class="btn btn-primary"
+                        th:onclick="|deleteKnowledge(${k.id})|">删除</button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <!-- 分页导航 -->
+    <div class="table-container">
+        <div style="line-height: 30px;">
+            当前第<span class="pageStyle" th:text="${pageK.pageNum}"></span>页
+            共<span class="pageStyle" th:text="${pageK.pages}"></span>页
+            总计<span class="pageStyle" th:text="${pageK.total}"></span>条
+        </div>
+        <div>
+            <nav aria-label="Page navigation">
+                <ul class="pagination pagination-sm">
+                    <li>
+                        <button type="button" th:onclick="|searchKnowledgePage(1)|">首页</button>
+                    </li>
+                    <li th:if="${pageK.pageNum != 1}">
+                        <button type="button"
+                                th:onclick="|searchKnowledgePage(${pageK.pageNum - 1})|">
+                            上一页
+                        </button>
+                    </li>
+                    <li th:each="i : ${#numbers.sequence(1, pageK.pages)}">
+                        <button type="button"
+                                th:onclick="|searchKnowledgePage(${i})|"
+                                th:classappend="${pageK.pageNum == i} ? 'active' : ''">
+                            <span th:text="${i}"></span>
+                        </button>
+                    </li>
+                    <li th:if="${pageK.pageNum != pageK.pages}">
+                        <button type="button"
+                                th:onclick="|searchKnowledgePage(${pageK.pageNum + 1})|">
+                            下一页
+                        </button>
+                    </li>
+                    <li>
+                        <button type="button"
+                                th:onclick="|searchKnowledgePage(${pageK.pages})|">
+                            尾页
+                        </button>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
 </html>

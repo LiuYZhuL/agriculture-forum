@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="user-modal" class="user-modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeUserModal()">&times;</span>
+        <h2>修改用户信息</h2>
+
+        <!-- 表单容器 -->
+        <div id="userForm" class="user-form">
+            <input type="hidden" id="editUserId" th:value="${user.id}">
+
+            <!-- 头像上传 -->
+            <div class="avatar-upload">
+                <div class="preview">
+                    <img id="userAvatarPreview"
+                         th:src="@{/static/uploads/img/{path}(path=${user.avatar})}"
+                         alt="用户头像">
+                    <div class="avatar-hover-layer">
+                        <span class="edit-tip">🖼️ 修改头像</span>
+                        <label class="upload-overlay">
+                            <input type="file" id="avatarInput" accept="image/*" hidden
+                                   onchange="handleAvatarPreview(event)">
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 基础信息 -->
+            <div class="form-group">
+                <label for="editUsername">用户名</label>
+                <input type="text" id="editUsername" class="form-input"
+                       th:value="${user.username}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="editEmail">邮箱</label>
+                <input type="email" id="editEmail" class="form-input"
+                       th:value="${user.email}" required>
+            </div>
+
+            <!-- 角色选择 -->
+            <div class="form-group">
+                <label for="editRole">角色</label>
+                <select id="editRole" class="form-select">
+                    <option value="1" th:selected="${user.roleId == 1}">普通用户</option>
+                    <option value="2" th:selected="${user.roleId == 2}">管理员</option>
+                </select>
+            </div>
+
+            <!-- 状态选择 -->
+            <div class="form-group">
+                <label for="editStatus">状态</label>
+                <select id="editStatus" class="form-select">
+                    <option value="1" th:selected="${user.status == 1}">启用</option>
+                    <option value="0" th:selected="${user.status == 0}">禁用</option>
+                </select>
+            </div>
+
+            <!-- 操作按钮 -->
+            <div class="form-actions">
+                <button type="button" class="btn-cancel" onclick="closeUserModal()">取消</button>
+                <button type="submit" class="btn-submit" onclick="submitUserChanges()">保存修改</button>
+            </div>
+        </div>
+    </div>
+</div>
+</html>

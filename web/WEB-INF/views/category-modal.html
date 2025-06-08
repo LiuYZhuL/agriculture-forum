@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<div th:fragment="category-modal" class="modal category-modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeCategoryModal()">&times;</span>
+        <h2>编辑分类</h2>
+        <input type="hidden" id="editCategoryId" th:value="${category.id}"/>
+        <div class="form-group">
+            <label>分类名称</label>
+            <input type="text" id="editCategoryName"
+                   class="input-field" th:value="${category.name}"/>
+        </div>
+        <div class="form-group">
+            <label>分类描述</label>
+            <textarea id="editCategoryDesc"
+                      class="textarea-field" th:text="${category.description}"></textarea>
+        </div>
+        <div class="modal-actions">
+            <button class="btn-cancel" onclick="closeCategoryModal()">取消</button>
+            <button class="btn-confirm" onclick="submitCategoryChanges()">保存</button>
+        </div>
+    </div>
+</div>
+</html>

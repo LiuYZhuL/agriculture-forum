@@ -42,36 +42,12 @@ public class ManageController {
      * @return ModelAndView
      */
     @GetMapping("/")
-    public ModelAndView manage(HttpSession session){
+    public ModelAndView manage(
+            @RequestParam(name = "section", required = false) String section,
+            HttpSession session){
         ModelAndView modelAndView = new ModelAndView();
         User user = (User) session.getAttribute("user");
-        List<PostVO> postVOs = new ArrayList<>();
-        List<Post> postList = postService.getCollectPostsByUser(user.getId());
-        for (Post p : postList) {
-            PostVO postVO = new PostVO(p,
-                    userService.getUserById(p.getUserId()).getUsername(),
-                    categoryService.getCategoryById(p.getCategoryId()).getName(),
-                    attachmentService.getAttachmentByPostId(p.getId()).isEmpty() ? null : attachmentService.getAttachmentByPostId(p.getId()).get(0),
-                    commentService.getCommentCountByPostId(p.getId()),
-                    p.getViewCount(),
-                    postService.getPostLikeCount(p.getId()),
-                    postService.getPostCollectionCount(p.getId()));
-            postVOs.add(postVO);
-        }
-        List<KnowledgeVO>  knowledgeVOs = new ArrayList<>();
-        List<Post> knowledgeList = postService.getCollectKnowledgeByUser(user.getId());
-        for (Post k : knowledgeList) {
-            KnowledgeVO knowledgeVO = new KnowledgeVO(k,
-                    userService.getUserById(k.getUserId()).getUsername(),
-                    categoryService.getCategoryById(k.getCategoryId()).getName(),
-                    attachmentService.getAttachmentByPostId(k.getId()).isEmpty() ? null : attachmentService.getAttachmentByPostId(k.getId()).get(0),
-                    k.getViewCount(),
-                    postService.getPostLikeCount(k.getId()),
-                    postService.getPostCollectionCount(k.getId()));
-            knowledgeVOs.add(knowledgeVO);
-        }
-        modelAndView.addObject("postVOs", postVOs);
-        modelAndView.addObject("knowledgeVOs", knowledgeVOs);
+        modelAndView.addObject("section", section);
         modelAndView.addObject("user", user);
         modelAndView.setViewName("manage");
         return modelAndView;
@@ -164,10 +140,22 @@ public class ManageController {
     public ModelAndView ListPosts(
             @RequestParam(value = "pageNum", defaultValue = "1")Integer pageNum,
             @RequestParam(value = "pageSize", defaultValue = "5") Integer pageSize,
-            @Valid SelectPost selectPost)
+            @RequestParam(name = "user", required = false) String user,
+            @RequestParam(name = "title", required = false) String title,
+            @RequestParam(name = "sts",  required = false) Integer sts,
+            @RequestParam(name = "isTop", required = false) Integer isTop,
+            @RequestParam(name = "isEssence", required = false) Integer isEssence,
+            @RequestParam(name = "category", required = false) Integer category)
     {
         ModelAndView mv = new ModelAndView();
         mv.addObject("activeSection","postMgt");
+        SelectPost selectPost = new SelectPost();
+        selectPost.setUser(user);
+        selectPost.setTitle(title);
+        selectPost.setSts(sts);
+        selectPost.setIsTop(isTop);
+        selectPost.setIsEssence(isEssence);
+        selectPost.setCategoryId(category);
         mv.addObject("selectPost", selectPost);
         Post post = new Post();
         post.setId(selectPost.getPostId());
