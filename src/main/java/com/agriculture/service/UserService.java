@@ -14,28 +14,21 @@ public interface UserService {
     void logout(User user);
     // 根据ID获取用户信息
     User getUserById(Integer userId);
-
     // 根据用户名获取用户信息
     User getUserByUsername(String username);
-
     // 更新用户基本信息
     void updateUserInfo(UpdateUser updateUser);
-
     // 修改密码
     void changePassword(UpdateUser updateUser);
-
     // 重置密码（忘记密码流程）
     String resetPassword(String username, String email);
     // 重置密码（管理员）
     void resetPassword(Integer userId);
-
     // 封禁/解封用户（管理员）
     void updateUserStatus(Integer userId, Integer status);
-
     // 修改用户角色（管理员）
     void updateUserRole(Integer userId, Integer roleId);
     List<User> AllUsers();
-
     // 分页查询用户列表（管理员）
     PageInfo<User> listUsers(int pageNum, int pageSize, User user);
     // 更新用户头像

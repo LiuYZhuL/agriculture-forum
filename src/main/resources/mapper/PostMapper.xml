@@ -141,7 +141,7 @@
                 and p.is_essence = #{isEssence}
             </if>
         </where>
-        ORDER BY p.update_time DESC,  p.is_top DESC, p.is_essence DESC
+        ORDER BY p.is_top , p.update_time DESC,  p.is_essence DESC
     </select>
     <select id="selectKnowledgeByCondition" parameterType="com.agriculture.model.po.Post" resultMap="BaseResultMap">
         SELECT p.*, u.username, c.name as category
@@ -178,7 +178,7 @@
                 and p.is_essence = #{isEssence}
             </if>
         </where>
-        ORDER BY p.update_time DESC,  p.is_top DESC, p.is_essence DESC
+        ORDER BY p.is_top , p.update_time DESC, p.is_essence DESC
     </select>
     <update id="updatePostViewCount" parameterType="int">
         UPDATE post

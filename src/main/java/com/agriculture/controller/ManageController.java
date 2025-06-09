@@ -188,6 +188,7 @@ public class ManageController {
     public ModelAndView ListKnowledge(
             @RequestParam(value = "pageNum", defaultValue = "1")Integer pageNum,
             @RequestParam(value = "pageSize", defaultValue = "5") Integer pageSize,
+            @RequestParam(name = "kuser", required = false) String kuser,
             @RequestParam(value = "ktitle", required = false) String ktitle,
             @RequestParam(value = "ksts"  , required = false) Integer ksts,
             @RequestParam(value = "kcategory", required = false) Integer kcategory,
@@ -197,6 +198,7 @@ public class ManageController {
         ModelAndView mv = new ModelAndView();
         SelectPost selectK = new SelectPost();
         selectK.setTitle(ktitle);
+        selectK.setUser(kuser);
         selectK.setSts(ksts);
         selectK.setCategoryId(kcategory);
         selectK.setIsTop(kisTop);

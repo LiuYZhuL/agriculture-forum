@@ -561,12 +561,12 @@ function searchPostPage(pageNum){
 function searchKnowledgePage(pageNum){
     const params = new URLSearchParams({
         pageNum: pageNum,
-        title: document.getElementById('ktitle').value || '',
-        user: document.getElementById('kuser').value || '',
-        category: document.getElementById('kcategory').value || '',
-        sts: document.getElementById('ksts').value || '',
-        isTop: document.getElementById('kisTop').value || '',
-        isEssence: document.getElementById('kisEssence').value || ''
+        ktitle: document.getElementById('ktitle').value || '',
+        kuser: document.getElementById('kuser').value || '',
+        kcategory: document.getElementById('kcategory').value || '',
+        ksts: document.getElementById('ksts').value || '',
+        kisTop: document.getElementById('kisTop').value || '',
+        kisEssence: document.getElementById('kisEssence').value || ''
     });
     console.log(params.toString());
     fetch(`${baseUrl}api/admin/manage/knowledgemgt?${params.toString()}`, {
