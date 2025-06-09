@@ -13,7 +13,7 @@
             <div class="post-summary" th:text="${#strings.abbreviate(postvo.post.content, 10)}"></div>
             <div class="post-stats">
                 <span>👁️ <span th:text="${postvo.viewCount}"></span></span>
-                <span>👍 <span th:text="${postvolikeCount}"></span></span>
+                <span>👍 <span th:text="${postvo.likeCount}"></span></span>
                 <span>💬 <span th:text="${postvo.commentCount}"></span></span>
                 <span>⭐ <span th:text="${postvo.collectionCount}"></span></span>
             </div>
