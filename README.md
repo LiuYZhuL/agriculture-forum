@@ -51,33 +51,75 @@
 
 | 接口名称         | 请求方式 | 路径                  | 参数                                                                 | 功能说明                     |
 |------------------|----------|-----------------------|----------------------------------------------------------------------|------------------------------|
-| 用户登录页面     | GET      | /api/user/login       | 无                                                                  | 跳转登录页面                 |
-| 用户登录         | POST     | /api/user/login       | loginUser(用户名密码)                                               | 执行登录操作                 |
-| 用户注册页面     | GET      | /api/user/register    | 无                                                                  | 跳转注册页面                 |
-| 用户注册         | POST     | /api/user/register    | registerUser(注册信息)                                              | 执行注册操作                 |
-| 用户注销         | GET      | /api/user/logout      | 无                                                                  | 退出登录状态                 |
-| 个人中心         | GET      | /api/user/home        | 无                                                                  | 查看收藏帖子和知识           |
-| 密码重置页面     | GET      | /api/user/reset       | 无                                                                  | 跳转密码重置页面             |
-| 密码重置         | POST     | /api/user/reset       | username, email                                                     | 通过邮箱重置密码             |
-| 头像修改         | POST     | /api/user/avatar      | avatar文件                                                          | 上传新头像                   |
-| 个人信息修改     | POST     | /api/user/update      | username, email                                                     | 更新用户基本信息             |
-| 密码修改         | POST     | /api/user/change      | password, newPassword                                               | 修改账户密码                 |
-| 用户帖子管理     | GET      | /api/user/post        | pageNum, pageSize, selectPost                                       | 分页查询用户发布的帖子       |
-| 用户知识管理     | GET      | /api/user/knowledge   | pageNum, pageSize, ktitle, ksts, kcategory, kisTop, kisEssence      | 分页查询用户发布的知识       |
-| 用户评论管理     | GET      | /api/user/comment     | pageNum, pageSize                                                   | 查看用户发表的评论           |
-| 积分计算         | GET      | /api/user/score       | 无                                                                  | 计算用户互动积分             |
+| 用户登录页面     | GET      | /login                | 无                                                                  | 跳转登录页面                 |
+| 用户登录         | POST     | /login                | username, password                                                  | 执行登录操作                 |
+| 用户注册页面     | GET      | /register             | 无                                                                  | 跳转注册页面                 |
+| 用户注册         | POST     | /register             | username, password, email                                           | 执行注册操作                 |
+| 用户注销         | GET      | /logout               | 无                                                                  | 退出登录状态                 |
+| 个人中心         | GET      | /home                 | section(可选)                                                       | 查看收藏帖子和知识           |
+| 密码重置页面     | GET      | /reset                | 无                                                                  | 跳转密码重置页面             |
+| 密码重置         | POST     | /reset                | username, email                                                     | 通过邮箱重置密码             |
+| 头像修改         | POST     | /avatar               | avatar文件                                                          | 上传新头像                   |
+| 个人信息修改     | POST     | /update               | username, email                                                     | 更新用户基本信息             |
+| 密码修改         | POST     | /change               | password, newPassword                                               | 修改账户密码                 |
+| 用户帖子管理     | GET      | /post                 | pageNum, pageSize, title, sts, categoryId                           | 分页查询用户发布的帖子       |
+| 用户知识管理     | GET      | /knowledge            | pageNum, pageSize, ktitle, ksts, kcategory                          | 分页查询用户发布的知识       |
+| 用户评论管理     | GET      | /comment              | pageNum, pageSize                                                   | 查看用户发表的评论           |
+| 积分计算         | GET      | /score                | 无                                                                  | 计算用户互动积分             |
 
 ## 管理员模块 (AdminController)
 **基础路径**: `/api/admin`
 
 | 接口名称         | 请求方式 | 路径                      | 参数                          | 功能说明                     |
 |------------------|----------|---------------------------|-------------------------------|------------------------------|
-| 用户修改页面     | GET      | /api/admin/user/update    | userId                        | 跳转用户信息修改页           |
-| 用户信息更新     | POST     | /api/admin/user/update    | id, avatar, username等        | 更新用户详细信息             |
-| 密码重置         | GET      | /api/admin/user/reset     | userId                        | 管理员重置用户密码           |
-| 分类删除         | GET      | /api/admin/category/delete| categoryId                    | 删除指定分类                 |
-| 分类新增         | POST     | /api/admin/category/add   | categoryName, categoryDesc    | 创建新分类                   |
-| 分类修改         | POST     | /api/admin/category/update| id, name, description         | 更新分类信息                 |
+| 用户修改页面     | GET      | /user/update              | userId                        | 跳转用户信息修改页           |
+| 用户信息更新     | POST     | /user/update              | id, avatar, username, roleId  | 更新用户详细信息             |
+| 密码重置         | GET      | /user/reset               | userId                        | 管理员重置用户密码           |
+| 分类删除         | DELETE   | /category/delete          | categoryId                    | 删除指定分类                 |
+| 分类新增         | POST     | /category/add             | categoryName, categoryDesc    | 创建新分类                   |
+| 分类修改页面     | GET      | /category/update          | categoryId                    | 跳转分类修改页               |
+| 分类修改         | POST     | /category/update          | id, name, description         | 更新分类信息                 |
+
+## 帖子模块 (PostController)
+**基础路径**: `/api/post`
+
+| 接口名称         | 请求方式 | 路径                  | 参数                                      | 功能说明                     |
+|------------------|----------|-----------------------|-------------------------------------------|------------------------------|
+| 帖子创建         | POST     | /add                  | title, content, categoryId, attachments   | 创建新帖子                   |
+| 帖子删除         | DELETE   | /delete/{postId}      | 无                                        | 删除指定帖子                 |
+| 帖子详情         | GET      | /detail               | postId                                    | 查看帖子详情                 |
+| 状态修改         | POST     | /status               | postId, status                            | 更新帖子状态                 |
+| 置顶设置         | POST     | /top                  | postId, isTop                             | 设置帖子置顶                 |
+| 精华设置         | POST     | /essence              | postId, isEssence                         | 设置精华帖子                 |
+| 修改页面         | GET      | /update               | postId                                    | 跳转帖子修改页               |
+| 内容更新         | POST     | /update               | postId, title, content, attachments       | 更新帖子内容                 |
+| 点赞操作         | POST     | /like                 | postId                                    | 点赞/取消点赞                |
+| 收藏操作         | POST     | /collect              | postId                                    | 收藏/取消收藏                |
+| 帖子列表         | GET      | /more                 | 无                                        | 跳转帖子列表页               |
+| 帖子搜索         | GET      | /search               | page, size, keyword, category             | 分页搜索帖子                 |
+
+## 知识模块 (KnowledgeController)
+**基础路径**: `/api/knowledge`
+
+| 接口名称         | 请求方式 | 路径                      | 参数                                      | 功能说明                     |
+|------------------|----------|---------------------------|-------------------------------------------|------------------------------|
+| 知识创建         | POST     | /add                      | title, content, categoryId, attachments   | 创建新知识条目               |
+| 知识详情         | GET      | /detail                   | postId                                    | 查看知识详情                 |
+| 知识列表         | GET      | /more                     | 无                                        | 跳转知识列表页               |
+| 知识搜索         | GET      | /search                   | page, size, keyword, category             | 分页搜索知识                 |
+| 知识删除         | DELETE   | /delete/{postId}          | 无                                        | 删除指定知识                 |
+| 状态修改         | GET      | /status                   | postId, status                            | 更新审核状态                 |
+| 置顶设置         | GET      | /top                      | postId, isTop                             | 设置知识置顶                 |
+| 精华设置         | GET      | /essence                  | postId, isEssence                         | 设置精华知识                 |
+
+## 评论模块 (CommentController)
+**基础路径**: `/api/comment`
+
+| 接口名称         | 请求方式 | 路径                  | 参数                                      | 功能说明                     |
+|------------------|----------|-----------------------|-------------------------------------------|------------------------------|
+| 评论添加         | POST     | /add                  | postId, userId, content, parentId(可选)  | 添加主评论/子评论            |
+| 分页查询         | GET      | /page                 | postId, page, size                        | 获取分页的树形结构评论       |
+| 评论删除         | DELETE   | /delete/{commentId}   | 无                                        | 删除指定评论                 |
 
 ## 根路径模块 (RootController)
 
@@ -85,49 +127,17 @@
 |------------------|----------|-------------------|-------|------------------------------|
 | 首页入口         | GET      | /                 | 无    | 展示精华帖子和知识           |
 | 仪表盘           | GET      | /api/dashboard    | 无    | 同首页入口                   |
+| 头部导航         | GET      | /api/header       | 无    | 获取头部导航信息             |
 
-## 帖子模块 (PostController)
-**基础路径** `/api/post`
-
-| 接口名称         | 请求方式 | 路径                  | 参数                                      | 功能说明                     |
-|------------------|----------|-----------------------|-------------------------------------------|------------------------------|
-| 帖子创建         | POST     | /api/post/add         | AddPost, images, videos, files            | 创建新帖子                   |
-| 帖子删除         | GET      | /api/post/delete      | postId                                    | 删除指定帖子                 |
-| 帖子详情         | GET      | /api/post/detail      | postId                                    | 查看帖子详情                 |
-| 帖子状态修改     | GET      | /api/post/status      | postId, status                            | 更新帖子状态                 |
-| 帖子置顶         | GET      | /api/post/top         | postId, isTop                             | 设置帖子置顶                 |
-| 帖子精华         | GET      | /api/post/essence     | postId, isEssence                         | 设置精华帖子                 |
-| 帖子修改页面     | GET      | /api/post/update      | postId                                    | 跳转帖子修改页               |
-| 帖子更新         | POST     | /api/post/update      | postId, AddPost, 附件相关参数             | 更新帖子内容                 |
-| 点赞操作         | POST     | /api/post/like        | postId                                    | 点赞/取消点赞                |
-| 收藏操作         | POST     | /api/post/collect     | postId                                    | 收藏/取消收藏                |
-| 帖子列表页面     | GET      | /api/post/more        | 无                                        | 跳转帖子列表页               |
-| 帖子搜索         | GET      | /api/post/search      | page, size, keyword, categoryId           | 分页搜索帖子                 |
-
-## 知识模块 (KnowledgeController)
-**基础路径** `/api/knowledge`
-
-| 接口名称         | 请求方式 | 路径                      | 参数                                      | 功能说明                     |
-|------------------|----------|---------------------------|-------------------------------------------|------------------------------|
-| 知识创建         | POST     | /api/knowledge/add        | AddPost, images, videos, files            | 创建新知识条目               |
-| 知识详情         | GET      | /api/knowledge/detail     | postId                                    | 查看知识详情                 |
-| 知识列表页面     | GET      | /api/knowledge/more       | 无                                        | 跳转知识列表页               |
-| 知识搜索         | GET      | /api/knowledge/search     | page, size, keyword, categoryId           | 分页搜索知识                 |
-| 知识删除         | GET      | /api/knowledge/delete     | postId                                    | 删除指定知识                 |
-| 知识状态修改     | GET      | /api/knowledge/status     | postId, status                            | 更新审核状态                 |
-| 知识置顶         | GET      | /api/knowledge/top        | postId, isTop                             | 设置知识置顶                 |
-| 知识精华         | GET      | /api/knowledge/essence    | postId, isEssence                         | 设置精华知识                 |
-
-## 评论模块 (CommentController)
-**基础路径** `/api/comment`
+## 管理界面模块 (ManageController)
+**基础路径**: `/api/admin/manage`
 
 | 接口名称         | 请求方式 | 路径                  | 参数                                      | 功能说明                     |
 |------------------|----------|-----------------------|-------------------------------------------|------------------------------|
-| 评论添加         | POST     | /api/comment/add      | postId, userId, content, parentId(可选)  | 添加主评论/子评论            |
-| 评论分页查询     | GET      | /api/comment/page     | postId, page, size                        | 获取分页的树形结构评论       |
-| 评论删除         | GET*     | /api/comment/delete   | commentId                                 | 删除指定评论                 |
-
-
+| 用户管理         | GET      | /usermgt              | pageNum, pageSize, username, roleId       | 分页用户管理                 |
+| 分类管理         | GET      | /categorymgt          | pageNum, pageSize, searchCategory         | 分类列表管理                 |
+| 帖子管理         | GET      | /postmgt              | pageNum, pageSize, title, status          | 帖子审核管理                 |
+| 知识管理         | GET      | /knowledgemgt         | pageNum, pageSize, ktitle, kcategory      | 知识条目管理                 |
 
 
 
