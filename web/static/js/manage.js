@@ -136,6 +136,7 @@ function editUser(userId) {
         .then(response => response.text())
         .then(html => {
             modalContainer.innerHTML = html;
+            modalContainer.style.display = 'block';
             const modal = modalContainer.querySelector('.user-modal');
             modal.style.display = 'block';
 
@@ -208,13 +209,15 @@ function submitUserChanges() {
 
 // 关闭模态框
 function closeUserModal() {
+    const modalContainer = document.getElementById('userEditModal');
+    modalContainer.style.display = 'none';
     const modal = document.querySelector('.user-modal');
     if (modal) {
         modal.style.display = 'none';
         // 清理临时文件
         userAvatarFile = null;
         // 移除DOM
-        document.getElementById('userEditModal').innerHTML = '';
+        modalContainer.innerHTML = '';
     }
 }
 function refreshHeaderComponent() {
