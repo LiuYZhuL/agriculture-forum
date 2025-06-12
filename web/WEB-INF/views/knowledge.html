@@ -51,9 +51,9 @@
             <span>👍</span>
             <span th:text="${likeCount}">0</span>
         </button>
-        <button class="action-btn favorite" id="favoriteBtn"
+        <button class="action-btn favorite" id="collectBtn"
                 th:classappend="${isCollected ? 'collected' : ''}"
-                th:onclick="toggleInteraction('favorite')">
+                th:onclick="toggleInteraction('collect')">
             <span>⭐</span>
             <span th:text="${collectionCount}">0</span>
         </button>
